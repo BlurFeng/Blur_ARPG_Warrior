@@ -10,6 +10,9 @@
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "Components/Input/WarriorInputComponent.h"
 #include "WarriorGameplayTags.h"
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "AbilitySystem/WarriorAttributeSet.h"
+#include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -42,7 +45,35 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f; //刹车减速度。
 }
 
-//Notes：
+void AWarriorHeroCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// if(WarriorAbilitySystemComponent && WarriorAttributeSet)
+	// {
+	// 	const FString ASCText =
+	// 		FString::Printf(TEXT("Owner Actor: %s, Avatar Actor: %s"),
+	// 			*WarriorAbilitySystemComponent->GetOwnerActor()->GetActorLabel(),
+	// 			*WarriorAbilitySystemComponent->GetAvatarActor()->GetActorLabel());
+	// 	Debug::Print(TEXT("Ability system component valid. ") + ASCText, FColor::Green);
+	// 	Debug::Print(TEXT("Attribute Set valid. ") + ASCText, FColor::Green);
+	// }
+
+	if(!CharacterStartUpData.IsNull())
+	{
+		//Notes：同步加载和异步加载。
+		//因为CharacterStartUpData中的内容我们希望在一开始就加载好，所以使用Synchronous Loading同步加载。
+		//如果不是立刻使用，或者需要大量时间加载的，建议使用Asynchronous Loading异步加载。比如敌人，场景等。
+		//这里是同步加载的范例，异步加载的范例可以查看加载敌人相关资源时的代码。
+		
+		if(UDataAsset_StartUpBase* LoadedData = CharacterStartUpData.LoadSynchronous())
+		{
+			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+		}
+	}
+}
+
+//Notes：Enhanced Input增强输入系统
 //基于UE5新的Enhanced Input增强输入系统，我们可以在ProjectSettings>Engine>Input中配置相关资源。
 //我们设置了项目的Default Input Component Class为WarriorInputComponent类。
 
@@ -65,9 +96,6 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	check(Subsystem);
 	Subsystem->AddMappingContext(InputConfigDataAsset->DefaultMappingContext, 0);
 
-	//Notes：
-	//
-	
 	//绑定输入事件。
 	UWarriorInputComponent* WarriorInputComponent = CastChecked<UWarriorInputComponent>(PlayerInputComponent); //将输入组件转换为UWarriorInputComponent类
 	WarriorInputComponent->BindNativeInputAction(
@@ -80,7 +108,7 @@ void AWarriorHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Debug::Print(TEXT("WarriorHeroCharacter BeginPlay."));
+	//Debug::Print(TEXT("WarriorHeroCharacter BeginPlay."));
 }
 
 void AWarriorHeroCharacter::Input_Move(const FInputActionValue& InputActionValue)

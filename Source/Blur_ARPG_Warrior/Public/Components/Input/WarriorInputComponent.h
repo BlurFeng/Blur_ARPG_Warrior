@@ -22,7 +22,7 @@ public:
 		const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func);
 };
 
-//Notes：
+//Notes：C++ template
 //C++的template模板是泛型编程的基础。允许提供非特定类型的参数。
 //这里的class和typename关键字是等价的。怎么使用取决于习惯，通常在构建泛型方法时使用typename，构建泛型类时使用class。
 //在这里，我想表示UserObject参数是一个类，CallbackFunc参数是一个回调方法。
