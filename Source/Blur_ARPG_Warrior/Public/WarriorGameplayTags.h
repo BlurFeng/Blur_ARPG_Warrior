@@ -11,6 +11,8 @@
 
 namespace WarriorGameplayTags
 {
+	//Notes：BLUR_ARPG_WARRIOR_API指定了我们可以使用这个宏的项目API，根据项目名称不同这个API也不同
+	
 	//Input Tags
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move)
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look)
