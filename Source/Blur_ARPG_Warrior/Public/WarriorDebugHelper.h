@@ -2,6 +2,9 @@
 
 namespace Debug
 {
+	//Debug用类，提供了打印等常用的Debug方法。
+	//通过 #include "WarriorDebugHelper.h" 引入进行使用。
+	
 	static void Print(const FString& Msg, const FColor& Color = FColor::MakeRandomColor(), int32 InKey = -1)
 	{
 		//Notes：
