@@ -15,7 +15,7 @@
 
 class UInputMappingContext;
 class UWarriorHeroLinkedAnimLayer;
-class UWarriorGameplayAbility;
+class UWarriorHeroGameplayAbility;
 
 //英雄技能设置数据
 USTRUCT(BlueprintType)
@@ -29,7 +29,7 @@ struct FWarriorHeroAbilitySet
 
 	//赋予技能组
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UWarriorGameplayAbility> AbilityToGrant;
+	TSubclassOf<UWarriorHeroGameplayAbility> AbilityToGrant;
 
 	bool IsValid() const;
 };
