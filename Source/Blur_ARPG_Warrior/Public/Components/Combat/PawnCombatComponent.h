@@ -16,7 +16,8 @@ class BLUR_ARPG_WARRIOR_API UPawnCombatComponent : public UPawnExtensionComponen
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "Warrior|Combat")
+	//当前装备武器Tag。应当在使用“装备武器”技能Ability时修改。
+	UPROPERTY(BlueprintReadWrite, Category = "Warrior|Combat")
 	FGameplayTag CurrentEquippedWeaponTag;
 
 	/// 注册一个生成武器。

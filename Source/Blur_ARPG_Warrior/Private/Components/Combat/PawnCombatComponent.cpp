@@ -1,9 +1,9 @@
 // Blur Feng All Rights Reserved.
 
-#include "WarriorDebugHelper.h"
-
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Items/Weapons/WarriorWeaponBase.h"
+
+#include "WarriorDebugHelper.h"
 
 void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister,
                                                  AWarriorWeaponBase* InWeaponToRegister, bool bRegisterAsEquippedWeapon)
@@ -13,6 +13,8 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 
 	CharacterCarriedWeaponsMap.Emplace(InWeaponTagToRegister, InWeaponToRegister);
 
+	//当生成武器时，如果武器直接进行装备时，直接设置CurrentEquippedWeaponTag。
+	//否则一般通过“装备武器”技能，并在Ability蓝图中修改。
 	if(bRegisterAsEquippedWeapon)
 	{
 		CurrentEquippedWeaponTag = InWeaponTagToRegister;

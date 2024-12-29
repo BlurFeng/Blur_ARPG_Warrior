@@ -18,6 +18,9 @@ struct FWarriorInputActionConfig
 	GENERATED_BODY() //UE生成相关宏，否则无法生成。
 
 public:
+
+	//Notes：通过 meta = (Categories = "InputTag")，我们限定可选的Tag只能是InputTag.之下的Tag。
+	
 	//输入行为对应的Tag。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "InputTag"))
 	FGameplayTag InputTag;

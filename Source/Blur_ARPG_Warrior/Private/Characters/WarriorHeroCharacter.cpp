@@ -1,7 +1,5 @@
 // Blur Feng All Rights Reserved.
 
-#include "WarriorDebugHelper.h"
-
 #include "Characters/WarriorHeroCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,9 +10,10 @@
 #include "Components/Input/WarriorInputComponent.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
-#include "AbilitySystem/WarriorAttributeSet.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
 #include "Components/Combat/HeroCombatComponent.h"
+
+#include "WarriorDebugHelper.h"
 
 //初始化。
 AWarriorHeroCharacter::AWarriorHeroCharacter()

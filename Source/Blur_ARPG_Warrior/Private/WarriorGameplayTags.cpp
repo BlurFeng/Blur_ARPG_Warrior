@@ -5,6 +5,12 @@
 
 namespace WarriorGameplayTags
 {
+	//Tips：Tag命名规则
+	//因为Tag在蓝图中使用时，Tag是按首字母顺序排列的。
+	//所以应当按项目需求规范命名规则。
+	//比如EquipAxe和UnequipAxe。我们将Axe作为开头的话，能根据具体对象分类排列。
+	//而用Equip和Unequip开头，则按照行为分类排列。
+	
 	//** Input Tags **//
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look, "InputTag.Look");
@@ -12,5 +18,11 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_UnequipAxe, "InputTag.UnequipAxe");
 
 	//** Player tags **//
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_Axe, "Player.Ability.Equip.Axe");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Unequip_Axe, "Player.Ability.Unequip.Axe");
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_Axe, "Player.Weapon.Axe");
+
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Equip_Axe, "Player.Event.Equip.Axe");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Unequip_Axe, "Player.Event.Unequip.Axe");
 }
