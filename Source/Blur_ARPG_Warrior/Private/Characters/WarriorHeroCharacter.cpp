@@ -1,5 +1,6 @@
 // Blur Feng All Rights Reserved.
 
+#include "WarriorDebugHelper.h"
 
 #include "Characters/WarriorHeroCharacter.h"
 #include "Components/CapsuleComponent.h"
@@ -13,8 +14,7 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "AbilitySystem/WarriorAttributeSet.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
-
-#include "WarriorDebugHelper.h"
+#include "Components/Combat/HeroCombatComponent.h"
 
 //初始化。
 AWarriorHeroCharacter::AWarriorHeroCharacter()
@@ -43,6 +43,9 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f); //旋转速率。
 	GetCharacterMovement()->MaxWalkSpeed = 400.f; //最大移动速度。
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f; //刹车减速度。
+
+	//创建战斗组件
+	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
 }
 
 void AWarriorHeroCharacter::PossessedBy(AController* NewController)

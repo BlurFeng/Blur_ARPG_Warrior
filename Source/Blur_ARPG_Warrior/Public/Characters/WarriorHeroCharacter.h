@@ -13,6 +13,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UDataAsset_InputConfig;
+class UHeroCombatComponent;
 struct FInputActionValue;
 
 //英雄角色类，玩家控制的角色。
@@ -42,13 +43,17 @@ private:
 	//Category：分类，有助于整理代码。蓝图中也会显示到相应分类下。
 	//meta = (AllowPrivateAccess = "true")：允许蓝图或编辑器访问private成员变量。
 
-	//相机臂
+	//相机臂。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
-	//自动跟随的相机
+	//自动跟随的相机。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	//战斗组件，用于管理武器和攻击方式。
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UHeroCombatComponent* HeroCombatComponent;
 	
 #pragma endregion
 
@@ -62,5 +67,6 @@ private:
 	
 #pragma endregion
 
-	
+public:
+	FORCEINLINE UHeroCombatComponent* GetHeroCombatComponent() const { return HeroCombatComponent; }
 };

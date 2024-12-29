@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "WarriorGameplayAbility.generated.h"
 
+class UPawnCombatComponent;
 //技能激活策略
 UENUM(BlueprintType)
 enum class EWarriorAbilityActivationPolicy : uint8
@@ -32,6 +33,11 @@ protected:
 	//~ End UGameplayAbility Interface
 
 	//技能激活策略。根据策略不同会以不同的形式运行这个技能。
-	UPROPERTY(EditDefaultsOnly, Category = "WarriorAbility")
+	UPROPERTY(EditDefaultsOnly, Category = "Warrior|Ability")
 	EWarriorAbilityActivationPolicy AbilityActivationPolicy = EWarriorAbilityActivationPolicy::OnTriggered;
+
+	/// 获取人物战斗组件
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	UPawnCombatComponent* GetPawnCombatComponentFromActorInfo() const;
 };
