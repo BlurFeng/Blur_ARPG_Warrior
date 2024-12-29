@@ -20,6 +20,9 @@ public:
 	template<class UserObject, typename CallbackFunc>
 	void BindNativeInputAction(const UDataAsset_InputConfig* InInputConfig,
 		const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func);
+
+	template<class UserObject, typename CallbackFunc>
+	void BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc,  CallbackFunc InputReleasedFunc);
 };
 
 //Notes：C++ template
@@ -27,7 +30,7 @@ public:
 //这里的class和typename关键字是等价的。怎么使用取决于习惯，通常在构建泛型方法时使用typename，构建泛型类时使用class。
 //在这里，我想表示UserObject参数是一个类，CallbackFunc参数是一个回调方法。
 
-/// 绑定本地输入事件
+/// 绑定输入事件
 /// @tparam UserObject 
 /// @tparam CallbackFunc 
 /// @param InInputConfig 这是我们自定义的输入配置。根据配置找到对应的InputAction进行绑定。
@@ -47,5 +50,27 @@ void UWarriorInputComponent::BindNativeInputAction(const UDataAsset_InputConfig*
 	if(UInputAction* FoundAction = InInputConfig->FindNativeInputActionByTag(InInputTag))
 	{
 		BindAction(FoundAction, TriggerEvent, ContextObject, Func);
+	}
+}
+
+/// 绑定技能输入事件
+/// @tparam UserObject 
+/// @tparam CallbackFunc 
+/// @param InInputConfig 这是我们自定义的输入配置。根据配置找到对应的InputAction进行绑定。
+/// @param ContextObject 根据InputTag我们会在InputConfig中找到对应的InputAction进行处理。
+/// @param InputPressedFunc 按下时回调方法。ETriggerEvent::Started。
+/// @param InputReleasedFunc 松开时回调方法。ETriggerEvent::Completed。
+template <class UserObject, typename CallbackFunc>
+void UWarriorInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig,
+	UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc)
+{
+	checkf(InInputConfig, TEXT("Input config data asset is null, can not proceed with binding."));
+
+	for (const FWarriorInputActionConfig& AbilityInputActionConfig : InInputConfig->AbilityInputActions)
+	{
+		if(!AbilityInputActionConfig.IsValid()) continue;
+
+		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Started, ContextObject, InputPressedFunc, AbilityInputActionConfig.InputTag);
+		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Completed, ContextObject, InputReleasedFunc, AbilityInputActionConfig.InputTag);
 	}
 }

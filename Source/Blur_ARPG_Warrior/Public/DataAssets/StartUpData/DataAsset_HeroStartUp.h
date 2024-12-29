@@ -4,14 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
+#include "GameplayTagContainer.h"
+
 #include "DataAsset_HeroStartUp.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FWarriorHeroAbilitySet
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "InputTag"))
+	FGameplayTag InputTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UWarriorGameplayAbility> AbilityToGrant;
+
+	bool IsValid() const;
+};
+
+//英雄启动数据资源
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UDataAsset_HeroStartUp : public UDataAsset_StartUpBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void GiveToAbilitySystemComponent(UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel = 1) override;
+
+private:
+	//角色启动技能设置组。用于在启动时赋予角色技能，这些技能是主动或被动技能，在必要时激活。他们都是游玩时使用到的技能，有复杂的状态机制。
+	UPROPERTY(EditDefaultsOnly, category = "StartUpData", meta = (TitleProperty = "InputTag"))
+	TArray<FWarriorHeroAbilitySet> HeroStartUpAbilitySets;
 };

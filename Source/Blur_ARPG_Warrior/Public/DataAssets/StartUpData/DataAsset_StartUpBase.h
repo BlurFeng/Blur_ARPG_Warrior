@@ -21,11 +21,11 @@ public:
 
 protected:
 
-	//激活给定能力组，在启动后立刻激活的能力。比如装备默认武器。
+	//立即激活技能组。在启动后立刻赋予技能并激活，然后从技能将被移除。比如生成默认武器。
 	UPROPERTY(EditDefaultsOnly, category = "StartUpData")
 	TArray<TSubclassOf<UWarriorGameplayAbility>> ActivateOnGivenAbilities;
 
-	//反应触发式能力。在特定条件下触发的能力。比如死亡。
+	//反应触发式技能。在特定条件下触发的技能。比如死亡。
 	UPROPERTY(EditDefaultsOnly, category = "StartUpData")
 	TArray<TSubclassOf<UWarriorGameplayAbility>> ReactiveAbilities;
 

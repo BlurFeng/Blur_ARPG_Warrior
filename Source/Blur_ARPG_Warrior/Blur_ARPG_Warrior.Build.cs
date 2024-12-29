@@ -2,6 +2,11 @@
 
 using UnrealBuildTool;
 
+//关于项目：
+//项目用于学习制作ARPG游戏的完整流程。
+//“Notes：”注释是一些知识点的记录。“Tips：”注释是关于项目的注意点或额外注释。其他注释一般用于提示代码流程或功能用法。
+//“TODO：”是未完成的功能或等待完善的内容。
+
 public class Blur_ARPG_Warrior : ModuleRules
 {
 	public Blur_ARPG_Warrior(ReadOnlyTargetRules Target) : base(Target)
