@@ -3,7 +3,7 @@
 
 #include "DataAssets/StartUpData/DataAsset_HeroStartUp.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
+#include "WarriorTypes/WarriorStructTypes.h"
 
 void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
 {
@@ -17,6 +17,7 @@ void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 	{
 		if(!AbilitySet.IsValid()) continue;
 
+		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
 		// Gameplay Ability Specification 用于描述Ability技能的详细信息。
 		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
 		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor();

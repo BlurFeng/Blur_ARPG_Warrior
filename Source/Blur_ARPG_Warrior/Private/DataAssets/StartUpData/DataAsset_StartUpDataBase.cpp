@@ -1,12 +1,12 @@
 // Blur Feng All Rights Reserved.
 
 
-#include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
+#include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 
 
-void UDataAsset_StartUpBase::GiveToAbilitySystemComponent(UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
+void UDataAsset_StartUpDataBase::GiveToAbilitySystemComponent(UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
 {
 	check(InASCToGive);
 
@@ -15,7 +15,7 @@ void UDataAsset_StartUpBase::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 	GrantAbilities(ReactiveAbilities, InASCToGive, ApplyLevel);
 }
 
-void UDataAsset_StartUpBase::GrantAbilities(const TArray<TSubclassOf<UWarriorGameplayAbility>>& InAbilitiesToGive,
+void UDataAsset_StartUpDataBase::GrantAbilities(const TArray<TSubclassOf<UWarriorGameplayAbility>>& InAbilitiesToGive,
 	UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
 {
 	if(InAbilitiesToGive.IsEmpty()) return;
@@ -25,6 +25,7 @@ void UDataAsset_StartUpBase::GrantAbilities(const TArray<TSubclassOf<UWarriorGam
 	{
 		if(!Ability) continue;
 
+        //TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
 		// Gameplay Ability Specification 用于描述Ability技能的详细信息。
 		FGameplayAbilitySpec AbilitySpec(Ability); //通过GameplayAbility创建Specification。
 		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor(); //技能来源对象，可以是角色，或者静态物体。

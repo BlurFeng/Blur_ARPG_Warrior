@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "DataAsset_StartUpBase.generated.h"
+#include "DataAsset_StartUpDataBase.generated.h"
 
 class UWarriorAbilitySystemComponent;
 class UWarriorGameplayAbility;
@@ -12,7 +12,7 @@ class UWarriorGameplayAbility;
  * 启动数据资源
  */
 UCLASS()
-class BLUR_ARPG_WARRIOR_API UDataAsset_StartUpBase : public UDataAsset
+class BLUR_ARPG_WARRIOR_API UDataAsset_StartUpDataBase : public UDataAsset
 {
 	GENERATED_BODY()
 

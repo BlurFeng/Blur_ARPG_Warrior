@@ -32,7 +32,7 @@ void UWarriorAbilitySystemComponent::GrantHeroWeaponAbilities(
 	{
 		if(!AbilitySet.IsValid()) continue;
 
-		//TODO:创建AbilitySpec并赋予技能的部分代码可以创建通用方法
+		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
 		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
 		AbilitySpec.SourceObject = GetAvatarActor();
 		AbilitySpec.Level = ApplyLevel;

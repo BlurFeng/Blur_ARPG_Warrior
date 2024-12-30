@@ -8,7 +8,7 @@
 
 #include "WarriorBaseCharacter.generated.h"
 
-class UDataAsset_StartUpBase;
+class UDataAsset_StartUpDataBase;
 class UWarriorAttributeSet;
 class UWarriorAbilitySystemComponent;
 //角色基础类型，之后派生子类Hero或者Enemy等。
@@ -40,7 +40,7 @@ protected:
 
 	//角色启动数据资源
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
-	TSoftObjectPtr<UDataAsset_StartUpBase> CharacterStartUpData;
+	TSoftObjectPtr<UDataAsset_StartUpDataBase> CharacterStartUpData;
 
 public:
 

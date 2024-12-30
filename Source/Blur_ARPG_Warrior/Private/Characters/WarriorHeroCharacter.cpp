@@ -10,7 +10,7 @@
 #include "Components/Input/WarriorInputComponent.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
-#include "DataAssets/StartUpData/DataAsset_StartUpBase.h"
+#include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "Components/Combat/HeroCombatComponent.h"
 
 #include "WarriorDebugHelper.h"
@@ -68,7 +68,7 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 		//如果不是立刻使用，或者需要大量时间加载的，建议使用Asynchronous Loading异步加载。比如敌人，场景等。
 		//这里是同步加载的范例，异步加载的范例可以查看加载敌人相关资源时的代码。
 		
-		if(UDataAsset_StartUpBase* LoadedData = CharacterStartUpData.LoadSynchronous())
+		if(UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous())
 		{
 			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
 		}

@@ -4,6 +4,16 @@
 
 #include "GameplayTagContainer.h"
 
+//Notes：Error C2665 : “FGameplayAbilitySpec::FGameplayAbilitySpec”: 没有重载函数可以转换所有参数类型。
+//使用 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h" 完整引用 代替 class UWarriorHeroGameplayAbility 前置引用来解决这个问题。
+//否则在其他类中引用 WarriorStructTypes.h 并使用其中的数据结构，并用到这些 前置引用的类 时可能出现问题。
+//比如一个方法要求传入 class A，但你 传入了他的子类 class A1，但 A1 是前置引用的，所以方法并不知道 A1 是 A 的子类，导致方法无法使用。如果他是重载方法，就会报错没找到可用的重载方法。
+//为了安全起见，我们总是为我们自己创造的 子类 进行#include完整引用。
+//一些UE引擎原生的类，我们依然可以使用 前置引用。或者这个类在蓝图中使用时，并不会有相关的报错产生。
+//还有一点需要注意，我们使用 增量编译 时，这样的问题可能被隐藏，知道下一次被编译（修改内容或完整重编译）时才会暴露此问题。
+
+#include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
+
 //Notes：generated.h
 //在UE中，我们必须需要 #include "WarriorStructTypes.generated.h" 才能成功编译这个文件。
 //每个包含 GENERATED_BODY() 或类似宏（如 GENERATED_UCLASS_BODY）的类或结构，必须在对应的头文件中包含一个 .generated.h 文件。
@@ -15,7 +25,6 @@
 
 class UInputMappingContext;
 class UWarriorHeroLinkedAnimLayer;
-class UWarriorHeroGameplayAbility;
 
 //英雄技能设置数据
 USTRUCT(BlueprintType)
