@@ -19,4 +19,8 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
 	AWarriorHeroWeapon* GetHeroCarriedWeaponByTag(FGameplayTag InWeaponTag) const;
+
+	//** 回调 **//
+	virtual void OnHitTargetActor(AActor* HitActor); //当武器命中目标时
+	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor); //当武器离开目标时
 };

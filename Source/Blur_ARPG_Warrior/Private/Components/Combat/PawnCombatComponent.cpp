@@ -2,6 +2,7 @@
 
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Items/Weapons/WarriorWeaponBase.h"
+#include "Components/BoxComponent.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -12,6 +13,10 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 	check(InWeaponToRegister);
 
 	CharacterCarriedWeaponsMap.Emplace(InWeaponTagToRegister, InWeaponToRegister);
+
+	//绑定回调方法到武器委托
+	InWeaponToRegister->OnWeaponHitTarget.BindUObject(this, &UPawnCombatComponent::OnHitTargetActor);
+	InWeaponToRegister->OnWeaponPulledFromTarget.BindUObject(this, &UPawnCombatComponent::OnWeaponPulledFromTargetActor);
 
 	//当生成武器时，如果武器直接进行装备时，直接设置CurrentEquippedWeaponTag。
 	//否则一般通过“装备武器”技能，并在Ability蓝图中修改。
@@ -49,4 +54,40 @@ AWarriorWeaponBase* UPawnCombatComponent::GetCharacterCurrentEquippedWeapon() co
 	if(!CurrentEquippedWeaponTag.IsValid()) return nullptr;
 	
 	return GetCharacterCarriedWeaponByTag(CurrentEquippedWeaponTag);
+}
+
+void UPawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType)
+{
+	if(ToggleDamageType == EToggleDamageType::CurrentEquippedWeapon)
+	{
+		AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
+
+		check(WeaponToToggle);
+
+		//开启或关闭武器碰撞盒检测
+		if (bShouldEnable)
+		{
+			//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision enabled."), FColor::Green);
+			//QueryOnly 仅查询。能够检测到碰撞但碰撞盒没有实际的物理体积。
+			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision disabled."), FColor::Red);
+			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			//在关闭碰撞盒时，清空造成过效果的目标Actors缓存列表。
+			OverlappedActors.Empty();
+		}
+	}
+
+	//TODO：Handle body collision boxes
+}
+
+void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
+{
+}
+
+void UPawnCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
+{
 }

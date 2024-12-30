@@ -9,6 +9,15 @@
 #include "PawnCombatComponent.generated.h"
 
 class AWarriorWeaponBase;
+
+UENUM(BlueprintType)
+enum class EToggleDamageType : uint8
+{
+	CurrentEquippedWeapon,
+	LeftHand,
+	RightHand,
+};
+
 //人物战斗组件基类，角色或敌人的战斗组件由此类派生
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UPawnCombatComponent : public UPawnExtensionComponentBase
@@ -37,6 +46,19 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
 	AWarriorWeaponBase* GetCharacterCurrentEquippedWeapon() const;
+
+	/// 开关武器碰撞盒
+	/// @param bShouldEnable 
+	/// @param ToggleDamageType 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
+	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
+
+	//** 回调 **//
+	virtual void OnHitTargetActor(AActor* HitActor); //当武器命中目标时
+	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor); //当武器离开目标时
+
+protected:
+	TArray<AActor*> OverlappedActors;
 	
 private:
 	TMap<FGameplayTag, AWarriorWeaponBase*> CharacterCarriedWeaponsMap;

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Interfaces/PawnCombatInterface.h"
 
 #include "WarriorBaseCharacter.generated.h"
 
@@ -13,7 +14,7 @@ class UWarriorAttributeSet;
 class UWarriorAbilitySystemComponent;
 //角色基础类型，之后派生子类Hero或者Enemy等。
 UCLASS()
-class BLUR_ARPG_WARRIOR_API AWarriorBaseCharacter : public ACharacter, public IAbilitySystemInterface
+class BLUR_ARPG_WARRIOR_API AWarriorBaseCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnCombatInterface
 {
 	GENERATED_BODY()
 
@@ -21,9 +22,16 @@ public:
 	// Sets default values for this character's properties
 	AWarriorBaseCharacter();
 
+	//Notes：IAbilitySystemInterface 接口是GAS和Character通信的重要接口。
+	//GAS通过此接口和Character通信。此接口在GAS系统的各种地方使用到。
+
 	//~ Begin IAbilitySystemInterface Interface.
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface Interface
+
+	//~ Begin IPawnCombatInterface Interface.
+	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
+	//~ End IPawnCombatInterface Interface
 	
 protected:
 	//~ Begin APawn Interface.
