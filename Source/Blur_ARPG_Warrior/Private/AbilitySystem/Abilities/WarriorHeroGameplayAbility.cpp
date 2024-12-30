@@ -41,6 +41,8 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 	check(EffectClass);
 
 	//创建EffectContext。这是上下文信息，帮助技能系统获取执行技能所需的信息。
+	//比如在使用UGameplayEffectExecutionCalculation类计算伤害时，通过Context我们能获取我们需要的内容。
+	//搜索 UGEExecCalc_DamageTaken::Execute_Implementation 来查看其中一个计算用类。
 	FGameplayEffectContextHandle ContextHandle = GetWarriorAbilitySystemComponentFromActorInfo()->MakeEffectContext();
 	ContextHandle.SetAbility(this);
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
