@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "WarriorTypes/WarriorEnumTypes.h"
+
 #include "WarriorGameplayAbility.generated.h"
 
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
+
 //技能激活策略
 UENUM(BlueprintType)
 enum class EWarriorAbilityActivationPolicy : uint8
@@ -46,4 +49,14 @@ protected:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UWarriorAbilitySystemComponent* GetWarriorAbilitySystemComponentFromActorInfo() const;
+
+	FActiveGameplayEffectHandle NativeApplyEffectSpecHandleTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle) const;
+
+	/// 应用一个GE到目标Actor。
+	/// @param TargetActor 
+	/// @param InSpecHandle 
+	/// @param OutSuccessType 
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability", meta = (DisplayName = "Apply Gameplay Effect Spec Handle To Target Actor", ExpandEnumAsExecs = "OutSuccessType"))
+	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EWarriorSuccessType& OutSuccessType);
 };

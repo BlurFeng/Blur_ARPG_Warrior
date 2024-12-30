@@ -18,14 +18,29 @@ class BLUR_ARPG_WARRIOR_API UWarriorHeroGameplayAbility : public UWarriorGamepla
 	GENERATED_BODY()
 
 public:
+	/// 获取英雄角色
+	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	AWarriorHeroCharacter* GetHeroCharacterFromActorInfo();
 
+	/// 获取英雄控制器
+	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	AWarriorHeroController* GetHeroControllerFromActorInfo();
 
+	/// 获取英雄战斗组件
+	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UHeroCombatComponent* GetHeroCombatComponentFromActorInfo();
+
+	/// 创建英雄伤害效果查询句柄。然后可以应用到TargetActor上。
+	/// @param EffectClass 
+	/// @param InWeaponBaseDamage 
+	/// @param InCurrentAttackTypeTag 
+	/// @param InUsedComboCount 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount) const;
 private:
 
 	//Notes：TWeakObjectPtr 智能指针

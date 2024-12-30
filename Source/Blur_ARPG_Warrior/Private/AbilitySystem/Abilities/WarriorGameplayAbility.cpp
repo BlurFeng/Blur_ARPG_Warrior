@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo,
                                             const FGameplayAbilitySpec& Spec)
@@ -47,4 +48,25 @@ UPawnCombatComponent* UWarriorGameplayAbility::GetPawnCombatComponentFromActorIn
 UWarriorAbilitySystemComponent* UWarriorGameplayAbility::GetWarriorAbilitySystemComponentFromActorInfo() const
 {
 	return Cast<UWarriorAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+}
+
+FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyEffectSpecHandleTarget(AActor* TargetActor,
+	const FGameplayEffectSpecHandle& InSpecHandle) const
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	return GetWarriorAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
+		*InSpecHandle.Data,
+		TargetASC
+		);
+}
+
+//Notes：这里不适用const方法，是应为const后方法在蓝图中是非执行节点，没有Exec节点可以连接。
+FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyEffectSpecHandleTarget(AActor* TargetActor,
+	const FGameplayEffectSpecHandle& InSpecHandle, EWarriorSuccessType& OutSuccessType)
+{
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleTarget(TargetActor, InSpecHandle);
+
+	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EWarriorSuccessType::Successful : EWarriorSuccessType::Failed;
+
+	return ActiveGameplayEffectHandle;
 }

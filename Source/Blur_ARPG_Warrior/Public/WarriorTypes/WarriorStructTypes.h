@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "GameplayTagContainer.h"
-
 //Notes：Error C2665 : “FGameplayAbilitySpec::FGameplayAbilitySpec”: 没有重载函数可以转换所有参数类型。
 //使用 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h" 完整引用 代替 class UWarriorHeroGameplayAbility 前置引用来解决这个问题。
 //否则在其他类中引用 WarriorStructTypes.h 并使用其中的数据结构，并用到这些 前置引用的类 时可能出现问题。
@@ -13,6 +11,8 @@
 //还有一点需要注意，我们使用 增量编译 时，这样的问题可能被隐藏，知道下一次被编译（修改内容或完整重编译）时才会暴露此问题。
 
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
+#include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 
 //Notes：generated.h
 //在UE中，我们必须需要 #include "WarriorStructTypes.generated.h" 才能成功编译这个文件。
@@ -57,10 +57,14 @@ struct FWarriorHeroWeaponData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputMappingContext* WeaponInputMappingContext;
 
+	//Tips：实际上我们的EquipAxe技能也不应当直接赋予角色，而是在角色获得Axe时赋予。
+	//但对于这个学习项目，这样就好。否则我们还需要开发相应的道具系统和拾取道具的功能。
+
 	//武器默认技能组。在装备武器时赋予角色。比如装备斧子时获得“卸下斧子”、“攻击”、“防御”等技能。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FWarriorHeroAbilitySet> DefaultWeaponAbilities;
 
-	//Tips：实际上我们的EquipAxe技能也不应当直接赋予角色，而是在角色获得Axe时赋予。
-	//但对于这个学习项目，这样就好。否则我们还需要开发相应的道具系统和拾取道具的功能。
+	//使用曲线设置武器的基础伤害
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat WeaponBaseDamage;
 };
