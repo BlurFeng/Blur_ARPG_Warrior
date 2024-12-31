@@ -43,7 +43,7 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 400.f; //最大移动速度。
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f; //刹车减速度。
 
-	//创建战斗组件
+	//创建战斗组件。
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
 }
 

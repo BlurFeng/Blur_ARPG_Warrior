@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/WarriorAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGameplayTags.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -48,12 +50,16 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 
 		const FString DebugString = FString::Printf(TEXT("Old Health: %f, Damage Done: %f, New Current Health: %f"), OldHealth, DamageDone, NewCurrentHealth);
 		Debug::Print(DebugString, FColor::Green);
+		
 		//TODO: Notify the UI
 
-		//TODO: Handle character death
+		//触发死亡
 		if (NewCurrentHealth == 0.f)
 		{
-			Debug::Print(TEXT("Need to Death."), FColor::Red);
+			//Debug::Print(TEXT("Need to Death."), FColor::Red);
+			//通过给角色添加 Shared_Status_Dead 来触发 GA_Enemy_Death_Base 死亡技能。在死亡技能中，我们配置了此GA的触发方式为添加 Shared_Status_Dead Tag时。
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Shared_Status_Dead);
+			
 		}
 	}
 }

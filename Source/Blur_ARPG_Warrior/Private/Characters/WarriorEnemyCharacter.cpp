@@ -19,13 +19,15 @@ AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	//设置角色移动组件。
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 180.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
-	CreateDefaultSubobject<UEnemyCombatComponent>("EnemyCombatComponent");
+	//创建战斗组件。
+	EnemyCombatComponent = CreateDefaultSubobject<UEnemyCombatComponent>("EnemyCombatComponent");
 }
 
 UPawnCombatComponent* AWarriorEnemyCharacter::GetPawnCombatComponent() const
