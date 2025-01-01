@@ -12,6 +12,7 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "Components/Combat/HeroCombatComponent.h"
+#include "Components/UI/HeroUIComponent.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -43,13 +44,26 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 400.f; //最大移动速度。
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f; //刹车减速度。
 
-	//创建战斗组件。
+	//创建英雄战斗组件。
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
+
+	//创建英雄UI组件。
+	HeroUIComponent = CreateDefaultSubobject<UHeroUIComponent>(TEXT("HeroUIComponent"));
 }
 
 UPawnCombatComponent* AWarriorHeroCharacter::GetPawnCombatComponent() const
 {
 	return HeroCombatComponent;
+}
+
+UPawnUIComponent* AWarriorHeroCharacter::GetPawnUIComponent() const
+{
+	return HeroUIComponent;
+}
+
+UHeroUIComponent* AWarriorHeroCharacter::GetHeroUIComponent() const
+{
+	return HeroUIComponent;
 }
 
 void AWarriorHeroCharacter::PossessedBy(AController* NewController)

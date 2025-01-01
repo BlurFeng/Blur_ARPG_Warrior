@@ -7,8 +7,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/AssetManager.h"
 #include "DataAssets/StartUpData/DataAsset_EnemyStartUp.h"
+#include "Components/UI/EnemyUIComponent.h"
+#include "Components/WidgetComponent.h"
 
 #include "WarriorDebugHelper.h"
+#include "Widgets/WarriorWidgetBase.h"
 
 AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 {
@@ -26,13 +29,41 @@ AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
-	//创建战斗组件。
+	//创建敌人战斗组件。
 	EnemyCombatComponent = CreateDefaultSubobject<UEnemyCombatComponent>("EnemyCombatComponent");
+
+	//创建敌人UI组件。
+	EnemyUIComponent = CreateDefaultSubobject<UEnemyUIComponent>("EnemyUIComponent");
+
+	//创建血条UI组件并附加到自身Mesh。
+	EnemyHealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("EnemyHealthWidgetComponent");
+	EnemyHealthWidgetComponent->SetupAttachment(GetMesh());
 }
 
 UPawnCombatComponent* AWarriorEnemyCharacter::GetPawnCombatComponent() const
 {
 	return EnemyCombatComponent;
+}
+
+UPawnUIComponent* AWarriorEnemyCharacter::GetPawnUIComponent() const
+{
+	return EnemyUIComponent;
+}
+
+UEnemyUIComponent* AWarriorEnemyCharacter::GetEnemyUIComponent() const
+{
+	return EnemyUIComponent;
+}
+
+void AWarriorEnemyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//初始化敌人血条UI组件。
+	if (UWarriorWidgetBase* HealthWidget = Cast<UWarriorWidgetBase>(EnemyHealthWidgetComponent->GetUserWidgetObject()))
+	{
+		HealthWidget->InitEnemyCreatedWidget(this);
+	}
 }
 
 void AWarriorEnemyCharacter::PossessedBy(AController* NewController)

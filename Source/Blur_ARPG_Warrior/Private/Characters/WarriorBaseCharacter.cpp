@@ -27,7 +27,13 @@ UAbilitySystemComponent* AWarriorBaseCharacter::GetAbilitySystemComponent() cons
 
 UPawnCombatComponent* AWarriorBaseCharacter::GetPawnCombatComponent() const
 {
-	//此接口由子类实现
+	//此接口由子类实现.
+	return nullptr;
+}
+
+UPawnUIComponent* AWarriorBaseCharacter::GetPawnUIComponent() const
+{
+	//此接口由子类实现.
 	return nullptr;
 }
 

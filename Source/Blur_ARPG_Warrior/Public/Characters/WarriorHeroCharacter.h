@@ -17,6 +17,7 @@ class UCameraComponent;
 class UDataAsset_InputConfig;
 class UHeroCombatComponent;
 struct FInputActionValue;
+class UHeroUIComponent;
 
 //英雄角色类，玩家控制的角色。
 UCLASS()
@@ -31,6 +32,11 @@ public:
 	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	//~ End IPawnCombatInterface Interface
 
+	//~ Begin IPawnUIInterface Interface.
+	virtual UPawnUIComponent* GetPawnUIComponent() const override;
+	virtual UHeroUIComponent* GetHeroUIComponent() const override;
+	//~ End IPawnUIInterface Interface
+
 protected:
 	//~ Begin APawn Interface.
 	virtual void PossessedBy(AController* NewController) override;
@@ -40,6 +46,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	
 #pragma region Components
 
 	//Notes:
@@ -60,6 +67,10 @@ private:
 	//战斗组件，用于管理武器和攻击方式。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UHeroCombatComponent* HeroCombatComponent;
+
+	//英雄UI组件。
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UHeroUIComponent* HeroUIComponent;
 	
 #pragma endregion
 
