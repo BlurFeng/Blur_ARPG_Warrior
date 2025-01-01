@@ -8,6 +8,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 
 #include "WarriorDebugHelper.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 //Notes：通过构造函数重载成员变量类型
 //通过这种方式。我们允许重载父类的一些成员变量类型为其子类。
@@ -51,10 +52,41 @@ ETeamAttitude::Type AWarriorAIController::GetTeamAttitudeTowards(const AActor& O
 	return ETeamAttitude::Friendly; //队友
 }
 
+void AWarriorAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+	{
+		//开关人群避让状态
+		CrowdComp->SetCrowdSimulationState(bEnableDetourCrowdAvoidance ? ECrowdSimulationState::Enabled : ECrowdSimulationState::Disabled);
+
+		//根据配置设置人群避障算法质量。
+		switch (DetourCrowdAvoidanceQuality)
+		{
+		case 1: CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low); break;
+		case 2: CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Medium); break;
+		case 3: CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Good); break;
+		case 4: CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High); break;
+		default:
+			break;
+		}
+
+		CrowdComp->SetAvoidanceGroup(1);
+		CrowdComp->SetGroupsToAvoid(1);
+		CrowdComp->SetCrowdCollisionQueryRange(CollisionQueryRange); //设置碰撞查询范围
+	}
+}
+
 void AWarriorAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed() && Actor)
 	{
-		Debug::Print(Actor->GetActorNameOrLabel() + TEXT(" was sensed"), FColor::Green);
+		//Debug::Print(Actor->GetActorNameOrLabel() + TEXT(" was sensed"), FColor::Green);
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			//设置目标到自身黑板的 TargetActor
+			BlackboardComponent->SetValueAsObject("TargetActor", Actor);
+		}
 	}	
 }

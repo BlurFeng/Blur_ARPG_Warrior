@@ -22,6 +22,7 @@ public:
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	//~ End IGenericTeamAgentInterface Interface
 protected:
+	virtual void BeginPlay() override;
 
 	//AI感知组件。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -34,4 +35,23 @@ protected:
 	//敌人感知更新时回调。
 	UFUNCTION()
 	virtual void OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+private:
+	//开关 绕行人群避让 功能
+	UPROPERTY(EditDefaultsOnly, Category = "Default Crowd Avoidance Config")
+	bool bEnableDetourCrowdAvoidance = true;
+
+	//Notes：meta = (EditCondition = "boolValue") 编辑条件
+	//当指定的 bool 值为True时才会在Edit面板上允许调整。
+	//Notes：UIMin = "1", UIMax = "4" 调整滑块
+	//在Edit面板显示滑块UI用于在限定范围内调整参数。
+
+	//算法质量。越高效果更好但计算消耗更大。
+	UPROPERTY(EditDefaultsOnly, Category = "Default Crowd Avoidance Config", meta = (EditCondition = "bEnableDetourCrowdAvoidance", UIMin = "1", UIMax = "4"))
+	int32 DetourCrowdAvoidanceQuality = 4;
+
+	//碰撞查询范围。
+	UPROPERTY(EditDefaultsOnly, Category = "Default Crowd Avoidance Config", meta = (EditCondition = "bEnableDetourCrowdAvoidance"))
+	float CollisionQueryRange = 600.f;
+	
 };
