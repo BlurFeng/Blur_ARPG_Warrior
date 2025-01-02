@@ -23,6 +23,7 @@ public class Blur_ARPG_Warrior : ModuleRules
 			"GameplayTags",
 			"EnhancedInput",
 			"GameplayTasks",
+			"AnimGraphRuntime",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

@@ -2,6 +2,8 @@
 
 
 #include "AnimInstance/WarriorCharacterAnimInstance.h"
+
+#include "KismetAnimationLibrary.h"
 #include "Characters/WarriorBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -25,5 +27,8 @@ void UWarriorCharacterAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaS
 	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
 
 	GroundSpeedRate = UKismetMathLibrary::SafeDivide(OwningCharacter->GetVelocity().Size2D(), OwningMovementComponent->MaxWalkSpeed);
+	
 	bHasAcceleration = OwningMovementComponent->GetCurrentAcceleration().SizeSquared2D() > 0.f;
+
+	LocomotionDirection = UKismetAnimationLibrary::CalculateDirection(OwningCharacter->GetVelocity(), OwningCharacter->GetActorRotation());
 }

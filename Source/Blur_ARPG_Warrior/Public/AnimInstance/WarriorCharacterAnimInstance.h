@@ -9,9 +9,7 @@
 class AWarriorBaseCharacter;
 class UCharacterMovementComponent;
 
-/**
- * 
- */
+//角色动画实例基类
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UWarriorCharacterAnimInstance : public UWarriorBaseAnimInstance
 {
@@ -35,6 +33,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|LocomotionData")
 	float GroundSpeedRate;
 
+	//拥有加速度
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|LocomotionData")
 	bool bHasAcceleration;
+
+	//移动方向
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|LocomotionData")
+	float LocomotionDirection;
 };
