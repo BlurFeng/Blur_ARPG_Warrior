@@ -43,7 +43,7 @@ ETeamAttitude::Type AWarriorAIController::GetTeamAttitudeTowards(const AActor& O
 	const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(PawnToCheck->GetController());
 
 	//确认是不同队伍的目标
-	if (OtherTeamAgent && OtherTeamAgent->GetGenericTeamId() != GetGenericTeamId())
+	if (OtherTeamAgent && OtherTeamAgent->GetGenericTeamId() < GetGenericTeamId())
 	{
 		return ETeamAttitude::Hostile; //敌对
 	}
@@ -80,13 +80,15 @@ void AWarriorAIController::BeginPlay()
 
 void AWarriorAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if (Stimulus.WasSuccessfullySensed() && Actor)
+	if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
 	{
-		//Debug::Print(Actor->GetActorNameOrLabel() + TEXT(" was sensed"), FColor::Green);
-		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		if (!BlackboardComponent->GetValueAsObject(FName("TargetActor")))
 		{
-			//设置目标到自身黑板的 TargetActor
-			BlackboardComponent->SetValueAsObject("TargetActor", Actor);
+			if (Stimulus.WasSuccessfullySensed() && Actor)
+			{
+				//设置目标到自身黑板的 TargetActor
+				BlackboardComponent->SetValueAsObject("TargetActor", Actor);
+			}
 		}
-	}	
+	}
 }
