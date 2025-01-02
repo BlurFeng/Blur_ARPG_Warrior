@@ -21,6 +21,7 @@ TODO
 
 ### Debug指引
 ' 按键（Enter左侧）打开综合控制台。小键盘数字键开关显示内容。
+游玩隐藏鼠标时 Shift + F1 显示鼠标。
 
 #### 自动避障
 控制台输入 ai.crowd.DebugSelectActor 1 后选中敌人Actor查看自动避障Debug绘制。
