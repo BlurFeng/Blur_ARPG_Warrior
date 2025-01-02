@@ -4,8 +4,10 @@
 #include "WarriorFunctionLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
+#include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
@@ -86,4 +88,43 @@ bool UWarriorFunctionLibrary::IsTargetPawnHostile(const APawn* QueryPawn, const 
 float UWarriorFunctionLibrary::GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel)
 {
 	return  InScalableFloat.GetValueAtLevel(InLevel);
+}
+
+FGameplayTag UWarriorFunctionLibrary::ComputeHitReactDirectionTag(const AActor* InAttacker, const AActor* InVictim,
+	float& OutAngleDifference)
+{
+	check(InAttacker && InVictim);
+
+	//获取攻击者和受害者数据。
+	const FVector VictimForward = InVictim->GetActorForwardVector();
+	const FVector VictimToAttackerNormalized = (InAttacker->GetActorLocation() - InVictim->GetActorLocation()).GetSafeNormal();
+
+	//计算角度差。
+	const float DotResult = FVector::DotProduct(VictimForward, VictimToAttackerNormalized);
+	OutAngleDifference = UKismetMathLibrary::DegAcos(DotResult);
+
+	//计算叉乘。
+	const FVector CrossResult = FVector::CrossProduct(VictimForward, VictimToAttackerNormalized);
+
+	//根据叉乘设定正负号。
+	if (CrossResult.Z < 0.0f)
+	{
+		OutAngleDifference *= -1.f;
+	}
+
+	//确认方向
+	if (OutAngleDifference >= -45.f)
+	{
+		if (OutAngleDifference <= 45.f)
+			return FGameplayTag(WarriorGameplayTags::Shared_Status_HitReact_Front);
+		if (OutAngleDifference <= 135.f)
+			return FGameplayTag(WarriorGameplayTags::Shared_Status_HitReact_Right);
+	}
+	if (OutAngleDifference < -45.f)
+	{
+		if (OutAngleDifference >= -135.f)
+			return FGameplayTag(WarriorGameplayTags::Shared_Status_HitReact_Left);
+	}
+		
+	return FGameplayTag(WarriorGameplayTags::Shared_Status_HitReact_Back);
 }

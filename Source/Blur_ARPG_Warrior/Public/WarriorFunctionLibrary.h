@@ -84,5 +84,13 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary", meta = (CompactNodeTitle = "Get Value At Level"))
 	static float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel);
+
+	/// 计算收击方向。
+	/// @param InAttacker 攻击者。
+	/// @param InVictim 受害者。
+	/// @param OutAngleDifference 角度差。 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static FGameplayTag ComputeHitReactDirectionTag(const AActor* InAttacker, const AActor* InVictim, float& OutAngleDifference);
 	
 };
