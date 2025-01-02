@@ -13,6 +13,8 @@
 class UDataAsset_StartUpDataBase;
 class UWarriorAttributeSet;
 class UWarriorAbilitySystemComponent;
+class UMotionWarpingComponent;
+
 //角色基础类型，之后派生子类Hero或者Enemy等。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API AWarriorBaseCharacter : public ACharacter, public IAbilitySystemInterface, public IPawnCombatInterface, public IPawnUIInterface
@@ -43,15 +45,19 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	//~ End APawn Interface
 
-	//技能系统组件（属于GAS插件的一部分）
+	//技能系统组件（属于GAS插件的一部分）。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "AbilitySystem")
 	UWarriorAbilitySystemComponent* WarriorAbilitySystemComponent;
 
-	//属性集（属于GAS插件的一部分）
+	//属性集（属于GAS插件的一部分）。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "AbilitySystem")
 	UWarriorAttributeSet* WarriorAttributeSet;
 
-	//角色启动数据资源
+	//运动变形组件。
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "MotionWarping")
+	UMotionWarpingComponent* MotionWarpingComponent;
+
+	//角色启动数据资源。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
 	TSoftObjectPtr<UDataAsset_StartUpDataBase> CharacterStartUpData;
 

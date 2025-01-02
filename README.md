@@ -8,6 +8,7 @@ being developed
 1.基于UE的Gameplay框架的玩家英雄和敌人。
 2.基于EnhancedInput的操作系统。
 3.Locomotion动画状态机。
+3.1.MotionWarping。
 4.基于GAS的战斗系统。
 5.UI。
 6.AI。
@@ -35,3 +36,6 @@ bUseDebugTargetFromHud = true
 
 #### NavMesh
 按 P 开关显示NavMesh生成范围。BT行为树的MoveTo功能需要NavMesh的支持。
+
+#### EQS
+使用 EQSTestingPawn 并配置使用的 EQ。可以在场景中可视化数据。
