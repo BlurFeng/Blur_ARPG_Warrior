@@ -33,7 +33,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UHeroCombatComponent* GetHeroCombatComponentFromActorInfo();
 
-	/// 创建英雄伤害效果查询句柄。然后可以应用到TargetActor上。
+	/// 创建英雄伤害效果查询句柄。然后可以应用GE到目标上。
 	/// @param EffectClass 
 	/// @param InWeaponBaseDamage 
 	/// @param InCurrentAttackTypeTag 

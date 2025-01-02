@@ -61,7 +61,6 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 		InWeaponBaseDamage
 		);
 
-	//将 InCurrentComboCount 存储到 EffectSpecHandle 并在之后使用。存储的数据通过Tag查询。
 	if (InCurrentAttackTypeTag.IsValid())
 	{
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(InCurrentAttackTypeTag, InUsedComboCount);

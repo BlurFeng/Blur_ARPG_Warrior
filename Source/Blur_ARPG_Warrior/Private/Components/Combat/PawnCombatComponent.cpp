@@ -64,7 +64,7 @@ void UPawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDama
 
 		check(WeaponToToggle);
 
-		//开启或关闭武器碰撞盒检测
+		//开启或关闭武器碰撞盒检测。
 		if (bShouldEnable)
 		{
 			//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision enabled."), FColor::Green);

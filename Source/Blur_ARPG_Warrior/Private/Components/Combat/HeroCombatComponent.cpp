@@ -29,7 +29,7 @@ void UHeroCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	//Debug::Print(GetOwningPawn()->GetActorNameOrLabel() + TEXT("hit ") + HitActor->GetActorNameOrLabel(), FColor::Green);
 
-	//确认是否已经对击中目标造成过效果
+	//确认是否已经对击中目标造成过效果.
 	if (OverlappedActors.Contains(HitActor)) return;
 	OverlappedActors.Add(HitActor);
 

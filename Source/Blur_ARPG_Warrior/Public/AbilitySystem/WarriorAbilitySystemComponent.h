@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "WarriorTypes/WarriorStructTypes.h"
 
 #include "WarriorAbilitySystemComponent.generated.h"
+
+struct FWarriorHeroAbilitySet;
 
 //技能系统组件
 UCLASS()
@@ -33,4 +34,11 @@ public:
 	/// @param InSpecHandlesToRemove 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	void RemoveGrantedHeroWeaponAbilities(UPARAM(ref) TArray<FGameplayAbilitySpecHandle>& InSpecHandlesToRemove);
+
+	/// 尝试激活技能，根据Tag。
+	/// 查询所有符合Tag要求的技能，并随机激活其中一个。
+	/// @param AbilityTagToActivate 
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
+	bool TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate);
 };
