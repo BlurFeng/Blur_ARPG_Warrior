@@ -11,6 +11,7 @@
 class UPawnCombatComponent;
 struct FGameplayTag;
 class UWarriorAbilitySystemComponent;
+struct FScalableFloat;
 
 //项目方法库
 UCLASS()
@@ -73,4 +74,15 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
 	static bool IsTargetPawnHostile(const APawn* QueryPawn, const APawn* TargetPawn);
+
+	//Notes：CompactNodeTitle
+	//使用 meta = (CompactNodeTitle = "Get Value At Level") 让此方法在蓝图中的节点显示为紧凑节点和输入的文字。
+	
+	/// 从ScalableFloat获取Float，根据Level。
+	/// @param InScalableFloat 
+	/// @param InLevel 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary", meta = (CompactNodeTitle = "Get Value At Level"))
+	static float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel);
+	
 };
