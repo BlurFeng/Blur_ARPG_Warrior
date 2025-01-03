@@ -20,7 +20,7 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	//玩家正在格挡。
 	const bool bIsPlayerBlocking = UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor, WarriorGameplayTags::Player_Status_Blocking);
-	const bool bIsMyAttackUnBlockable = false;
+	const bool bIsMyAttackUnBlockable = UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetOwningPawn(), WarriorGameplayTags::Enemy_Status_Unblockable);
 
 	//确认攻击是否被格挡。
 	if (bIsPlayerBlocking && !bIsMyAttackUnBlockable)
