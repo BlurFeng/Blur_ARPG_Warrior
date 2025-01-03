@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "WarriorTypes/WarriorEnumTypes.h"
+#include "GameplayEffectTypes.h"
 
 #include "WarriorFunctionLibrary.generated.h"
 
@@ -99,5 +100,12 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
 	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
-	
+
+	/// 将GE应用到目标Actor上。
+	/// @param InInstigator 施法者。
+	/// @param InTargetActor 目标Actor。
+	/// @param InSpecHandle GE说明句柄。
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, FGameplayEffectSpecHandle& InSpecHandle);
 };

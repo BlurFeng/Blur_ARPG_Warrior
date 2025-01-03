@@ -143,3 +143,14 @@ bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefende
 	//TODO：根据技能要求有不同的防御有效范围。
 	return DotResult < -0.2f;
 }
+
+bool UWarriorFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor,
+	FGameplayEffectSpecHandle& InSpecHandle)
+{
+	UWarriorAbilitySystemComponent* SourceASC = NativeGetWarriorASCFromActor(InInstigator);
+	UWarriorAbilitySystemComponent* TargetASC = NativeGetWarriorASCFromActor(InTargetActor);
+	
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
+
+	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
+}
