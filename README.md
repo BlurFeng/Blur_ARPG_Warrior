@@ -3,22 +3,56 @@ being developed
 
 ## 简介
 
+
 ### 开发内容
 
-1.基于UE的Gameplay框架的玩家英雄和敌人。
-2.基于EnhancedInput的操作系统。
-3.Locomotion动画状态机。
-3.1.MotionWarping。
-4.基于GAS的战斗系统。
-5.UI。
-6.AI。
-6.1.Detour Crowd Avoidance.人群绕行避让。
-6.2.Behavior Tree.行为树。
+#### 游戏Gameplay框架
+基于UE的Gameplay框架的玩家英雄和敌人。
+基于DataAssets的初始化配置。
 
+#### 移动功能和动画状态机
+Locomotion动画状态机。
+
+#### GAS技能系统
+基于GAS的技能系统和角色状态管理。
+MotionWarping用于技能中的位移变化。
+GameplayTag用于游戏流程管理和通讯。
+
+#### UI界面
+UMG。
+英雄状态。
+敌人状态。
+
+#### 英雄
+##### 输入系统
+基于EnhancedInput的操作系统。
+##### 装备功能
+武器的配备和卸下。不同武器赋予角色不同的技能。
+##### 攻击连击
+轻攻击。
+重攻击。
+##### 防御
+防御。
+完美防御和防御反击。
+##### 翻滚
+翻滚技能。
+
+#### 敌人
+##### AI
+Behavior Tree.行为树。
+Detour Crowd Avoidance.人群绕行避让。
+EQS环境查询系统。
+##### 攻击
+普通攻击。
+
+#### 材质和特效
+收击效果。
 敌人消融Material和Niagara特效。
+
 
 ### 项目类结构图
 TODO
+
 
 ### Debug指引
 ' 按键（Enter左侧）打开综合控制台。小键盘数字键开关显示内容。

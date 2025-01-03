@@ -16,8 +16,26 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		//确认输入的技能是否存在，通过对比InInputTag。此Tag应当在启动时被添加。
 		if(!AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag)) continue;
 
-		//尝试触发技能
-		TryActivateAbility(AbilitySpec.Handle);
+		//切换类技能在每次按下时，在触发和取消之间切换。
+		if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable))
+		{
+			if (AbilitySpec.IsActive())
+			{
+				//尝试取消技能
+				CancelAbilityHandle(AbilitySpec.Handle);
+			}
+			else
+			{
+				//尝试触发技能
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+		//一般技能触发。
+		else
+		{
+			//尝试触发技能
+			TryActivateAbility(AbilitySpec.Handle);
+		}
 	}
 }
 
