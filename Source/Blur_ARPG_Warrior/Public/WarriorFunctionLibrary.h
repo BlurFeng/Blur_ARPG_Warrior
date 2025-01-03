@@ -92,5 +92,12 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
 	static FGameplayTag ComputeHitReactDirectionTag(const AActor* InAttacker, const AActor* InVictim, float& OutAngleDifference);
+
+	/// 确认是否是有效的格挡。
+	/// @param InAttacker 
+	/// @param InDefender 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
 	
 };

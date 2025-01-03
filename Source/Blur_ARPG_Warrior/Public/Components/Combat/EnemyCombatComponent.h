@@ -15,5 +15,5 @@ class BLUR_ARPG_WARRIOR_API UEnemyCombatComponent : public UPawnCombatComponent
 	GENERATED_BODY()
 
 public:
-	virtual void OnHitTargetActor(AActor* HitActor); //当武器命中目标时
+	virtual void OnHitTargetActor(AActor* HitActor) override; //当武器命中目标时
 };

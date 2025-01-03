@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "WarriorDebugHelper.h"
+#include "WarriorFunctionLibrary.h"
 #include "WarriorGameplayTags.h"
 
 void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
@@ -17,12 +18,14 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	bool bIsValidBlock = false;
 
-	const bool bIsPlayerBlocking = false;
+	//玩家正在格挡。
+	const bool bIsPlayerBlocking = UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor, WarriorGameplayTags::Player_Status_Blocking);
 	const bool bIsMyAttackUnBlockable = false;
 
+	//确认攻击是否被格挡。
 	if (bIsPlayerBlocking && !bIsMyAttackUnBlockable)
 	{
-		//TODO： check if the block is valid
+		bIsValidBlock = UWarriorFunctionLibrary::IsValidBlock(GetOwningPawn(), HitActor);
 	}
 
 	FGameplayEventData EventData;
@@ -31,7 +34,11 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	if (bIsValidBlock)
 	{
-		//TODO: Handle successful block
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			HitActor,
+			WarriorGameplayTags::Player_Event_SuccessfulBlock,
+			EventData
+			);
 	}
 	else
 	{
@@ -39,6 +46,7 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			GetOwningPawn(),
 			WarriorGameplayTags::Shared_Event_MeleeHit,
-			EventData);
+			EventData
+			);
 	}
 }

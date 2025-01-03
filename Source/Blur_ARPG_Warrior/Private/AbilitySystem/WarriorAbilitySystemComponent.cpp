@@ -2,6 +2,8 @@
 
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+
+#include "WarriorGameplayTags.h"
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorTypes/WarriorStructTypes.h"
 
@@ -21,7 +23,17 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
-	
+	//如果是必须持续按住的技能，在松开时取消技能。
+	if(!InInputTag.IsValid() || !InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld)) return;
+
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		//取消正在激活中的技能。
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag) && AbilitySpec.IsActive())
+		{
+			CancelAbilityHandle(AbilitySpec.Handle);
+		}
+	}
 }
 
 void UWarriorAbilitySystemComponent::GrantHeroWeaponAbilities(

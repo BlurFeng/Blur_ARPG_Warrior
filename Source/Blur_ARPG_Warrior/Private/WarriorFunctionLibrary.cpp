@@ -9,6 +9,8 @@
 #include "Interfaces/PawnCombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#include "WarriorDebugHelper.h"
+
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
 	check(InActor);
@@ -127,4 +129,17 @@ FGameplayTag UWarriorFunctionLibrary::ComputeHitReactDirectionTag(const AActor* 
 	}
 		
 	return FGameplayTag(WarriorGameplayTags::Shared_Status_HitReact_Back);
+}
+
+bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
+{
+	check(InAttacker && InDefender);
+
+	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
+
+	//const FString DebugString = FString::Printf(TEXT("Dot Result: %f %s"), DotResult, DotResult < -0.2f ? TEXT("Valid Block.") : TEXT("Invalid Block."));
+	//Debug::Print(DebugString, DotResult < -0.2f ? FColor::Green : FColor::Red);
+	
+	//TODO：根据技能要求有不同的防御有效范围。
+	return DotResult < -0.2f;
 }
