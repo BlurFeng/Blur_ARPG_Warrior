@@ -6,14 +6,16 @@
 #include "Components/Combat/PawnCombatComponent.h"
 #include "EnemyCombatComponent.generated.h"
 
-/**
- * 
- */
+//敌人战斗组件。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UEnemyCombatComponent : public UPawnCombatComponent
 {
 	GENERATED_BODY()
 
 public:
-	virtual void OnHitTargetActor(AActor* HitActor) override; //当武器命中目标时
+	//当击中目标时。
+	virtual void OnHitTargetActor(AActor* HitActor) override;
+
+protected:
+	virtual void ToggleBodyCollisionBoxCollision(const bool bShouldEnable, const EToggleDamageType ToggleDamageType) override;
 };

@@ -40,7 +40,7 @@ public:
 	/// @param InWeaponTagToGet 武器Tag。
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
-	AWarriorWeaponBase* GetCharacterCarriedWeaponByTag(FGameplayTag InWeaponTagToGet) const;
+	AWarriorWeaponBase* GetCharacterCarriedWeaponByTag(const FGameplayTag InWeaponTagToGet) const;
 
 	/// 获取角色当前装备的武器。
 	/// @return 
@@ -51,13 +51,16 @@ public:
 	/// @param bShouldEnable 
 	/// @param ToggleDamageType 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
-	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
+	void ToggleWeaponCollision(const bool bShouldEnable,const EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
 
 	//** 回调 **//
 	virtual void OnHitTargetActor(AActor* HitActor); //当武器命中目标时
 	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor); //当武器离开目标时
 
 protected:
+	virtual void ToggleCurrentEquippedWeaponCollision(const bool bShouldEnable);
+	virtual void ToggleBodyCollisionBoxCollision(const bool bShouldEnable, const EToggleDamageType ToggleDamageType);
+	
 	TArray<AActor*> OverlappedActors;
 	
 private:

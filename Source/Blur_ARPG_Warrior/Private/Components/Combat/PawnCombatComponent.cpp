@@ -29,7 +29,7 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 	//Debug::Print(WeaponString);
 }
 
-AWarriorWeaponBase* UPawnCombatComponent::GetCharacterCarriedWeaponByTag(FGameplayTag InWeaponTagToGet) const
+AWarriorWeaponBase* UPawnCombatComponent::GetCharacterCarriedWeaponByTag(const FGameplayTag InWeaponTagToGet) const
 {
 	//Notes：双重指针。
 	//TMap存储的实际上是指向常量指针的指针，我们通过解指针获得需要的指向常量的指针并作为返回值。
@@ -56,32 +56,16 @@ AWarriorWeaponBase* UPawnCombatComponent::GetCharacterCurrentEquippedWeapon() co
 	return GetCharacterCarriedWeaponByTag(CurrentEquippedWeaponTag);
 }
 
-void UPawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType)
+void UPawnCombatComponent::ToggleWeaponCollision(const bool bShouldEnable,const EToggleDamageType ToggleDamageType)
 {
 	if(ToggleDamageType == EToggleDamageType::CurrentEquippedWeapon)
 	{
-		AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
-
-		check(WeaponToToggle);
-
-		//开启或关闭武器碰撞盒检测。
-		if (bShouldEnable)
-		{
-			//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision enabled."), FColor::Green);
-			//QueryOnly 仅查询。能够检测到碰撞但碰撞盒没有实际的物理体积。
-			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}
-		else
-		{
-			//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision disabled."), FColor::Red);
-			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-			//在关闭碰撞盒时，清空造成过效果的目标Actors缓存列表。
-			OverlappedActors.Empty();
-		}
+		ToggleCurrentEquippedWeaponCollision(bShouldEnable);
 	}
-
-	//TODO：Handle body collision boxes
+	else
+	{
+		ToggleBodyCollisionBoxCollision(bShouldEnable, ToggleDamageType);
+	}
 }
 
 void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
@@ -90,4 +74,33 @@ void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 void UPawnCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
 {
+}
+
+void UPawnCombatComponent::ToggleCurrentEquippedWeaponCollision(const bool bShouldEnable)
+{
+	AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
+
+	check(WeaponToToggle);
+
+	//开启或关闭武器碰撞盒检测。
+	if (bShouldEnable)
+	{
+		//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision enabled."), FColor::Green);
+		//QueryOnly 仅查询。能够检测到碰撞但碰撞盒没有实际的物理体积。
+		WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else
+	{
+		//Debug::Print(WeaponToToggle->GetName() + TEXT("Collision disabled."), FColor::Red);
+		WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//在关闭碰撞盒时，清空造成过效果的目标Actors缓存列表。
+		OverlappedActors.Empty();
+	}
+}
+
+void UPawnCombatComponent::ToggleBodyCollisionBoxCollision(const bool bShouldEnable,
+	const EToggleDamageType ToggleDamageType)
+{
+	
 }
