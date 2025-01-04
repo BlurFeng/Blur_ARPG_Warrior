@@ -29,6 +29,9 @@ protected:
 	void BP_OnOwningEnemyUIComponentInitialized(UEnemyUIComponent* OwningEnemyUIComponent);
 
 public:
+	/// 初始化敌人UI。在创建UI时调用。
+	/// 我们会通知到Widget敌人UI的初始化。
+	/// @param OwningEnemyActor 
 	UFUNCTION(BlueprintCallable)
 	void InitEnemyCreatedWidget(AActor* OwningEnemyActor);
 };
