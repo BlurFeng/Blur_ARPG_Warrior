@@ -92,3 +92,13 @@ void AWarriorAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus S
 		}
 	}
 }
+
+void AWarriorAIController::SetCrowdComponentDeactivate() const
+{
+	if (UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+	{
+		//关闭人群避障组件并清空数据。
+		CrowdComp->Deactivate();
+		CrowdComp->Cleanup();
+	}
+}

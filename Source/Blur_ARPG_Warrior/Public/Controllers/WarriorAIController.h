@@ -21,6 +21,10 @@ public:
 	//~ Begin IGenericTeamAgentInterface Interface.
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	//~ End IGenericTeamAgentInterface Interface
+
+	//角色死亡时关闭。防止死亡的角色对绕行避障组件产生不可知的影响。
+	UFUNCTION(BlueprintCallable, Category = "Default Crowd Avoidance Config")
+	void SetCrowdComponentDeactivate() const;
 protected:
 	virtual void BeginPlay() override;
 

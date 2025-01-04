@@ -6,6 +6,7 @@
 #include "Characters/WarriorBaseCharacter.h"
 #include "WarriorEnemyCharacter.generated.h"
 
+class AWarriorAIController;
 class UBoxComponent;
 class UWidgetComponent;
 class UEnemyUIComponent;
@@ -69,6 +70,10 @@ protected:
 	//敌人血条UI组件。之后可以再蓝图配置具体生生的Widget类。
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* EnemyHealthWidgetComponent;
+
+	//AI控制器。
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	AWarriorAIController* WarriorAIController;
 
 	//当身体碰撞盒开始重叠。包括用于拳击的手部碰撞盒。
 	UFUNCTION()

@@ -12,7 +12,9 @@
 
 #include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/BoxComponent.h"
+#include "Controllers/WarriorAIController.h"
 #include "Widgets/WarriorWidgetBase.h"
 
 AWarriorEnemyCharacter::AWarriorEnemyCharacter()
@@ -71,6 +73,9 @@ UEnemyUIComponent* AWarriorEnemyCharacter::GetEnemyUIComponent() const
 void AWarriorEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//获取自身AI控制器。
+	WarriorAIController = Cast<AWarriorAIController>(UAIBlueprintHelperLibrary::GetAIController(this));
 
 	//初始化敌人血条UI组件。
 	if (UWarriorWidgetBase* HealthWidget = Cast<UWarriorWidgetBase>(EnemyHealthWidgetComponent->GetUserWidgetObject()))
