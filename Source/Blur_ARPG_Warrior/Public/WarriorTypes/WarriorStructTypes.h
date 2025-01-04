@@ -43,6 +43,21 @@ struct FWarriorHeroAbilitySet
 	bool IsValid() const;
 };
 
+//特殊技能配置。
+USTRUCT(BlueprintType)
+struct FWarriorHeroSpecialAbilitySet : public FWarriorHeroAbilitySet
+{
+	GENERATED_BODY()
+
+	//技能Icon材质。
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<UMaterialInterface> AbilityIconMaterial;
+
+	//技能冷却Tag。
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "Player.Cooldown"))
+	FGameplayTag AbilityCooldownTag;
+};
+
 //英雄武器数据
 USTRUCT(BlueprintType)
 struct FWarriorHeroWeaponData
@@ -63,6 +78,10 @@ struct FWarriorHeroWeaponData
 	//武器默认技能组。在装备武器时赋予角色。比如装备斧子时获得“卸下斧子”、“攻击”、“防御”等技能。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FWarriorHeroAbilitySet> DefaultWeaponAbilities;
+
+	//特殊武器技能。强力的技能，有CD。
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
+	TArray<FWarriorHeroSpecialAbilitySet> SpecialWeaponAbilities;
 
 	//使用曲线设置武器的基础伤害
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

@@ -37,7 +37,7 @@ public:
 	/// @param EffectClass 
 	/// @param InWeaponBaseDamage 
 	/// @param InCurrentAttackTypeTag 
-	/// @param InUsedComboCount 
+	/// @param InUsedComboCount 此值按连击阶段增幅伤害。
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount) const;

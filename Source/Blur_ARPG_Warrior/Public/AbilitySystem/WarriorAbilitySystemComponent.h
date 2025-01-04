@@ -7,6 +7,7 @@
 
 #include "WarriorAbilitySystemComponent.generated.h"
 
+struct FWarriorHeroSpecialAbilitySet;
 struct FWarriorHeroAbilitySet;
 
 //技能系统组件
@@ -24,7 +25,7 @@ public:
 	/// @param ApplyLevel 
 	/// @param OutGrantedAbilitySpecHandles 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability", meta = (ApplyLevel = 1))
-	void GrantHeroWeaponAbilities(const TArray<FWarriorHeroAbilitySet> InDefaultWeaponAbilities, int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles);
+	void GrantHeroWeaponAbilities(const TArray<FWarriorHeroAbilitySet> InDefaultWeaponAbilities, const TArray<FWarriorHeroSpecialAbilitySet> InSpecialWeaponAbilities, int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles);
 
 	//Notes：使用UPARAM(ref)宏告知UE此参数不是输出参数。
 	//只添加 & 时，此参数进行引用传递。在UE蓝图中，此参数还会被认为是输出参数。
