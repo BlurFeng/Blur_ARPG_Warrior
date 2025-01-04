@@ -37,8 +37,8 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 	checkf(CachedPawnUIInterface.IsValid(), TEXT("%s didn't implement IPawnUIInterface."), *Data.Target.GetAvatarActor()->GetActorNameOrLabel())
 
 	//获取人物UI组件。
-	UPawnUIComponent* PawnUIComponent = CachedPawnUIInterface->GetPawnUIComponent();
-	checkf(PawnUIComponent, TEXT("Couldn't extrac a PawnUIComponent from %s .") ,*Data.Target.GetAvatarActor()->GetActorNameOrLabel())
+	const UPawnUIComponent* PawnUIComponent = CachedPawnUIInterface->GetPawnUIComponent();
+	checkf(PawnUIComponent, TEXT("Couldn't extract a PawnUIComponent from %s .") ,*Data.Target.GetAvatarActor()->GetActorNameOrLabel())
 	
 	//生命值
 	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
@@ -56,8 +56,25 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 		const float NewCurrentRage = FMath::Clamp(GetCurrentRage(), 0.f, GetMaxRage());
 		SetCurrentRage(NewCurrentRage);
 
+		//愤怒值达到最大。
+		if (GetCurrentRage() == GetMaxRage())
+		{
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_Full);
+		}
+		//愤怒值变为空。
+		else if (GetCurrentRage() == 0.f)
+		{
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_None);
+		}
+		//移除愤怒值最大和愤怒值空Tag。
+		else
+		{
+			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_Full);
+			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_None);
+		}
+
 		//UI更新广播
-		if(UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
 		{
 			//只要英雄有怒气值。
 			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());

@@ -16,9 +16,9 @@ struct FGameplayEventData;
 UENUM(BlueprintType)
 enum class EProjectileDamagePolicy : uint8
 {
-	//当击中时。
+	//当击中时造成效果，且在击中后销毁。
 	OnHit,
-	//当开始穿过时。
+	//当开始穿过时造成效果，且在击中目标后穿过，不销毁。
 	OnBeginOverlap,
 };
 
@@ -74,4 +74,7 @@ private:
 	
 	//应用炸弹伤害GE到目标Pawn。
 	void HandleApplyProjectileDamage(APawn* InHitPawn, const FGameplayEventData& InPayload);
+
+	//被穿过的物体。
+	TArray<AActor*> OverlappedActors;
 };

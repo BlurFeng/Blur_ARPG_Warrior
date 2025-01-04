@@ -9,31 +9,25 @@
 
 void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
-	if(!InInputTag.IsValid()) return;
+	if (!InInputTag.IsValid()) return;
 
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		//确认输入的技能是否存在，通过对比InInputTag。此Tag应当在启动时被添加。
-		if(!AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag)) continue;
+		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag)) continue;
 
 		//切换类技能在每次按下时，在触发和取消之间切换。
-		if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable))
+		if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable) && AbilitySpec.IsActive())
 		{
-			if (AbilitySpec.IsActive())
-			{
-				//尝试取消技能
-				CancelAbilityHandle(AbilitySpec.Handle);
-			}
-			else
-			{
-				//尝试触发技能
-				TryActivateAbility(AbilitySpec.Handle);
-			}
+			//TODO：使用配置打断技能来取消此技能，这样能够通过GameplayTag的配置来确认哪些情况下不能取消技能。
+			//比如使用愤怒技能后，必须等待愤怒技能成功激活后才能取消。或者愤怒值低于一半后才能取消等。
+			//尝试取消技能
+			CancelAbilityHandle(AbilitySpec.Handle);
 		}
-		//一般技能触发。
+		//技能触发。所有的技能触发都在此调用。
 		else
 		{
-			//尝试触发技能
+			//尝试触发技能。
 			TryActivateAbility(AbilitySpec.Handle);
 		}
 	}
@@ -42,7 +36,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
 	//如果是必须持续按住的技能，在松开时取消技能。
-	if(!InInputTag.IsValid() || !InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld)) return;
+	if (!InInputTag.IsValid() || !InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld)) return;
 
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
@@ -57,11 +51,11 @@ void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& 
 void UWarriorAbilitySystemComponent::GrantHeroWeaponAbilities(
 	const TArray<FWarriorHeroAbilitySet> InDefaultWeaponAbilities, int32 ApplyLevel, TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles)
 {
-	if(InDefaultWeaponAbilities.IsEmpty()) return;
+	if (InDefaultWeaponAbilities.IsEmpty()) return;
 
-	for(const FWarriorHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
+	for (const FWarriorHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
 	{
-		if(!AbilitySet.IsValid()) continue;
+		if (!AbilitySet.IsValid()) continue;
 
 		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
 		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
@@ -76,9 +70,9 @@ void UWarriorAbilitySystemComponent::GrantHeroWeaponAbilities(
 
 void UWarriorAbilitySystemComponent::RemoveGrantedHeroWeaponAbilities(TArray<FGameplayAbilitySpecHandle>& InSpecHandlesToRemove)
 {
-	if(InSpecHandlesToRemove.IsEmpty()) return;
+	if (InSpecHandlesToRemove.IsEmpty()) return;
 
-	for(const FGameplayAbilitySpecHandle& SpecHandle : InSpecHandlesToRemove)
+	for (const FGameplayAbilitySpecHandle& SpecHandle : InSpecHandlesToRemove)
 	{
 		if(!SpecHandle.IsValid()) continue;
 		
