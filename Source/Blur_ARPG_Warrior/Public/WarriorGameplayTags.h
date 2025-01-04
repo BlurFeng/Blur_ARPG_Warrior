@@ -64,11 +64,18 @@ namespace WarriorGameplayTags
 
 	
 	//** Enemy tags **//
+	//Ability 技能
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Ability_Melee); //敌人近战攻击
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Ability_Ranged); //敌人远程攻击
-	
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Ability_SummonEnemies);
 
+	//Weapon 武器Tag，用于区分和管理不同的武器Actor。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon);
+	
+	//Event 事件
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Event_SummonEnemies);
+
+	//Status 状态
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_Strafing);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_UnderAttack);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_Unblockable);

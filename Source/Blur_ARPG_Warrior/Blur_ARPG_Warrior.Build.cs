@@ -26,6 +26,7 @@ public class Blur_ARPG_Warrior : ModuleRules
 			"AnimGraphRuntime",
 			"MotionWarping",
 			"Niagara",
+			"NavigationSystem",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

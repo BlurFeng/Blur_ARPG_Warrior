@@ -11,6 +11,7 @@ UAbilityTask_ExecuteTaskOnTick::UAbilityTask_ExecuteTaskOnTick()
 
 UAbilityTask_ExecuteTaskOnTick* UAbilityTask_ExecuteTaskOnTick::ExecuteTaskOnTick(UGameplayAbility* OwningAbility)
 {
+	//创建一个技能任务节点。这是我们必须进行的工作。
 	UAbilityTask_ExecuteTaskOnTick* Node = NewAbilityTask<UAbilityTask_ExecuteTaskOnTick>(OwningAbility);
 	return Node; 
 }
@@ -24,8 +25,10 @@ void UAbilityTask_ExecuteTaskOnTick::TickTask(float DeltaTime)
 	{
 		OnAbilityTaskTick.Broadcast(DeltaTime);
 	}
+	//结束任务。
 	else
 	{
+		//在我们认为技能任我结束时，我们应当调用 EndTask() 来结束任务。
 		EndTask();
 	}
 }

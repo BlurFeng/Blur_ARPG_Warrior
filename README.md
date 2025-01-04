@@ -45,12 +45,14 @@ UMG。
 Behavior Tree.行为树。
 Detour Crowd Avoidance.人群绕行避让。
 EQS环境查询系统。
-##### 攻击
-普通攻击。
+##### 攻击技能
+近战攻击和远程攻击。随机选择攻击方式。
+##### 召唤技能
+召唤敌人角色。
 
 #### 材质和特效
-收击效果。
-敌人消融Material和Niagara特效。
+受击效果。
+敌人消融Material和Niagara特效。用于进场和退场动画。
 
 
 ### 项目类结构图

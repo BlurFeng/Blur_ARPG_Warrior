@@ -31,6 +31,10 @@ public:
 	virtual void TickTask(float DeltaTime) override;
 	//~ End UGameplayTask Interface
 
+	//Notes：AbilityTask 技能任务重的多播委托。
+	//BlueprintAssignable 多播委托成员将会出现在 AbilityTask 蓝图节点的右侧作为可执行引脚。参数也将在右侧输出。
+	//然后我们在我们需要的时候调用 OnAbilityTaskTick 来进行广播。
+
 	//技能Tick更新时回调。
 	UPROPERTY(BlueprintAssignable)
 	FOnAbilityTaskTickDelegate OnAbilityTaskTick;
