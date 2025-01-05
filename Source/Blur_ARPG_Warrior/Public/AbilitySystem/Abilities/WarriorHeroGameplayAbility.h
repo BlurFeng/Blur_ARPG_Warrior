@@ -41,6 +41,15 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount) const;
+
+	/// 获取技能冷却剩余时间。
+	/// @param InCooldownTag 冷却GETag。 
+	/// @param TotalCooldownTime 总时间。
+	/// @param RemainingCooldownTime 剩余时间。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	bool GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime) const;
+
 private:
 
 	//Notes：TWeakObjectPtr 智能指针
