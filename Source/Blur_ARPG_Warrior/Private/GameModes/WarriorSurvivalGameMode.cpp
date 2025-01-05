@@ -190,7 +190,7 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	
 	CurrentSpawnedEnemiesCounter--;
 
-	Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, TotalSpawnedEnemiesThisWaveCounter: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
+	//Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, TotalSpawnedEnemiesThisWaveCounter: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
 
 	//确认是否继续生成敌人。
 	if (ShouldKeepSpawnEnemies())
@@ -205,5 +205,17 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 
 		//波次结束。
 		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
+	}
+}
+
+void AWarriorSurvivalGameMode::RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister)
+{
+	for (AWarriorEnemyCharacter* SpawnedEnemy : InEnemiesToRegister)
+	{
+		if (!SpawnedEnemy) continue;
+
+		CurrentSpawnedEnemiesCounter++;
+
+		SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
 	}
 }

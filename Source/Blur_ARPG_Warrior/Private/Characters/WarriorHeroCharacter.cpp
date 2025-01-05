@@ -17,6 +17,7 @@
 #include "Components/UI/HeroUIComponent.h"
 
 #include "WarriorDebugHelper.h"
+#include "GameModes/WarriorBaseGameMode.h"
 
 //初始化。
 AWarriorHeroCharacter::AWarriorHeroCharacter()
@@ -91,7 +92,30 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 		
 		if(UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous())
 		{
-			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+			int32 AbilityApplyLevel = 1;
+
+			//根据游戏难度设置技能等级。
+			//Tips：游戏没有技能升级机制，所以此处将技能等级和游戏难度相关。
+			if (AWarriorBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AWarriorBaseGameMode>())
+			{
+				switch (BaseGameMode->GetCurrentGameDifficulty())
+				{
+				case EWarriorGameDifficulty::Easy:
+					AbilityApplyLevel = 4;
+					break;
+				case EWarriorGameDifficulty::Normal:
+					AbilityApplyLevel = 3;
+					break;
+				case EWarriorGameDifficulty::Hard:
+					AbilityApplyLevel = 2;
+					break;
+				case EWarriorGameDifficulty::VeryHard:
+					AbilityApplyLevel = 1;
+					break;
+				}
+			}
+			
+			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent, AbilityApplyLevel);
 		}
 	}
 }

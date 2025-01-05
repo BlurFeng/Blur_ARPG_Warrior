@@ -18,6 +18,9 @@ Locomotion动画状态机。
 MotionWarping用于技能中的位移变化。
 GameplayTag用于游戏流程管理和通讯。
 
+### 游戏模式
+Survival生存游戏模式。以及四个可选的游戏难度。
+
 ### UI界面
 UMG。
 英雄状态。
@@ -72,8 +75,7 @@ EQS环境查询系统。
 受击效果。
 敌人消融Material和Niagara特效。用于进场和退场动画。
 
-### 游戏模式
-Survival生存游戏模式。
+
 
 ## 项目类结构图
 TODO

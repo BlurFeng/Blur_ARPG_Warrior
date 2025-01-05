@@ -137,7 +137,7 @@ private:
 	float SpawnNewWaveWaitTime = 5.f;
 
 	//SpawningNewWave 状态，开始生成逻辑前的一段延迟时间。生成结束后进入 InProgress 状态。
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float SpawnEnemiesDelayTime = 2.f;
 
 	//WaveCompleted 状态逻辑执行前的等待时间。
@@ -147,4 +147,12 @@ private:
 	//预加载敌人缓存Map。
 	UPROPERTY()
 	TMap<TSoftClassPtr<AWarriorEnemyCharacter>, UClass*> PreLoadedEnemyClassMap;
+
+public:
+	
+	/// 注册生成的敌人到GameMode。
+	/// 不是游戏模式生成的敌人被创建时（比如召唤技能），应当通过此方法注册到游戏模式。
+	/// @param InEnemiesToRegister 
+	UFUNCTION(BlueprintCallable)
+	void RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
 };
