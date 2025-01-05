@@ -108,4 +108,26 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
 	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, FGameplayEffectSpecHandle& InSpecHandle);
+
+	//Notes：Latent Action 潜在事件节点。
+	//通过 Latent Action 我们可以实现一些蓝图的异步节点。比如常用的 Delay 就是一个 Latent Action。
+	//Notes：元数据说明符。
+	//Latent：标记此方法为 Latent 方法。
+	//LatentInfo：此方法必须有 FLatentActionInfo 参数并通过 LatentInfo 标记。
+	//WorldContext：自动获得 WorldContextObject 参数。当我们的方法需要 世界 信息时，可以通过此方式自动获取。在生成Actor，计时器，全局设置等时候。
+	//UPARAM(DisplayName = "Output")：我们可以在参数前使用UPARAM()进行说明。这里重设了显示名称以防止过长的文字。
+
+	/// 倒计时异步方法。
+	/// @param WorldContextObject 
+	/// @param TotalTime 总时间。
+	/// @param UpdateInterval 更新间隔。
+	/// @param ExecuteOnFirst 在开始的第一帧执行。
+	/// @param OutRemainingTime 剩余时间。
+	/// @param CountDownInput 输入执行引脚。
+	/// @param CountDownOutput 输出执行引脚。
+	/// @param LatentInfo 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true"))
+	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+		FLatentActionInfo LatentInfo);
 };

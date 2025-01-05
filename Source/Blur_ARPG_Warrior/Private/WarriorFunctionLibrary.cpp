@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #include "WarriorDebugHelper.h"
+#include "WarriorTypes/WarriorCountDownAction.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
@@ -153,4 +154,46 @@ bool UWarriorFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor*
 	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
 
 	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
+}
+
+void UWarriorFunctionLibrary::CountDown(
+	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+	FLatentActionInfo LatentInfo)
+{
+	//确认World可用。
+	UWorld* World = nullptr;
+	if (GEngine)
+	{
+		World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	}
+	if (!World) return;
+
+	//查找LatentAction。
+	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+	FWarriorCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FWarriorCountDownAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
+
+	//输入执行为开始。
+	if (CountDownInput == EWarriorCountDownActionInput::Start)
+	{
+		//创建LatentAction。
+		//此处 new 的类将由 LatentActionManager 进行管理，我们无需担心内存泄露问题。
+		if (!FoundAction)
+		{
+			LatentActionManager.AddNewAction(
+				LatentInfo.CallbackTarget,
+				LatentInfo.UUID, new FWarriorCountDownAction(TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
+				);
+		}
+	}
+
+	//输入执行为取消。
+	if (CountDownInput == EWarriorCountDownActionInput::Cancel)
+	{
+		//取消LatentAction。
+		if (FoundAction)
+		{
+			FoundAction->CancelAction();
+		}
+	}
 }
