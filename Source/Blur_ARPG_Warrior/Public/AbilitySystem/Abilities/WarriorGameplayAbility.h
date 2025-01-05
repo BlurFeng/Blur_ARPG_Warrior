@@ -22,9 +22,7 @@ enum class EWarriorAbilityActivationPolicy : uint8
 	OnGiven,
 };
 
-/**
- * 
- */
+//GA基类。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UWarriorGameplayAbility : public UGameplayAbility
 {
@@ -59,4 +57,11 @@ protected:
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability", meta = (DisplayName = "Apply Gameplay Effect Spec Handle To Target Actor", ExpandEnumAsExecs = "OutSuccessType"))
 	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EWarriorSuccessType& OutSuccessType);
+
+	/// 应用一个GE到FHitResult碰撞探测目标数组。
+	/// 可以使用 BoxTrace 等探测方式来获得目标FHitResult。
+	/// @param InSpecHandle GE说明句柄。
+	/// @param InHitResults Trace获得的Hit目标。
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
+	void ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle, const TArray<FHitResult>& InHitResults);
 };
