@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorHeroGameplayAbility.generated.h"
 
+class UHeroUIComponent;
 class UHeroCombatComponent;
 class AWarriorHeroController;
 class AWarriorHeroCharacter;
@@ -32,6 +33,11 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UHeroCombatComponent* GetHeroCombatComponentFromActorInfo();
+
+	/// 获取英雄UI组件。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	UHeroUIComponent* GetHeroUIComponentFromActorInfo();
 
 	/// 创建英雄伤害效果查询句柄。然后可以应用GE到目标上。
 	/// @param EffectClass 
