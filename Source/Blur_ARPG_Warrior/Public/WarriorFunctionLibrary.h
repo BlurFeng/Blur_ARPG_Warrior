@@ -9,6 +9,7 @@
 
 #include "WarriorFunctionLibrary.generated.h"
 
+class UWarriorGameInstance;
 class UPawnCombatComponent;
 struct FGameplayTag;
 class UWarriorAbilitySystemComponent;
@@ -130,4 +131,16 @@ public:
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
 		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 		FLatentActionInfo LatentInfo);
+
+	/// 获取游戏实例。
+	/// @param WorldContextObject 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary", meta = (WorldContext = "WorldContextObject"))
+	static UWarriorGameInstance* GetWarriorGameInstance(const UObject* WorldContextObject);
+
+	/// 设置输入模式。在游戏模式和UI模式中切换。
+	/// @param WorldContextObject 
+	/// @param InInputMode 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (WorldContext = "WorldContextObject"))
+	static void SetInputMode(const UObject* WorldContextObject, const EWarriorInputMode InInputMode);
 };

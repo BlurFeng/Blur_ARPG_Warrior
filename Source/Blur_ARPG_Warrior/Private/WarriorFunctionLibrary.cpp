@@ -2,14 +2,16 @@
 
 
 #include "WarriorFunctionLibrary.h"
+#include "WarriorDebugHelper.h"
+
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
-
-#include "WarriorDebugHelper.h"
+#include "WarriorGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "WarriorTypes/WarriorCountDownAction.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
@@ -195,5 +197,48 @@ void UWarriorFunctionLibrary::CountDown(
 		{
 			FoundAction->CancelAction();
 		}
+	}
+}
+
+UWarriorGameInstance* UWarriorFunctionLibrary::GetWarriorGameInstance(const UObject* WorldContextObject)
+{
+	if (GEngine)
+	{
+		if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			return World->GetGameInstance<UWarriorGameInstance>();
+		}
+	}
+
+	return nullptr;
+}
+
+void UWarriorFunctionLibrary::SetInputMode(const UObject* WorldContextObject, const EWarriorInputMode InInputMode)
+{
+	APlayerController* PlayerController = nullptr;
+
+	if (GEngine)
+	{
+		if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			PlayerController = World->GetFirstPlayerController();
+		}
+	}
+
+	if (!PlayerController) return;
+
+	const FInputModeGameOnly GameOnlyMode;
+	const FInputModeUIOnly UIOnlyMode;
+	
+	switch (InInputMode)
+	{
+	case EWarriorInputMode::GameOnly:
+		PlayerController->SetInputMode(GameOnlyMode);
+		PlayerController->bShowMouseCursor = false;
+		break;
+	case EWarriorInputMode::UIOnly:
+		PlayerController->SetInputMode(UIOnlyMode);
+		PlayerController->bShowMouseCursor = true;
+		break;
 	}
 }
