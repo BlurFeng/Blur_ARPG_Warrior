@@ -46,6 +46,7 @@ void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 
 		//触发执行引脚。
 		OutRemainingTime = TotalCountDownTime - ElapsedTimeSinceStart; //剩余时间
+		OutRemainingTime = OutRemainingTime > 0.f ? OutRemainingTime : 0.f;
 		CountDownOutput = EWarriorCountDownActionOutput::Update; //输出执行引脚
 		Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
 

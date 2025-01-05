@@ -13,5 +13,7 @@ UCLASS()
 class BLUR_ARPG_WARRIOR_API AWarriorBaseGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	AWarriorBaseGameMode();
 };
