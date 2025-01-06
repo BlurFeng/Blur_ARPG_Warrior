@@ -12,6 +12,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "WarriorGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "SaveGame/WarriorSaveGame.h"
 #include "WarriorTypes/WarriorCountDownAction.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
@@ -241,4 +242,38 @@ void UWarriorFunctionLibrary::SetInputMode(const UObject* WorldContextObject, co
 		PlayerController->bShowMouseCursor = true;
 		break;
 	}
+}
+
+void UWarriorFunctionLibrary::SaveCurrentGameDifficulty(EWarriorGameDifficulty InDifficultyToSave)
+{
+	USaveGame* SaveGameObj = UGameplayStatics::CreateSaveGameObject(UWarriorSaveGame::StaticClass());
+
+	if (UWarriorSaveGame* WarriorSaveGameObj = Cast<UWarriorSaveGame>(SaveGameObj))
+	{
+		WarriorSaveGameObj->SavedGameDifficulty = InDifficultyToSave;
+		const bool bWasSaved = UGameplayStatics::SaveGameToSlot(WarriorSaveGameObj, WarriorGameplayTags::GameData_SaveGame_Slot_1.GetTag().ToString(), 0);
+
+		//Debug::Print(bWasSaved ? TEXT(" Difficulty Saved") : TEXT("Difficulty NOT Saved"));
+	}
+}
+
+bool UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(EWarriorGameDifficulty& OutSavedDifficulty)
+{
+	if (UGameplayStatics::DoesSaveGameExist(WarriorGameplayTags::GameData_SaveGame_Slot_1.GetTag().ToString(), 0))
+	{
+		USaveGame* SaveGameObj = UGameplayStatics::LoadGameFromSlot(WarriorGameplayTags::GameData_SaveGame_Slot_1.GetTag().ToString(), 0);
+		if (const UWarriorSaveGame* WarriorSaveGameObj = Cast<UWarriorSaveGame>(SaveGameObj))
+		{
+			OutSavedDifficulty = WarriorSaveGameObj->SavedGameDifficulty;
+
+			//Debug::Print(TEXT("Loading Successful"), FColor::Green);
+
+			return true;
+		}
+	}
+
+	//存储默认值。
+	OutSavedDifficulty = EWarriorGameDifficulty::Easy;
+	SaveCurrentGameDifficulty(OutSavedDifficulty);
+	return false;
 }

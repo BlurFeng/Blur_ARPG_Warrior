@@ -143,4 +143,29 @@ public:
 	/// @param InInputMode 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (WorldContext = "WorldContextObject"))
 	static void SetInputMode(const UObject* WorldContextObject, const EWarriorInputMode InInputMode);
+
+	/// 存储游戏难度设置。
+	/// @param InDifficultyToSave 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static void SaveCurrentGameDifficulty(EWarriorGameDifficulty InDifficultyToSave);
+
+	/// 读取存档的游戏难度。
+	/// @param OutSavedDifficulty 
+	/// @return 是否成功读取。及时失败，我们也会返回一个默认的 OutSavedDifficulty。
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static bool TryLoadSavedGameDifficulty(EWarriorGameDifficulty& OutSavedDifficulty);
+
+	/// 获取Enum对应的String。
+	/// @param EnumValue 枚举值。
+	/// @return 
+	template <class TEnum>
+	static FString GetEnumString(TEnum EnumValue);
 };
+
+template <class TEnum>
+FString UWarriorFunctionLibrary::GetEnumString(TEnum EnumValue)
+{
+	const UEnum* EnumPtr = StaticEnum<TEnum>();
+	if (!EnumPtr) return "Invalid";
+	return EnumPtr->GetNameStringByValue(static_cast<int32>(EnumValue));
+}

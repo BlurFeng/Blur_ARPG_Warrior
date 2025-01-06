@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/TargetPoint.h"
 #include "GameModes/WarriorBaseGameMode.h"
-#include "Kismet/GameplayStatics.h"
 #include "WarriorSurvivalGameMode.generated.h"
 
 class AWarriorEnemyCharacter;
@@ -70,6 +68,7 @@ class BLUR_ARPG_WARRIOR_API AWarriorSurvivalGameMode : public AWarriorBaseGameMo
 	GENERATED_BODY()
 
 protected:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
