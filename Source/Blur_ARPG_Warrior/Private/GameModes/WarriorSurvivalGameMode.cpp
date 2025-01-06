@@ -26,7 +26,7 @@ void AWarriorSurvivalGameMode::BeginPlay()
 
 	checkf(EnemyWaveSpawnerDataTable,TEXT("Forgot to assign a valid data table in survival game mode blueprint."))
 
-	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaitSpawnNewWave);
+	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveStarted);
 
 	TotalWavesToSpawn = EnemyWaveSpawnerDataTable->GetRowNames().Num();
 
@@ -38,7 +38,21 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//等待生成新的波次。
-	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaitSpawnNewWave)
+	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaveStarted)
+	{
+		//波次开始，更新数据。
+		CurrentWaveCount++;
+
+		FWarriorEnemyWaveSpawnerTableRow* TableRow = GetCurrentWaveSpawnerTableRow();
+		CurrentWaveLimitTime = TableRow->WaveLimitTime;
+		WaveLimitTimer = 0.f;
+		CurrentSpawnEnemyIntervalTime = TableRow->SpawnEnemyIntervalTime;
+		SpawnEnemyIntervalTimer = 0.f;
+		TotalSpawnedEnemiesThisWaveCounter = 0;
+		
+		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaitSpawnNewWave);
+	}
+	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaitSpawnNewWave)
 	{
 		TimePassedSinceStart += DeltaTime;
 
@@ -60,31 +74,71 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 			TimePassedSinceStart = 0.f;
 
 			//生成敌人。
-			CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+			CheckAndTrySpawnWaveEnemies();
 			
 			//进入波次挑战过程中。玩家战斗中。
-			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::InProgress);
+			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::BattleStarted);
 		}
 	}
+	//波次开始。
+	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::BattleStarted)
+	{
+		//进入波次挑战过程中。玩家战斗中。
+		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::InProgress);
+	}
+	//波次进行中。
+	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::InProgress)
+	{
+		//超过敌人生成间隔时间，生成敌人。
+		if (CurrentSpawnEnemyIntervalTime > 0.f)
+		{
+			SpawnEnemyIntervalTimer += DeltaTime;
+			if (SpawnEnemyIntervalTimer >= CurrentSpawnEnemyIntervalTime)
+			{
+				// SpawnEnemyIntervalTimer 在成功“生成敌人”后重置。因为敌人死亡也会触发“生成敌人”。
+				SpawnEnemyIntervalTimer = 0.f;
+				CheckAndTrySpawnWaveEnemies();
+			}
+		}
+
+		//超时时，直接进入下一波次。
+		if (CurrentWaveLimitTime > 0.f)
+		{
+			WaveLimitTimer += DeltaTime;
+			if (WaveLimitTimer >= CurrentWaveLimitTime)
+			{
+				WaveLimitTimer = 0.f;
+				//生成所有剩余的敌人。
+				CheckAndTrySpawnWaveEnemies(true);
+
+				//波次结束。
+				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
+			}
+		}
+	}
+	//波次结束。
 	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaveCompleted)
 	{
 		TimePassedSinceStart += DeltaTime;
 
-		if (TimePassedSinceStart >= WaveCompletedWaitTime)
+		if (HasFinishedAllWaves() || TimePassedSinceStart >= WaveCompletedWaitTime)
 		{
 			TimePassedSinceStart = 0.f;
 
-			CurrentWaveCount++;
-
+			//所有波次结束。
 			if (HasFinishedAllWaves())
 			{
-				//所有波次结束。
-				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::AllWavesDone);
+				//清空敌人，胜利。
+				if (CurrentSpawnedEnemiesCounter == 0)
+					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::AllWavesDone);
+				//否则失败。
+				else
+					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::PlayerDied);
 			}
+			//进入下一次波次，等待生成新波次。
 			else
 			{
-				//进入下一次波次，等待生成新波次。
-				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaitSpawnNewWave);
+				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveStarted);
 				PreLoadNextWaveEnemies();
 			}
 		}
@@ -101,7 +155,7 @@ void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(const EWarriorSur
 
 bool AWarriorSurvivalGameMode::HasFinishedAllWaves() const
 {
-	return CurrentWaveCount > TotalWavesToSpawn;
+	return CurrentWaveCount >= TotalWavesToSpawn;
 }
 
 void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
@@ -114,7 +168,7 @@ void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
 	//使用 FTableRowBase 类创建 DataTable 并配置需要加载 Actor 的 TSoftClassPtr。
 	//通过 UAssetManager::GetStreamableManager().RequestAsyncLoad() 方法异步加载资源，并缓存。
 
-	for (const FWarriorEnemyWaveSpawnerInfo& SpawnerInfo : GetCurrentWaveSpawnerTableRow()->EnemyWaveSpawnerDefinitions)
+	for (const FWarriorEnemyWaveSpawnerInfo& SpawnerInfo : GetCurrentWaveSpawnerTableRow(true)->EnemyWaveSpawnerDefinitions)
 	{
 		if (SpawnerInfo.SoftEnemyClassToSpawn.IsNull()) continue;
 
@@ -134,9 +188,9 @@ void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
 	}
 }
 
-FWarriorEnemyWaveSpawnerTableRow* AWarriorSurvivalGameMode::GetCurrentWaveSpawnerTableRow() const
+FWarriorEnemyWaveSpawnerTableRow* AWarriorSurvivalGameMode::GetCurrentWaveSpawnerTableRow(const bool GetNext) const
 {
-	const FName RowName = FName(TEXT("Wave") + FString::FromInt(CurrentWaveCount));
+	FName RowName = FName(TEXT("Wave") + FString::FromInt(CurrentWaveCount + (GetNext ? 1 : 0)));
 	FWarriorEnemyWaveSpawnerTableRow* Row = EnemyWaveSpawnerDataTable->FindRow<FWarriorEnemyWaveSpawnerTableRow>(RowName, FString());
 	checkf(Row, TEXT("Could not find a valid row under the name %s in the data table."), *RowName.ToString());
 
@@ -156,7 +210,7 @@ int32 AWarriorSurvivalGameMode::TrySpawnWaveEnemies()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
-	for (const FWarriorEnemyWaveSpawnerInfo SpawnerInfo : GetCurrentWaveSpawnerTableRow()->EnemyWaveSpawnerDefinitions)
+	for (const FWarriorEnemyWaveSpawnerInfo& SpawnerInfo : GetCurrentWaveSpawnerTableRow()->EnemyWaveSpawnerDefinitions)
 	{
 		if (SpawnerInfo.SoftEnemyClassToSpawn.IsNull()) continue;
 
@@ -172,7 +226,7 @@ int32 AWarriorSurvivalGameMode::TrySpawnWaveEnemies()
 			FVector RandomLocation;
 			UNavigationSystemV1::K2_GetRandomLocationInNavigableRadius(this, SpawnOrigin, RandomLocation, 400.f);
 
-			RandomLocation += FVector(0.f, 0.f, 150.f);
+			RandomLocation += FVector(0.f, 0.f, 160.f);
 
 			AWarriorEnemyCharacter* SpawnedEnemy = GetWorld()->SpawnActor<AWarriorEnemyCharacter>(LoadedEnemyClass, RandomLocation, SpawnRotation, SpawnParameters);
 
@@ -191,6 +245,33 @@ int32 AWarriorSurvivalGameMode::TrySpawnWaveEnemies()
 	return EnemiesSpawnedThisTime;
 }
 
+bool AWarriorSurvivalGameMode::CheckAndTrySpawnWaveEnemies(const bool SpawnAll)
+{
+	bool IsSpawned = false;
+	
+	if (SpawnAll)
+	{
+		while (ShouldKeepSpawnEnemies())
+		{
+			CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+			IsSpawned = true;
+		}
+	}
+	else if (ShouldKeepSpawnEnemies())
+	{
+		CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+		IsSpawned = true;
+	}
+
+	if (IsSpawned)
+	{
+		//每次生成敌人后，生成敌人间隔时间重置。
+		SpawnEnemyIntervalTimer = 0.f;
+	}
+
+	return IsSpawned;
+}
+
 bool AWarriorSurvivalGameMode::ShouldKeepSpawnEnemies() const
 {
 	return TotalSpawnedEnemiesThisWaveCounter < GetCurrentWaveSpawnerTableRow()->TotalEnemyToSpawnThisWave;
@@ -203,17 +284,11 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	CurrentSpawnedEnemiesCounter--;
 
 	//Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, TotalSpawnedEnemiesThisWaveCounter: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
-
-	//确认是否继续生成敌人。
-	if (ShouldKeepSpawnEnemies())
+	
+	//确认无法继续生成敌人且没有存活的敌人。
+	if (!CheckAndTrySpawnWaveEnemies() && CurrentSpawnedEnemiesCounter == 0)
 	{
-		CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
-	}
-	//确认没有存活的敌人。
-	else if (CurrentSpawnedEnemiesCounter == 0)
-	{
-		TotalSpawnedEnemiesThisWaveCounter = 0;
-		CurrentSpawnedEnemiesCounter = 0;
+		//CurrentSpawnedEnemiesCounter = 0;
 
 		//波次结束。
 		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);

@@ -13,11 +13,15 @@ UENUM(BlueprintType)
 enum class EWarriorSurvivalGameModeState : uint8
 {
 	None = 0,
-	
+
+	//波次开始
+	WaveStarted,
 	//等待生成新的波次。
 	WaitSpawnNewWave,
 	//生成新的波次中。
 	SpawningNewWave,
+	//波次战斗开始，此状态只会停留一帧，然后切换到InProgress。
+	BattleStarted,
 	//进行中。玩家正在战斗。
 	InProgress,
 	//波次完成。
@@ -34,12 +38,15 @@ struct FWarriorEnemyWaveSpawnerInfo
 {
 	GENERATED_BODY()
 
+	//生成敌人类型。
 	UPROPERTY(EditAnywhere)
 	TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn;
 
+	//每次生成敌人的随机数最小值。
 	UPROPERTY(EditAnywhere)
 	int32 MinPerSpawnCount = 1;
 
+	//每次生成敌人的随机数最大值。
 	UPROPERTY(EditAnywhere)
 	int32 MaxPerSpawnCount = 3;
 };
@@ -50,12 +57,23 @@ struct FWarriorEnemyWaveSpawnerTableRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	//敌人生成器定义数据组。
 	UPROPERTY(EditAnywhere)
 	TArray<FWarriorEnemyWaveSpawnerInfo> EnemyWaveSpawnerDefinitions;
 
 	//这一波生成敌人总数。
 	UPROPERTY(EditAnywhere)
 	int32 TotalEnemyToSpawnThisWave = 1;
+
+	//“生成敌人”间隔时间。正常情况下，在有敌人死亡时，触发一次“生成敌人”。但如果达到间隔时间，直接触发一次“生成敌人”。
+	//当任意情况下触发“生成敌人”后，重新计时。
+	UPROPERTY(EditAnywhere)
+	float SpawnEnemyIntervalTime = 20.f;
+
+	//本波次的限制时间，时间结束时直接进入下一波次。
+	//如果达到波次限制时间，但还有剩余的需要生成的敌人，会直接生成全部需要数量的敌人。
+	UPROPERTY(EditAnywhere)
+	float WaveLimitTime = 50.f;
 };
 
 
@@ -78,16 +96,18 @@ private:
 	void SetCurrentSurvivalGameModeState(const EWarriorSurvivalGameModeState InState);
 
 	//是否结束了所有波次。
+	UFUNCTION(BlueprintCallable, Category = "WaveDefinition")
 	bool HasFinishedAllWaves() const;
 
 	//预加载下一波次敌人。
 	void PreLoadNextWaveEnemies();
 
 	//获取当前波次生成器TableRow数据。
-	FWarriorEnemyWaveSpawnerTableRow* GetCurrentWaveSpawnerTableRow() const;
+	FWarriorEnemyWaveSpawnerTableRow* GetCurrentWaveSpawnerTableRow(const bool GetNext = false) const;
 	
 	//生产当前波次敌人。
 	int32 TrySpawnWaveEnemies();
+	bool CheckAndTrySpawnWaveEnemies(const bool SpawnAll = false);
 
 	bool ShouldKeepSpawnEnemies() const;
 
@@ -113,8 +133,8 @@ private:
 
 	//当前波次计数。
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
-	int32 CurrentWaveCount = 1;
-
+	int32 CurrentWaveCount = 0;
+	
 	//当前生成敌人计数器。
 	UPROPERTY()
 	int32 CurrentSpawnedEnemiesCounter = 0;
@@ -130,7 +150,7 @@ private:
 	//等待计时器。
 	UPROPERTY()
 	float TimePassedSinceStart = 0.f;
-
+	
 	//WaitSpawnNewWave 状态的等待时间。之后进入 SpawningNewWave 状态。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float SpawnNewWaveWaitTime = 5.f;
@@ -147,6 +167,17 @@ private:
 	UPROPERTY()
 	TMap<TSoftClassPtr<AWarriorEnemyCharacter>, UClass*> PreLoadedEnemyClassMap;
 
+	//当前波次生成敌人时间间隔。
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	float CurrentSpawnEnemyIntervalTime;
+	UPROPERTY()
+	float SpawnEnemyIntervalTimer;
+
+	//当前波次限制时间。
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	float CurrentWaveLimitTime;
+	UPROPERTY()
+	float WaveLimitTimer;
 public:
 	
 	/// 注册生成的敌人到GameMode。
