@@ -12,6 +12,9 @@
 namespace WarriorGameplayTags
 {
 	//Notes：BLUR_ARPG_WARRIOR_API指定了我们可以使用这个宏的项目API，根据项目名称不同这个API也不同
+
+	//空Tag。用于缓存或查询比较等逻辑功能。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
 	
 	//** Input Tags **//
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
@@ -78,6 +81,8 @@ namespace WarriorGameplayTags
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Rage_Active); //愤怒激活。
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Rage_Full); //愤怒值达到最大时。
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Rage_None); //愤怒值变为空时。
+
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Attacking); //正在进攻中
 
 	//Set By Caller
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Light);

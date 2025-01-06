@@ -95,6 +95,7 @@ private:
 	//技能输入。
 	void Input_AbilityInputPressed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);
+	void Input_AbilityInputTriggered(FGameplayTag InInputTag);
 	
 #pragma endregion
 

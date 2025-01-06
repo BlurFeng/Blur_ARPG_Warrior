@@ -17,11 +17,15 @@ class BLUR_ARPG_WARRIOR_API UWarriorAbilitySystemComponent : public UAbilitySyst
 	GENERATED_BODY()
 
 public:
+	UWarriorAbilitySystemComponent();
+	
 	void OnAbilityInputPressed(const FGameplayTag& InInputTag);
 	void OnAbilityInputReleased(const FGameplayTag& InInputTag);
+	void OnAbilityInputTriggered(const FGameplayTag& InInputTag);
 
 	/// 赋予英雄武器技能。在装备武器时使用此方法为角色赋予装备技能。
-	/// @param InDefaultWeaponAbilities 
+	/// @param InDefaultWeaponAbilities
+	/// @param InSpecialWeaponAbilities 
 	/// @param ApplyLevel 
 	/// @param OutGrantedAbilitySpecHandles 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability", meta = (ApplyLevel = 1))
@@ -42,4 +46,10 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	bool TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate);
+
+private:
+	UPROPERTY()
+	FGameplayTag CachedMustBeHeldGameplayAbilityInputTag;
+	UPROPERTY()
+	FGameplayAbilitySpecHandle CachedMustBeHeldFGameplayAbilitySpecHandle;
 };

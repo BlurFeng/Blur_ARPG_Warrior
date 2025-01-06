@@ -158,7 +158,7 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_PickUp_Stones, ETriggerEvent::Started, this, &ThisClass::Input_PickUpStonesStarted);
 	
 	//技能输入。
-	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased);
+	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased, &ThisClass::Input_AbilityInputTriggered);
 }
 
 void AWarriorHeroCharacter::BeginPlay()
@@ -241,4 +241,9 @@ void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
 void AWarriorHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 {
 	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
+}
+
+void AWarriorHeroCharacter::Input_AbilityInputTriggered(FGameplayTag InInputTag)
+{
+	WarriorAbilitySystemComponent->OnAbilityInputTriggered(InInputTag);
 }

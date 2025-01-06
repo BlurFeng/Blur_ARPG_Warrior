@@ -10,6 +10,8 @@ namespace WarriorGameplayTags
 	//所以应当按项目需求规范命名规则。
 	//比如EquipAxe和UnequipAxe。我们将Axe作为开头的话，能根据具体对象分类排列。
 	//而用Equip和Unequip开头，则按照行为分类排列。
+
+	UE_DEFINE_GAMEPLAY_TAG(None, "None");
 	
 	//** Input Tags **//
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
@@ -75,6 +77,9 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rage_Active, "Player.Status.Rage.Active");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rage_Full, "Player.Status.Rage.Full");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rage_None, "Player.Status.Rage.None");
+
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Attacking, "Player.Status.Attacking");
+	
 	
 	//Set By Caller GAS中用于标记缓存数据用途。
 	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");

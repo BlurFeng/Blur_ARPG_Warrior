@@ -3,14 +3,20 @@
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 
+#include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
 #include "WarriorGameplayTags.h"
-#include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorTypes/WarriorStructTypes.h"
+
+UWarriorAbilitySystemComponent::UWarriorAbilitySystemComponent()
+{
+}
 
 void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
 	if (!InInputTag.IsValid()) return;
+
+	//Debug::Print(TEXT("OnAbilityInputPressed 1"));
 
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
@@ -20,6 +26,12 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		//切换类技能在每次按下时，在触发和取消之间切换。
 		if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable) && AbilitySpec.IsActive())
 		{
+			//清空缓存的需要持续按住触发的技能Spec。
+			if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld))
+			{
+				CachedMustBeHeldGameplayAbilityInputTag = WarriorGameplayTags::None;
+			}
+			
 			//TODO：使用配置打断技能来取消此技能，这样能够通过GameplayTag的配置来确认哪些情况下不能取消技能。
 			//比如使用愤怒技能后，必须等待愤怒技能成功激活后才能取消。或者愤怒值低于一半后才能取消等。
 			//尝试取消技能
@@ -28,6 +40,13 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		//技能触发。所有的技能触发都在此调用。
 		else
 		{
+			//缓存需要持续按住触发的技能Spec。我们只缓存最新的持续按住技能。
+			if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld))
+			{
+				CachedMustBeHeldGameplayAbilityInputTag = InInputTag;
+				CachedMustBeHeldFGameplayAbilitySpecHandle = AbilitySpec.Handle;
+			}
+			
 			//尝试触发技能。
 			TryActivateAbility(AbilitySpec.Handle);
 		}
@@ -36,6 +55,8 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
+	//Debug::Print(TEXT("OnAbilityInputReleased 2"));
+	
 	//如果是必须持续按住的技能，在松开时取消技能。
 	if (!InInputTag.IsValid()) return;
 
@@ -48,6 +69,19 @@ void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& 
 			{
 				CancelAbilityHandle(AbilitySpec.Handle);
 			}
+		}
+	}
+}
+
+void UWarriorAbilitySystemComponent::OnAbilityInputTriggered(const FGameplayTag& InInputTag)
+{
+	//在持续按住的技能一直按住时，尝试在技能未激活时（被打断）再触发。
+	if (CachedMustBeHeldGameplayAbilityInputTag == InInputTag)
+	{
+		if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(CachedMustBeHeldFGameplayAbilitySpecHandle))
+		{
+			if (!AbilitySpec->IsActive())
+				TryActivateAbility(AbilitySpec->Handle);
 		}
 	}
 }

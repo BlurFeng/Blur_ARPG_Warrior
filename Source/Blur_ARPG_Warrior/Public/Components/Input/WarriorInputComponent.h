@@ -22,7 +22,9 @@ public:
 		const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func);
 
 	template<class UserObject, typename CallbackFunc>
-	void BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc,  CallbackFunc InputReleasedFunc);
+	void BindAbilityInputAction(
+		const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject,
+		CallbackFunc InputPressedFunc,  CallbackFunc InputReleasedFunc, CallbackFunc InputTriggeredFunc);
 };
 
 //Notes：C++ template
@@ -60,9 +62,11 @@ void UWarriorInputComponent::BindNativeInputAction(const UDataAsset_InputConfig*
 /// @param ContextObject 根据InputTag我们会在InputConfig中找到对应的InputAction进行处理。
 /// @param InputPressedFunc 按下时回调方法。ETriggerEvent::Started。
 /// @param InputReleasedFunc 松开时回调方法。ETriggerEvent::Completed。
+/// @param InputTriggeredFunc 持续时回调方法。ETriggerEvent::Triggered。
 template <class UserObject, typename CallbackFunc>
-void UWarriorInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig,
-	UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc)
+void UWarriorInputComponent::BindAbilityInputAction(
+	const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject,
+	CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc, CallbackFunc InputTriggeredFunc)
 {
 	checkf(InInputConfig, TEXT("Input config data asset is null, can not proceed with binding."));
 
@@ -72,5 +76,6 @@ void UWarriorInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig
 
 		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Started, ContextObject, InputPressedFunc, AbilityInputActionConfig.InputTag);
 		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Completed, ContextObject, InputReleasedFunc, AbilityInputActionConfig.InputTag);
+		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Triggered, ContextObject, InputTriggeredFunc, AbilityInputActionConfig.InputTag);
 	}
 }
