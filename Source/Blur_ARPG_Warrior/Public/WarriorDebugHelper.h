@@ -32,4 +32,18 @@ namespace Debug
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *FinalMsg);
 		}
 	}
+
+	/// 获取Enum对应的String。
+	/// @param EnumValue 枚举值。
+	/// @return 
+	template <class TEnum>
+	static FString GetEnumString(TEnum EnumValue);
+
+	template <class TEnum>
+	FString GetEnumString(TEnum EnumValue)
+	{
+		const UEnum* EnumPtr = StaticEnum<TEnum>();
+		if (!EnumPtr) return "Invalid";
+		return EnumPtr->GetNameStringByValue(static_cast<int32>(EnumValue));
+	}
 }

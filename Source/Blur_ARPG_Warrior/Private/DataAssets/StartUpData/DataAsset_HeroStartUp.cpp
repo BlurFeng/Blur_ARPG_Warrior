@@ -2,6 +2,8 @@
 
 
 #include "DataAssets/StartUpData/DataAsset_HeroStartUp.h"
+
+#include "WarriorFunctionLibrary.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "WarriorTypes/WarriorStructTypes.h"
 
@@ -17,13 +19,9 @@ void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 	{
 		if(!AbilitySet.IsValid()) continue;
 
-		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
-		// Gameplay Ability Specification 用于描述Ability技能的详细信息。
-		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
-		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor();
-		AbilitySpec.Level = ApplyLevel;
-		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
-
+		FGameplayAbilitySpec AbilitySpec =
+			UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(AbilitySet.AbilityToGrant, InASCToGive->GetAvatarActor(), ApplyLevel, AbilitySet.InputTag);
+		
 		//给角色（技能组件）技能，只有经过GiveAbility()赋予的技能才能使用。
 		//Tips：这里赋予的技能是类似装备武器，攻击能需要输入主动触发的技能。
 		InASCToGive->GiveAbility(AbilitySpec);

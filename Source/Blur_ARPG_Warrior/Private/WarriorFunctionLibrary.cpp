@@ -15,6 +15,54 @@
 #include "SaveGame/WarriorSaveGame.h"
 #include "WarriorTypes/WarriorCountDownAction.h"
 
+#pragma region Tools
+
+void UWarriorFunctionLibrary::CountDown(
+	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+	FLatentActionInfo LatentInfo)
+{
+	//确认World可用。
+	UWorld* World = nullptr;
+	if (GEngine)
+	{
+		World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	}
+	if (!World) return;
+
+	//查找LatentAction。
+	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+	FWarriorCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FWarriorCountDownAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
+
+	//输入执行为开始。
+	if (CountDownInput == EWarriorCountDownActionInput::Start)
+	{
+		//创建LatentAction。
+		//此处 new 的类将由 LatentActionManager 进行管理，我们无需担心内存泄露问题。
+		if (!FoundAction)
+		{
+			LatentActionManager.AddNewAction(
+				LatentInfo.CallbackTarget,
+				LatentInfo.UUID, new FWarriorCountDownAction(TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
+				);
+		}
+	}
+
+	//输入执行为取消。
+	if (CountDownInput == EWarriorCountDownActionInput::Cancel)
+	{
+		//取消LatentAction。
+		if (FoundAction)
+		{
+			FoundAction->CancelAction();
+		}
+	}
+}
+
+#pragma endregion
+
+#pragma region Gameplay
+
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
 	check(InActor);
@@ -159,48 +207,6 @@ bool UWarriorFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor*
 	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
 }
 
-void UWarriorFunctionLibrary::CountDown(
-	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
-	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
-	FLatentActionInfo LatentInfo)
-{
-	//确认World可用。
-	UWorld* World = nullptr;
-	if (GEngine)
-	{
-		World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	}
-	if (!World) return;
-
-	//查找LatentAction。
-	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-	FWarriorCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FWarriorCountDownAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
-
-	//输入执行为开始。
-	if (CountDownInput == EWarriorCountDownActionInput::Start)
-	{
-		//创建LatentAction。
-		//此处 new 的类将由 LatentActionManager 进行管理，我们无需担心内存泄露问题。
-		if (!FoundAction)
-		{
-			LatentActionManager.AddNewAction(
-				LatentInfo.CallbackTarget,
-				LatentInfo.UUID, new FWarriorCountDownAction(TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
-				);
-		}
-	}
-
-	//输入执行为取消。
-	if (CountDownInput == EWarriorCountDownActionInput::Cancel)
-	{
-		//取消LatentAction。
-		if (FoundAction)
-		{
-			FoundAction->CancelAction();
-		}
-	}
-}
-
 UWarriorGameInstance* UWarriorFunctionLibrary::GetWarriorGameInstance(const UObject* WorldContextObject)
 {
 	if (GEngine)
@@ -277,3 +283,26 @@ bool UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(EWarriorGameDifficulty&
 	SaveCurrentGameDifficulty(OutSavedDifficulty);
 	return false;
 }
+
+FGameplayAbilitySpec UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(
+	const TSubclassOf<UGameplayAbility>& GameplayAbility, const TWeakObjectPtr<UObject> SourceObject,
+	const int32 ApplyLevel)
+{
+	FGameplayAbilitySpec AbilitySpec(GameplayAbility); //技能。
+	AbilitySpec.SourceObject = SourceObject; //来源。比如施法者。
+	AbilitySpec.Level = ApplyLevel; //技能等级。可用于在配置表查询不同等级对应的不同数值。
+
+	return AbilitySpec;
+}
+
+FGameplayAbilitySpec UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(
+	const TSubclassOf<UGameplayAbility>& GameplayAbility, const TWeakObjectPtr<UObject> SourceObject,
+	const int32 ApplyLevel, const FGameplayTag InputTag)
+{
+	FGameplayAbilitySpec AbilitySpec = NativeGetGameplayAbilitySpec(GameplayAbility, SourceObject, ApplyLevel);
+	AbilitySpec.DynamicAbilityTags.AddTag(InputTag);
+
+	return AbilitySpec;
+}
+
+#pragma endregion

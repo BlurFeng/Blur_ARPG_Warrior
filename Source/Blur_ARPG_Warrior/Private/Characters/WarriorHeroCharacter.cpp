@@ -151,7 +151,7 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	WarriorInputComponent->BindNativeInputAction(
 		InputConfigDataAsset, WarriorGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 
-	//切换目标输入。在锁定目标时使用。
+	//开启目标锁定后，切换目标输入。在锁定目标时使用。
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTriggered);
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Completed, this, &ThisClass::Input_SwitchTargetCompleted);
 
@@ -216,6 +216,7 @@ void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue&
 
 void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
 {
+	//移动鼠标，根据移动方向切换锁定目标。
 	const FGameplayEventData Data;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		this,

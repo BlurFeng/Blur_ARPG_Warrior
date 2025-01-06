@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 
+#include "WarriorFunctionLibrary.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorTypes/WarriorStructTypes.h"
@@ -36,14 +37,17 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
 	//如果是必须持续按住的技能，在松开时取消技能。
-	if (!InInputTag.IsValid() || !InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld)) return;
+	if (!InInputTag.IsValid()) return;
 
-	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld))
 	{
-		//取消正在激活中的技能。
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag) && AbilitySpec.IsActive())
+		for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 		{
-			CancelAbilityHandle(AbilitySpec.Handle);
+			//取消正在激活中的技能。
+			if (AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag) && AbilitySpec.IsActive())
+			{
+				CancelAbilityHandle(AbilitySpec.Handle);
+			}
 		}
 	}
 }
@@ -53,31 +57,27 @@ void UWarriorAbilitySystemComponent::GrantHeroWeaponAbilities(
 {
 	if (InDefaultWeaponAbilities.IsEmpty()) return;
 
+	//默认武器技能。
 	for (const FWarriorHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
 	{
 		if (!AbilitySet.IsValid()) continue;
+		
+		FGameplayAbilitySpec AbilitySpec =
+			UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(AbilitySet.AbilityToGrant, GetAvatarActor(), ApplyLevel, AbilitySet.InputTag);
 
-		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
-		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
-		AbilitySpec.SourceObject = GetAvatarActor();
-		AbilitySpec.Level = ApplyLevel;
-		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
-
-		//返回赋予技能Handle，方便之后用于移除技能等操作。
+		//缓存赋予技能Handle，方便之后用于移除技能等操作。
 		OutGrantedAbilitySpecHandles.AddUnique(GiveAbility(AbilitySpec));
 	}
 
+	//特殊武器技能。
 	for (const FWarriorHeroSpecialAbilitySet& AbilitySet : InSpecialWeaponAbilities)
 	{
 		if (!AbilitySet.IsValid()) continue;
+		
+		FGameplayAbilitySpec AbilitySpec =
+			UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(AbilitySet.AbilityToGrant, GetAvatarActor(), ApplyLevel, AbilitySet.InputTag);
 
-		//TODO：创建AbilitySpec并赋予技能的部分代码可以创建通用方法
-		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
-		AbilitySpec.SourceObject = GetAvatarActor();
-		AbilitySpec.Level = ApplyLevel;
-		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
-
-		//返回赋予技能Handle，方便之后用于移除技能等操作。
+		//缓存赋予技能Handle，方便之后用于移除技能等操作。
 		OutGrantedAbilitySpecHandles.AddUnique(GiveAbility(AbilitySpec));
 	}
 }

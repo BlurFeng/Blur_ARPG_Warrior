@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpec.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "WarriorTypes/WarriorEnumTypes.h"
 #include "GameplayEffectTypes.h"
@@ -22,6 +23,35 @@ class BLUR_ARPG_WARRIOR_API UWarriorFunctionLibrary : public UBlueprintFunctionL
 	GENERATED_BODY()
 
 public:
+
+#pragma region Tools
+
+	//Notes：Latent Action 潜在事件节点。
+	//通过 Latent Action 我们可以实现一些蓝图的异步节点。比如常用的 Delay 就是一个 Latent Action。
+	//Notes：元数据说明符。
+	//Latent：标记此方法为 Latent 方法。
+	//LatentInfo：此方法必须有 FLatentActionInfo 参数并通过 LatentInfo 标记。
+	//WorldContext：自动获得 WorldContextObject 参数。当我们的方法需要 世界 信息时，可以通过此方式自动获取。在生成Actor，计时器，全局设置等时候。
+	//UPARAM(DisplayName = "Output")：我们可以在参数前使用UPARAM()进行说明。这里重设了显示名称以防止过长的文字。
+
+	/// 倒计时异步方法。
+	/// @param WorldContextObject 
+	/// @param TotalTime 总时间。
+	/// @param UpdateInterval 更新间隔。
+	/// @param ExecuteOnFirst 在开始的第一帧执行。
+	/// @param OutRemainingTime 剩余时间。
+	/// @param CountDownInput 输入执行引脚。
+	/// @param CountDownOutput 输出执行引脚。
+	/// @param LatentInfo 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true"))
+	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+		FLatentActionInfo LatentInfo);
+	
+#pragma endregion
+
+#pragma region Gameplay
+
 	/// 获取AbilitySystemComponent从Actor。
 	/// @param InActor 
 	/// @return 
@@ -110,28 +140,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
 	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, FGameplayEffectSpecHandle& InSpecHandle);
 
-	//Notes：Latent Action 潜在事件节点。
-	//通过 Latent Action 我们可以实现一些蓝图的异步节点。比如常用的 Delay 就是一个 Latent Action。
-	//Notes：元数据说明符。
-	//Latent：标记此方法为 Latent 方法。
-	//LatentInfo：此方法必须有 FLatentActionInfo 参数并通过 LatentInfo 标记。
-	//WorldContext：自动获得 WorldContextObject 参数。当我们的方法需要 世界 信息时，可以通过此方式自动获取。在生成Actor，计时器，全局设置等时候。
-	//UPARAM(DisplayName = "Output")：我们可以在参数前使用UPARAM()进行说明。这里重设了显示名称以防止过长的文字。
-
-	/// 倒计时异步方法。
-	/// @param WorldContextObject 
-	/// @param TotalTime 总时间。
-	/// @param UpdateInterval 更新间隔。
-	/// @param ExecuteOnFirst 在开始的第一帧执行。
-	/// @param OutRemainingTime 剩余时间。
-	/// @param CountDownInput 输入执行引脚。
-	/// @param CountDownOutput 输出执行引脚。
-	/// @param LatentInfo 
-	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true"))
-	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
-		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
-		FLatentActionInfo LatentInfo);
-
 	/// 获取游戏实例。
 	/// @param WorldContextObject 
 	/// @return 
@@ -155,17 +163,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
 	static bool TryLoadSavedGameDifficulty(EWarriorGameDifficulty& OutSavedDifficulty);
 
-	/// 获取Enum对应的String。
-	/// @param EnumValue 枚举值。
+	/// 创建一个 FGameplayAbilitySpec。 Gameplay Ability Specification 用于描述Ability技能的详细信息。
+	/// @param GameplayAbility 技能。
+	/// @param SourceObject 来源。比如施法者。
+	/// @param ApplyLevel 技能等级。可用于在配置表查询不同等级对应的不同数值。
 	/// @return 
-	template <class TEnum>
-	static FString GetEnumString(TEnum EnumValue);
-};
+	static FGameplayAbilitySpec NativeGetGameplayAbilitySpec(const TSubclassOf<UGameplayAbility>& GameplayAbility, const TWeakObjectPtr<UObject> SourceObject, const int32 ApplyLevel);
 
-template <class TEnum>
-FString UWarriorFunctionLibrary::GetEnumString(TEnum EnumValue)
-{
-	const UEnum* EnumPtr = StaticEnum<TEnum>();
-	if (!EnumPtr) return "Invalid";
-	return EnumPtr->GetNameStringByValue(static_cast<int32>(EnumValue));
-}
+	/// 创建一个 FGameplayAbilitySpec。 Gameplay Ability Specification 用于描述Ability技能的详细信息。
+	/// @param GameplayAbility 技能。
+	/// @param SourceObject 来源。比如施法者。
+	/// @param ApplyLevel 技能等级。可用于在配置表查询不同等级对应的不同数值。
+	/// @param InputTag 添加到 DynamicAbilityTags 的Tag。可在之后作为查询的数据。
+	/// @return 
+	static FGameplayAbilitySpec NativeGetGameplayAbilitySpec(const TSubclassOf<UGameplayAbility>& GameplayAbility, const TWeakObjectPtr<UObject> SourceObject, const int32 ApplyLevel, const FGameplayTag InputTag);
+
+#pragma endregion
+};
