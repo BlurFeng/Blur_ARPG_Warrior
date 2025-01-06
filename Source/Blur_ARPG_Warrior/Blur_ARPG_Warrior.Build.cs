@@ -27,6 +27,7 @@ public class Blur_ARPG_Warrior : ModuleRules
 			"MotionWarping",
 			"Niagara",
 			"NavigationSystem",
+			"MoviePlayer",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

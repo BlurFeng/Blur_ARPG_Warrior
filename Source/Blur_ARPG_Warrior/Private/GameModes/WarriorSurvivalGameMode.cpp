@@ -17,7 +17,7 @@ void AWarriorSurvivalGameMode::InitGame(const FString& MapName, const FString& O
 	
 	UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(CurrentGameDifficulty);
 
-	Debug::Print(FString::Printf(TEXT("Current Difficulty: %s") , *UWarriorFunctionLibrary::GetEnumString(CurrentGameDifficulty)));
+	//Debug::Print(FString::Printf(TEXT("Current Difficulty: %s") , *UWarriorFunctionLibrary::GetEnumString(CurrentGameDifficulty)));
 }
 
 void AWarriorSurvivalGameMode::BeginPlay()

@@ -32,7 +32,14 @@ class BLUR_ARPG_WARRIOR_API UWarriorGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+public:
+	virtual void Init() override;
+
 protected:
+	//加载地图前。
+	virtual void OnPreloadMap(const FString& MapName);
+	//目标地图加载完成后。
+	virtual void OnDestinationWorldLoaded(UWorld* LoadedWorld);
 
 	//游戏地图设置。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
