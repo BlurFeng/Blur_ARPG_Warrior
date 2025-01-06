@@ -25,7 +25,7 @@ public:
 	: bNeedToCancel(false),
 	TotalCountDownTime(InTotalCountTime), UpdateInterval(InUpdateInterval), ExecuteOnFirst(InExecuteOnFirst), OutRemainingTime(InOutRemainingTime), CountDownOutput(InCountDownOutput),
 	ExecutionFunction(LatentInfo.ExecutionFunction), OutputLink(LatentInfo.Linkage), CallbackTarget(LatentInfo.CallbackTarget),
-	ElapsedIntervalTimer(0.f), ElapsedTimeSinceStart(0.f)
+	TimerFromStart(0.f), IntervalTimer(0.f)
 	{
 		
 	}
@@ -37,13 +37,13 @@ public:
 private:
 	bool bNeedToCancel; //确认是否触发了取消。
 	const float TotalCountDownTime; //总倒计时时间。
-	const float UpdateInterval; //更新间隔，为零时每帧执行Update回调。
+	float UpdateInterval; //更新间隔，为零时每帧执行Update回调。
 	bool ExecuteOnFirst; //在第一帧执行。
 	float& OutRemainingTime; //剩余时间。
 	EWarriorCountDownActionOutput& CountDownOutput; //输出执行引脚。
 	FName ExecutionFunction;
 	int32 OutputLink;
 	FWeakObjectPtr CallbackTarget;
-	float ElapsedIntervalTimer; //经过间隔计时器。
-	float ElapsedTimeSinceStart; //经过总时间。
+	float TimerFromStart; //经过总时间。
+	float IntervalTimer;
 };
