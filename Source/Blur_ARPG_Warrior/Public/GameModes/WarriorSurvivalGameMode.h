@@ -29,7 +29,7 @@ enum class EWarriorSurvivalGameModeState : uint8
 	//所有波次完成。
 	AllWavesDone,
 	//玩家死亡。
-	PlayerDied
+	Failed
 };
 
 //敌人波次生成器信息。
@@ -120,9 +120,9 @@ private:
 	EWarriorSurvivalGameModeState CurrentSurvivalGameModeState;
 
 	//当游戏模式状态改变时委托。
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	UPROPERTY(BlueprintAssignable)
 	FOnSurvivalGameModeStateChanged OnSurvivalGameModeStateChanged;
-
+	
 	//敌人波次生成器数据表。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	UDataTable* EnemyWaveSpawnerDataTable;
@@ -185,4 +185,8 @@ public:
 	/// @param InEnemiesToRegister 
 	UFUNCTION(BlueprintCallable)
 	void RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
+
+	//生存游戏模式失败。玩家真正死亡时调用。
+	UFUNCTION(BlueprintCallable)
+	void OnSurvivalGameModeStateToFailed();
 };

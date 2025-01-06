@@ -133,7 +133,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::AllWavesDone);
 				//否则失败。
 				else
-					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::PlayerDied);
+					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
 			}
 			//进入下一次波次，等待生成新波次。
 			else
@@ -305,4 +305,9 @@ void AWarriorSurvivalGameMode::RegisterSpawnEnemies(const TArray<AWarriorEnemyCh
 
 		SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
 	}
+}
+
+void AWarriorSurvivalGameMode::OnSurvivalGameModeStateToFailed()
+{
+	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
 }
