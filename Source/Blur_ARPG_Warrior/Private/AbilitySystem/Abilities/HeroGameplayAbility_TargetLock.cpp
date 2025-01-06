@@ -21,9 +21,17 @@ void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpec
                                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                                       const FGameplayEventData* TriggerEventData)
 {
-	TryLockOnTarget(); //尝试锁定到目标。
-	InitTargetLockMovement(); //初始化锁定移动模式。
-	InitTargetLockMappingContext(); //更新输入映射。
+	//尝试锁定到目标。
+	if (TryLockOnTarget())
+	{
+		InitTargetLockMovement(); //初始化锁定移动模式。
+		InitTargetLockMappingContext(); //更新输入映射。
+	}
+	//失败时取消技能。
+	else
+	{
+		CancelTargetLockAbility();
+	}
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -49,15 +57,17 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 		CancelTargetLockAbility();
 		return;
 	}
-
+  
 	//更新目标锁定指示器Widget位置。
 	SetTargetLockWidgetPosition();
 
 	//确认是否重载旋转。
 	const bool bShouldOverrideRotation =
-		!UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Player_Status_Rolling)
-		&& !UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Player_Status_Blocking);
+		!UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Player_Status_Rolling);
 
+	//Tips：在锁定时防御，也自动转向更符合操作直觉。
+	//!UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Player_Status_Blocking)
+	
 	//更新玩家旋转面向锁定目标。
 	if (bShouldOverrideRotation)
 	{
@@ -106,34 +116,29 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	}
 }
 
-void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
+bool UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 {
 	GetAvailableActorsToLock();
 
 	//当没有有效目标时，直接取消此技能。
-	if (AvailableActorsToLock.IsEmpty())
-	{
-		CancelTargetLockAbility();
-		return;
-	}
+	if (AvailableActorsToLock.IsEmpty()) return false;
 
 	//获取距离自身最近的目标Actor。
 	CurrentLockedActor = GetNearestTargetFromAvailableActors(AvailableActorsToLock);
-	if (!CurrentLockedActor)
-	{
-		CancelTargetLockAbility();
-		return;
-	}
+	if (!CurrentLockedActor) return false;
 
 	DrawTargetLockWidget(); //绘制目标锁定指示器Widget。
 	SetTargetLockWidgetPosition(); //设定目标锁定Widget位置。
+
+	return true;
 }
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 {
 	AvailableActorsToLock.Empty();
 	TArray<FHitResult> BoxTraceHits;
-	
+
+	//在Box范围内探测可锁定的目标。
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
 		GetHeroCharacterFromActorInfo(),
 		GetHeroCharacterFromActorInfo()->GetActorLocation(),
@@ -154,6 +159,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 		{
 			if (HitActor != GetHeroCharacterFromActorInfo())
 			{
+				//添加敌人到有效锁定目标数组。
 				AvailableActorsToLock.AddUnique(HitActor);
 			}
 		}

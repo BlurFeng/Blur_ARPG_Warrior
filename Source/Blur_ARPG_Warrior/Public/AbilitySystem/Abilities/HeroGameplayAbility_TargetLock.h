@@ -29,7 +29,7 @@ protected:
 
 private:
 	//尝试锁定目标。
-	void TryLockOnTarget();
+	bool TryLockOnTarget();
 	//获取何用的锁定目标。
 	void GetAvailableActorsToLock();
 	//获取距离自身最近的目标。
