@@ -22,7 +22,7 @@ struct FWarriorGameLevelSet
 
 	bool IsValid() const
 	{
-		return LevelTag.IsValid() && Level.IsValid();
+		return LevelTag.IsValid() && !Level.IsNull();
 	}
 };
 
@@ -44,5 +44,5 @@ public:
 	/// @param InTag 
 	/// @return 
 	UFUNCTION(BlueprintPure, meta = (Categories = "GameData.Level"))
-	TSoftObjectPtr<UWorld> GetGameLevelByTag(FGameplayTag InTag) const;
+	TSoftObjectPtr<UWorld> GetGameLevelByTag(const FGameplayTag InTag) const;
 };
