@@ -49,6 +49,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 		CurrentSpawnEnemyIntervalTime = TableRow->SpawnEnemyIntervalTime;
 		SpawnEnemyIntervalTimer = 0.f;
 		TotalSpawnedEnemiesThisWaveCounter = 0;
+		CurrentWhenWaveOverGoToNext = TableRow->WhenWaveOverGoToNext;
 		
 		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaitSpawnNewWave);
 	}
@@ -101,8 +102,8 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 			}
 		}
 
-		//超时时，直接进入下一波次。
-		if (CurrentWaveLimitTime > 0.f)
+		//超时且未清空敌人。
+		if (CurrentWaveLimitTime > 0.f && !HaveNoEnemies())
 		{
 			WaveLimitTimer += DeltaTime;
 			if (WaveLimitTimer >= CurrentWaveLimitTime)
@@ -112,37 +113,40 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 				CheckAndTrySpawnWaveEnemies(true);
 
 				//波次结束。
-				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
+				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveTimedOut);
 			}
 		}
 	}
-	//波次结束。
+	//波次完成。清空敌人进入此阶段。
 	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaveCompleted)
 	{
-		TimePassedSinceStart += DeltaTime;
-
-		if (HasFinishedAllWaves() || TimePassedSinceStart >= WaveCompletedWaitTime)
+		CheckWaveOverGoToNext(DeltaTime);
+	}
+	//波次结束。超过限制时间进入此阶段。
+	else if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaveTimedOut)
+	{
+		if (CurrentWhenWaveOverGoToNext)
 		{
-			TimePassedSinceStart = 0.f;
-
-			//所有波次结束。
-			if (HasFinishedAllWaves())
-			{
-				//清空敌人，胜利。
-				if (CurrentSpawnedEnemiesCounter == 0)
-					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::AllWavesDone);
-				//否则失败。
-				else
-					SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
-			}
-			//进入下一次波次，等待生成新波次。
-			else
-			{
-				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveStarted);
-				PreLoadNextWaveEnemies();
-			}
+			CheckWaveOverGoToNext(DeltaTime);
+		}
+		else
+		{
+			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
 		}
 	}
+}
+
+void AWarriorSurvivalGameMode::RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister)
+{
+	for (AWarriorEnemyCharacter* SpawnedEnemy : InEnemiesToRegister)
+	{
+		NativeRegisterSpawnEnemy(SpawnedEnemy);
+	}
+}
+
+void AWarriorSurvivalGameMode::OnSurvivalGameModeStateToFailed()
+{
+	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
 }
 
 void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(const EWarriorSurvivalGameModeState InState)
@@ -156,6 +160,33 @@ void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(const EWarriorSur
 bool AWarriorSurvivalGameMode::HasFinishedAllWaves() const
 {
 	return CurrentWaveCount >= TotalWavesToSpawn;
+}
+
+void AWarriorSurvivalGameMode::CheckWaveOverGoToNext(const float DeltaTime)
+{
+	TimePassedSinceStart += DeltaTime;
+
+	if (HasFinishedAllWaves() || TimePassedSinceStart >= WaveCompletedWaitTime)
+	{
+		TimePassedSinceStart = 0.f;
+
+		//所有波次结束。
+		if (HasFinishedAllWaves())
+		{
+			//清空敌人，胜利。
+			if (HaveNoEnemies())
+				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::AllWavesDone);
+			//否则失败。
+			else
+				SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
+		}
+		//进入下一次波次，等待生成新波次。
+		else
+		{
+			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveStarted);
+			PreLoadNextWaveEnemies();
+		}
+	}
 }
 
 void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
@@ -190,7 +221,7 @@ void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
 
 FWarriorEnemyWaveSpawnerTableRow* AWarriorSurvivalGameMode::GetCurrentWaveSpawnerTableRow(const bool GetNext) const
 {
-	FName RowName = FName(TEXT("Wave") + FString::FromInt(CurrentWaveCount + (GetNext ? 1 : 0)));
+	const FName RowName = FName(TEXT("Wave") + FString::FromInt(CurrentWaveCount + (GetNext ? 1 : 0)));
 	FWarriorEnemyWaveSpawnerTableRow* Row = EnemyWaveSpawnerDataTable->FindRow<FWarriorEnemyWaveSpawnerTableRow>(RowName, FString());
 	checkf(Row, TEXT("Could not find a valid row under the name %s in the data table."), *RowName.ToString());
 
@@ -230,12 +261,9 @@ int32 AWarriorSurvivalGameMode::TrySpawnWaveEnemies()
 
 			AWarriorEnemyCharacter* SpawnedEnemy = GetWorld()->SpawnActor<AWarriorEnemyCharacter>(LoadedEnemyClass, RandomLocation, SpawnRotation, SpawnParameters);
 
-			if (SpawnedEnemy)
+			if (NativeRegisterSpawnEnemy(SpawnedEnemy))
 			{
-				SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
-				
 				EnemiesSpawnedThisTime++;
-				TotalSpawnedEnemiesThisWaveCounter++;
 			}
 
 			if (!ShouldKeepSpawnEnemies()) return EnemiesSpawnedThisTime;
@@ -253,13 +281,13 @@ bool AWarriorSurvivalGameMode::CheckAndTrySpawnWaveEnemies(const bool SpawnAll)
 	{
 		while (ShouldKeepSpawnEnemies())
 		{
-			CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+			TrySpawnWaveEnemies();
 			IsSpawned = true;
 		}
 	}
 	else if (ShouldKeepSpawnEnemies())
 	{
-		CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+		TrySpawnWaveEnemies();
 		IsSpawned = true;
 	}
 
@@ -277,6 +305,17 @@ bool AWarriorSurvivalGameMode::ShouldKeepSpawnEnemies() const
 	return TotalSpawnedEnemiesThisWaveCounter < GetCurrentWaveSpawnerTableRow()->TotalEnemyToSpawnThisWave;
 }
 
+bool AWarriorSurvivalGameMode::NativeRegisterSpawnEnemy(AWarriorEnemyCharacter* InEnemiesToRegister)
+{
+	if (!InEnemiesToRegister) return false;
+
+	CurrentSpawnedEnemiesCounter++;
+	InEnemiesToRegister->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
+	TotalSpawnedEnemiesThisWaveCounter++;
+
+	return true;
+}
+
 void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 {
 	//当生成的敌人死亡被销毁时。
@@ -286,7 +325,7 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	//Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, TotalSpawnedEnemiesThisWaveCounter: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
 	
 	//确认无法继续生成敌人且没有存活的敌人。
-	if (!CheckAndTrySpawnWaveEnemies() && CurrentSpawnedEnemiesCounter == 0)
+	if (!CheckAndTrySpawnWaveEnemies() && HaveNoEnemies())
 	{
 		//CurrentSpawnedEnemiesCounter = 0;
 
@@ -295,19 +334,7 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	}
 }
 
-void AWarriorSurvivalGameMode::RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister)
+bool AWarriorSurvivalGameMode::HaveNoEnemies() const
 {
-	for (AWarriorEnemyCharacter* SpawnedEnemy : InEnemiesToRegister)
-	{
-		if (!SpawnedEnemy) continue;
-
-		CurrentSpawnedEnemiesCounter++;
-
-		SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
-	}
-}
-
-void AWarriorSurvivalGameMode::OnSurvivalGameModeStateToFailed()
-{
-	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
+	return CurrentSpawnedEnemiesCounter == 0;
 }

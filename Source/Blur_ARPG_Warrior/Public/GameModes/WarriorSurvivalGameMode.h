@@ -24,8 +24,10 @@ enum class EWarriorSurvivalGameModeState : uint8
 	BattleStarted,
 	//进行中。玩家正在战斗。
 	InProgress,
-	//波次完成。
+	//波次完成。当在倒计时结束前清空波次进入此阶段。
 	WaveCompleted,
+	//波次超时结束。当波次倒计时结束时进入此阶段。
+	WaveTimedOut,
 	//所有波次完成。
 	AllWavesDone,
 	//玩家死亡。
@@ -43,11 +45,11 @@ struct FWarriorEnemyWaveSpawnerInfo
 	TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn;
 
 	//每次生成敌人的随机数最小值。
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 99))
 	int32 MinPerSpawnCount = 1;
 
 	//每次生成敌人的随机数最大值。
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 99))
 	int32 MaxPerSpawnCount = 3;
 };
 
@@ -62,18 +64,22 @@ struct FWarriorEnemyWaveSpawnerTableRow : public FTableRowBase
 	TArray<FWarriorEnemyWaveSpawnerInfo> EnemyWaveSpawnerDefinitions;
 
 	//这一波生成敌人总数。
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 99))
 	int32 TotalEnemyToSpawnThisWave = 1;
 
-	//“生成敌人”间隔时间。正常情况下，在有敌人死亡时，触发一次“生成敌人”。但如果达到间隔时间，直接触发一次“生成敌人”。
+	//“生成敌人”间隔时间。0为无间隔。正常情况下，在有敌人死亡时，触发一次“生成敌人”。但如果达到间隔时间，直接触发一次“生成敌人”。
 	//当任意情况下触发“生成敌人”后，重新计时。
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 999))
 	float SpawnEnemyIntervalTime = 20.f;
 
-	//本波次的限制时间，时间结束时直接进入下一波次。
+	//本波次的限制时间，时间结束时直接进入下一波次。0为无限制时间。
 	//如果达到波次限制时间，但还有剩余的需要生成的敌人，会直接生成全部需要数量的敌人。
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 999))
 	float WaveLimitTime = 50.f;
+
+	//当本波次结束（超时）时，进入下一波次。否则直接游戏失败。
+	UPROPERTY(EditAnywhere)
+	bool WhenWaveOverGoToNext = true;
 };
 
 
@@ -90,6 +96,18 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	
+	/// 注册生成的敌人到GameMode。
+	/// 不是游戏模式生成的敌人被创建时（比如召唤技能），应当通过此方法注册到游戏模式。
+	/// @param InEnemiesToRegister 
+	UFUNCTION(BlueprintCallable)
+	void RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
+	
+	//生存游戏模式失败。玩家真正死亡时调用。
+	UFUNCTION(BlueprintCallable)
+	void OnSurvivalGameModeStateToFailed();
+
 private:
 
 	//设置当前游戏状态。
@@ -98,6 +116,9 @@ private:
 	//是否结束了所有波次。
 	UFUNCTION(BlueprintCallable, Category = "WaveDefinition")
 	bool HasFinishedAllWaves() const;
+
+	//波次结束，确认是否进入下一波次。
+	void CheckWaveOverGoToNext(const float DeltaTime);
 
 	//预加载下一波次敌人。
 	void PreLoadNextWaveEnemies();
@@ -111,12 +132,20 @@ private:
 
 	bool ShouldKeepSpawnEnemies() const;
 
+	/// 注册生成的敌人
+	/// @param InEnemiesToRegister 
+	/// @return 
+	bool NativeRegisterSpawnEnemy(AWarriorEnemyCharacter* InEnemiesToRegister);
+
 	UFUNCTION()
 	void OnEnemyDestroyed(AActor* DestroyedActor);
+
+	//确认没有剩余敌人。
+	bool HaveNoEnemies() const;
 	
 	
 	//当前生存模式状态。
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	EWarriorSurvivalGameModeState CurrentSurvivalGameModeState;
 
 	//当游戏模式状态改变时委托。
@@ -178,15 +207,8 @@ private:
 	float CurrentWaveLimitTime;
 	UPROPERTY()
 	float WaveLimitTimer;
-public:
-	
-	/// 注册生成的敌人到GameMode。
-	/// 不是游戏模式生成的敌人被创建时（比如召唤技能），应当通过此方法注册到游戏模式。
-	/// @param InEnemiesToRegister 
-	UFUNCTION(BlueprintCallable)
-	void RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
 
-	//生存游戏模式失败。玩家真正死亡时调用。
-	UFUNCTION(BlueprintCallable)
-	void OnSurvivalGameModeStateToFailed();
+	//当前波次超时结束时，进入下一波次。否则失败。
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	bool CurrentWhenWaveOverGoToNext;
 };
