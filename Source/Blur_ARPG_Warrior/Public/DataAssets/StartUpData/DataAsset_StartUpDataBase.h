@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, category = "StartUpData")
 	TArray<TSubclassOf<UWarriorGameplayAbility>> ReactiveAbilities;
 
-	//启动时GE。在启动时直接应用到自身。比如设置最大血量和当前血量。注意，如果GE本身有依赖关系，请注意配置的前后顺序。我们从数组的0位开始应用GE到自身。
+	//启动时GE。在启动时直接应用到自身。比如设置最大血量和当前血量或持续恢复体力等。注意，如果GE本身有依赖关系，请注意配置的前后顺序。我们从数组的0位开始应用GE到自身。
 	UPROPERTY(EditDefaultsOnly, category = "StartUpData")
 	TArray<TSubclassOf<UGameplayEffect>> StartUpGameplayEffects;
 

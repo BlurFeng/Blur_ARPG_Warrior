@@ -16,6 +16,7 @@ GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 class IPawnUIInterface;
+
 //基本属性集
 //在 AWarriorBaseCharacter::AWarriorBaseCharacter() 中创建并附加给角色。
 UCLASS()
@@ -36,6 +37,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, MaxHealth)
+
+	//体力
+	UPROPERTY(BlueprintReadOnly, Category = "Vitality")
+	FGameplayAttributeData CurrentVitality;
+	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, CurrentVitality)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Vitality")
+	FGameplayAttributeData MaxVitality;
+	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, MaxVitality)
 
 	//怒气
 	UPROPERTY(BlueprintReadOnly, Category = "Rage")

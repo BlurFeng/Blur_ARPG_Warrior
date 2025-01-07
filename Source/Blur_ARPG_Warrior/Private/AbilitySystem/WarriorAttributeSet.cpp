@@ -16,6 +16,8 @@ UWarriorAttributeSet::UWarriorAttributeSet()
 	//设置属性默认值
 	InitCurrentHealth(1.f);
 	InitMaxHealth(1.f);
+	InitCurrentVitality(1.f);
+	InitMaxVitality(1.f);
 	InitCurrentRage(1.f);
 	InitMaxRage(1.f);
 	InitAttackPower(1.f);
@@ -49,9 +51,21 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 		//UI更新广播
 		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 	}
-
+	//体力值
+	else if (Data.EvaluatedData.Attribute == GetCurrentVitalityAttribute())
+	{
+		const float NewCurrentVitality = FMath::Clamp(GetCurrentVitality(), 0.f, GetMaxVitality());
+		SetCurrentVitality(NewCurrentVitality);
+		
+		//UI更新广播
+		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+		{
+			//只要英雄有怒气值。
+			HeroUIComponent->OnCurrentVitalityChanged.Broadcast(GetCurrentVitality() / GetMaxVitality());
+		}
+	}
 	//愤怒值
-	if (Data.EvaluatedData.Attribute == GetCurrentRageAttribute())
+	else if (Data.EvaluatedData.Attribute == GetCurrentRageAttribute())
 	{
 		const float NewCurrentRage = FMath::Clamp(GetCurrentRage(), 0.f, GetMaxRage());
 		SetCurrentRage(NewCurrentRage);
@@ -80,9 +94,8 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
 		}
 	}
-
 	//伤害承受值
-	if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
+	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
 	{
 		//将 承受伤害值 应用到 当前生命值。
 		const float OldHealth = GetCurrentHealth();

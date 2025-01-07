@@ -20,10 +20,14 @@ class BLUR_ARPG_WARRIOR_API UHeroUIComponent : public UPawnUIComponent
 	GENERATED_BODY()
 
 public:
+	//当前体力值变化时。
+	UPROPERTY(BlueprintAssignable)
+	FOnPercentChangedDelegate OnCurrentVitalityChanged;
+	
 	//当前怒气值变化时。
 	UPROPERTY(BlueprintAssignable)
 	FOnPercentChangedDelegate OnCurrentRageChanged;
-
+	
 	//当装备武器变化时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnEquippedWeaponChangedDelegate OnEquippedWeaponChangedDelegate;
