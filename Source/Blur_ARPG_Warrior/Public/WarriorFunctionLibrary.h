@@ -47,7 +47,21 @@ public:
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
 		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 		FLatentActionInfo LatentInfo);
-	
+
+	/// 根据传入的权重数组，根据权重随机并返回一个Index。
+	/// @param Weights 权重数组。 
+	/// @param WeightTotal 如果知道总权重，传入参数可以减少计算，否则自动计算总权重。
+	/// @return 随机选中的权重Index。
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static int32 RandomIndexByWeights(const TArray<int32>& Weights, int32 WeightTotal = 0);
+
+	/// 在三个权重值之间随机并返回对应Index
+	/// @param Weight1 
+	/// @param Weight2 
+	/// @param Weight3 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static int32 RandomIndexByWeightsForThree(const int32 Weight1, const int32 Weight2, const int32 Weight3);
 #pragma endregion
 
 #pragma region Gameplay

@@ -2,6 +2,9 @@
 
 
 #include "WarriorFunctionLibrary.h"
+
+#include <ios>
+
 #include "WarriorDebugHelper.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
@@ -57,6 +60,49 @@ void UWarriorFunctionLibrary::CountDown(
 			FoundAction->CancelAction();
 		}
 	}
+}
+
+int32 UWarriorFunctionLibrary::RandomIndexByWeights(const TArray<int32>& Weights, int32 WeightTotal)
+{
+	if (Weights.IsEmpty()) return 0;
+
+	//没有传入有效总权重时，自行计算。
+	if (WeightTotal <= 0)
+	{
+		WeightTotal = 0;
+		for (int32 i = 0; i < Weights.Num(); i++)
+		{
+			WeightTotal += Weights[i];
+		}
+	}
+
+	//随机数在总权重值内。
+	const int32 RandomInt = FMath::RandRange(1, WeightTotal);
+
+	//确认随机数命中区段。
+	int32 Right = 0;
+	for (int32 i = 0; i < Weights.Num(); i++)
+	{
+		Right += Weights[i];
+
+		if (RandomInt <= Right)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+int32 UWarriorFunctionLibrary::RandomIndexByWeightsForThree(const int32 Weight1, const int32 Weight2, const int32 Weight3)
+{
+	const int32 WeightTotal = Weight1 + Weight2 + Weight3;
+	const int32 RandomInt = FMath::RandRange(1, WeightTotal);
+
+	//确认随机数命中区段。
+	if (RandomInt <= Weight1) return 0;
+	if (RandomInt <= Weight1 + Weight2) return 1;
+	return 2;
 }
 
 #pragma endregion
