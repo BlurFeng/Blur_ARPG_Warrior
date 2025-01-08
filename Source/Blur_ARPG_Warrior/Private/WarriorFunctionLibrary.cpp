@@ -3,8 +3,6 @@
 
 #include "WarriorFunctionLibrary.h"
 
-#include <ios>
-
 #include "WarriorDebugHelper.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
@@ -147,7 +145,9 @@ float UWarriorFunctionLibrary::LerpLimitChangeMin(const float A, const float B, 
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
-	check(InActor);
+	//在技能调用中按ESC结束游戏会导致空。
+	//heck(InActor);
+	if (!InActor) return nullptr;
 
 	return CastChecked<UWarriorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
 }
@@ -156,7 +156,7 @@ void UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGame
 {
 	UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActor);
 
-	if(!ASC->HasMatchingGameplayTag(TagToAdd))
+	if(ASC && !ASC->HasMatchingGameplayTag(TagToAdd))
 	{
 		ASC->AddLooseGameplayTag(TagToAdd);
 	}
@@ -166,7 +166,7 @@ void UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(AActor* InActor,
 {
 	UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActor);
 
-	if(ASC->HasMatchingGameplayTag(TagToRemove))
+	if(ASC && ASC->HasMatchingGameplayTag(TagToRemove))
 	{
 		ASC->RemoveLooseGameplayTag(TagToRemove);
 	}
@@ -176,7 +176,7 @@ bool UWarriorFunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayT
 {
 	UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActor);
 
-	return ASC->HasMatchingGameplayTag(TagToCheck);
+	return ASC && ASC->HasMatchingGameplayTag(TagToCheck);
 }
 
 void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck,
@@ -283,6 +283,7 @@ bool UWarriorFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor*
 {
 	UWarriorAbilitySystemComponent* SourceASC = NativeGetWarriorASCFromActor(InInstigator);
 	UWarriorAbilitySystemComponent* TargetASC = NativeGetWarriorASCFromActor(InTargetActor);
+	if (!SourceASC || !TargetASC) return false;
 	
 	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
 

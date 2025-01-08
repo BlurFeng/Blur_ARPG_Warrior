@@ -1,20 +1,19 @@
 // Blur Feng All Rights Reserved.
 
 
-#include "AbilitySystem/AbilityTasks/AbilityTask_WaitSpawnEnemies.h"
+#include "AbilitySystem/AbilityTasks/AbilityTask_WaitSpawnActors.h"
 
 #include "AbilitySystemComponent.h"
 #include "NavigationSystem.h"
-#include "Characters/WarriorEnemyCharacter.h"
 #include "Engine/AssetManager.h"
 
-UAbilityTask_WaitSpawnEnemies* UAbilityTask_WaitSpawnEnemies::WaitSpawnEnemies(UGameplayAbility* OwningAbility,
-                                                                               FGameplayTag EventTag, TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn, int32 NumToSpawn,
+UAbilityTask_WaitSpawnActors* UAbilityTask_WaitSpawnActors::WaitSpawnActors(UGameplayAbility* OwningAbility,
+                                                                               FGameplayTag EventTag, TSoftClassPtr<AActor> SoftActorClassToSpawn, int32 NumToSpawn,
                                                                                const FVector& SpawnOrigin, float RandomSpawnRadius)
 {
-	UAbilityTask_WaitSpawnEnemies* Node = NewAbilityTask<UAbilityTask_WaitSpawnEnemies>(OwningAbility);
+	UAbilityTask_WaitSpawnActors* Node = NewAbilityTask<UAbilityTask_WaitSpawnActors>(OwningAbility);
 	Node->CachedEventTag = EventTag;
-	Node->CachedSoftEnemyClassToSpawn = SoftEnemyClassToSpawn;
+	Node->CachedSoftActorClassToSpawn = SoftActorClassToSpawn;
 	Node->CachedNumToSpawn = NumToSpawn;
 	Node->CachedSpawnOrigin = SpawnOrigin;
 	Node->CachedRandomSpawnRadius = RandomSpawnRadius;
@@ -22,7 +21,7 @@ UAbilityTask_WaitSpawnEnemies* UAbilityTask_WaitSpawnEnemies::WaitSpawnEnemies(U
 	return Node;
 }
 
-void UAbilityTask_WaitSpawnEnemies::Activate()
+void UAbilityTask_WaitSpawnActors::Activate()
 {
 	//Super::Activate();
 
@@ -31,7 +30,7 @@ void UAbilityTask_WaitSpawnEnemies::Activate()
 	DelegateHandle = Delegate.AddUObject(this, &ThisClass::OnGameplayEventReceived);
 }
 
-void UAbilityTask_WaitSpawnEnemies::OnDestroy(bool bInOwnerFinished)
+void UAbilityTask_WaitSpawnActors::OnDestroy(bool bInOwnerFinished)
 {
 	//销毁时移除委托。
 	FGameplayEventMulticastDelegate& Delegate = AbilitySystemComponent->GenericGameplayEventCallbacks.FindOrAdd(CachedEventTag);
@@ -40,33 +39,33 @@ void UAbilityTask_WaitSpawnEnemies::OnDestroy(bool bInOwnerFinished)
 	Super::OnDestroy(bInOwnerFinished);
 }
 
-void UAbilityTask_WaitSpawnEnemies::OnGameplayEventReceived(const FGameplayEventData* InPayload)
+void UAbilityTask_WaitSpawnActors::OnGameplayEventReceived(const FGameplayEventData* InPayload)
 {
 	//收到GameplayEvent。
 
 	//确认配置了有效的生成敌人类型。
-	if (ensure(!CachedSoftEnemyClassToSpawn.IsNull()))
+	if (ensure(!CachedSoftActorClassToSpawn.IsNull()))
 	{
-		//异步加载。在OnEnemyClassLoaded回调中处理之后的逻辑。
+		//异步加载。在OnActorClassLoaded回调中处理之后的逻辑。
 		UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
-			CachedSoftEnemyClassToSpawn.ToSoftObjectPath(),
-			FStreamableDelegate::CreateUObject(this, &ThisClass::OnEnemyClassLoaded));
+			CachedSoftActorClassToSpawn.ToSoftObjectPath(),
+			FStreamableDelegate::CreateUObject(this, &ThisClass::OnActorClassLoaded));
 	}
 	else
 	{
 		//确认可以进行技能任务广播。确认技能任然在激活状态。
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			DidNotSpawn.Broadcast(TArray<AWarriorEnemyCharacter*>());
+			DidNotSpawn.Broadcast(TArray<AActor*>());
 		}
 
 		EndTask();
 	}
 }
 
-void UAbilityTask_WaitSpawnEnemies::OnEnemyClassLoaded()
+void UAbilityTask_WaitSpawnActors::OnActorClassLoaded()
 {
-	UClass* LoadedClass = CachedSoftEnemyClassToSpawn.Get();
+	UClass* LoadedClass = CachedSoftActorClassToSpawn.Get();
 	UWorld* World = GetWorld();
 
 	//确认参数是否有效。
@@ -75,14 +74,14 @@ void UAbilityTask_WaitSpawnEnemies::OnEnemyClassLoaded()
 		//确认可以进行技能任务广播。确认技能任然在激活状态。
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			DidNotSpawn.Broadcast(TArray<AWarriorEnemyCharacter*>());
+			DidNotSpawn.Broadcast(TArray<AActor*>());
 		}
 
 		EndTask();
 		return;
 	}
 
-	TArray<AWarriorEnemyCharacter*> SpawnedEnemies;
+	TArray<AActor*> SpawnedActors;
 	const FRotator SpawnFacingRotation = AbilitySystemComponent->GetAvatarActor()->GetActorForwardVector().ToOrientationRotator();
 
 	//生成参数。
@@ -101,22 +100,22 @@ void UAbilityTask_WaitSpawnEnemies::OnEnemyClassLoaded()
 		RandomLocation += FVector(0.f, 0.f, 100.f);
 		
 		//生成敌人。
-		if (AWarriorEnemyCharacter* SpawnEnemy = World->SpawnActor<AWarriorEnemyCharacter>(LoadedClass, RandomLocation, SpawnFacingRotation, SpawnParams))
+		if (AActor* SpawnActor = World->SpawnActor<AActor>(LoadedClass, RandomLocation, SpawnFacingRotation, SpawnParams))
 		{
-			SpawnedEnemies.Add(SpawnEnemy);
+			SpawnedActors.Add(SpawnActor);
 		}
 	}
 
 	//广播生成结束委托。
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		if (!SpawnedEnemies.IsEmpty())
+		if (!SpawnedActors.IsEmpty())
 		{
-			OnSpawnFinished.Broadcast(SpawnedEnemies);
+			OnSpawnFinished.Broadcast(SpawnedActors);
 		}
 		else
 		{
-			DidNotSpawn.Broadcast(TArray<AWarriorEnemyCharacter*>());
+			DidNotSpawn.Broadcast(TArray<AActor*>());
 		}
 	}
 	

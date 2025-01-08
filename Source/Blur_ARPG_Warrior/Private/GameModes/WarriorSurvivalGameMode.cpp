@@ -144,6 +144,15 @@ void AWarriorSurvivalGameMode::RegisterSpawnEnemies(const TArray<AWarriorEnemyCh
 	}
 }
 
+void AWarriorSurvivalGameMode::RegisterSpawnEnemiesInActors(const TArray<AActor*>& InActorsToRegister)
+{
+	for (AActor* SpawnedActor : InActorsToRegister)
+	{
+		if (AWarriorEnemyCharacter* SpawnedEnemy = Cast<AWarriorEnemyCharacter>(SpawnedActor))
+			NativeRegisterSpawnEnemy(SpawnedEnemy);
+	}
+}
+
 void AWarriorSurvivalGameMode::OnSurvivalGameModeStateToFailed()
 {
 	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);

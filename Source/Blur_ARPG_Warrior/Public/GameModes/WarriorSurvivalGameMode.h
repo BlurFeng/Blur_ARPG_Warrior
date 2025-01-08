@@ -104,6 +104,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterSpawnEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
 	
+	/// 注册生成的敌人到GameMode。
+	/// 不是游戏模式生成的敌人被创建时（比如召唤技能），应当通过此方法注册到游戏模式。
+	/// @param InActorsToRegister 
+	UFUNCTION(BlueprintCallable)
+	void RegisterSpawnEnemiesInActors(const TArray<AActor*>& InActorsToRegister);
+	
 	//生存游戏模式失败。玩家真正死亡时调用。
 	UFUNCTION(BlueprintCallable)
 	void OnSurvivalGameModeStateToFailed();
