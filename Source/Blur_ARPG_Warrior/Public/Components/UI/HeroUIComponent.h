@@ -12,6 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeaponChangedDelegate, TS
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityIconSlotUpdatedDelegate, FGameplayTag, AbilityInputTag, TSoftObjectPtr<UMaterialInterface>, SoftAbilityIconMaterial);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAbilityCooldownBeginDelegate, FGameplayTag, AbilityInputTag, float, TotalCooldownTime, float, RemainingCooldownTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStoneInteractedDelegate, bool, bShouldDisplayInputKey);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldown, bool, bAllow, FGameplayTag, AbilityTag);
 
 //英雄UI组件
 UCLASS()
@@ -43,4 +44,12 @@ public:
 	//当和石头交互时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnStoneInteractedDelegate OnStoneInteracted;
+
+	//当确认技能Cost是否足够时。
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnCheckCostOrCooldown OnCheckCost;
+
+	//当确认技能Cooldown是否足够时。
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnCheckCostOrCooldown OnCheckCooldown;
 };

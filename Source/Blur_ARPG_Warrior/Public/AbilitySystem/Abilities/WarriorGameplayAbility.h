@@ -8,8 +8,12 @@
 
 #include "WarriorGameplayAbility.generated.h"
 
+class IPawnUIInterface;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldownDelegate, bool, bAllow, FGameplayTag, AbilityTag);
+
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
+class IPawnUIInterface;
 
 //技能激活策略
 UENUM(BlueprintType)
@@ -27,12 +31,32 @@ UCLASS()
 class BLUR_ARPG_WARRIOR_API UWarriorGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
+public:
+	UWarriorGameplayAbility();
 
 protected:
 	//~ Begin UGameplayAbility Interface.
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 	//~ End UGameplayAbility Interface
+
+	UFUNCTION()
+	virtual void OnCheckCost(bool bAllow, FGameplayTag AbilityTag);
+	UFUNCTION()
+	virtual void OnCheckCooldown(bool bAllow, FGameplayTag AbilityTag);
+	
+public:
+	///当尝试触发技能，确认Cost是否足够时。
+	UPROPERTY(BlueprintAssignable, Category = "Warrior|Ability", meta = (DisplayName = "On Check Cost"))
+	FOnCheckCostOrCooldownDelegate OnCheckCostDelegate;
+
+	///当尝试触发技能，确认Cooldown是否结束。
+	UPROPERTY(BlueprintAssignable, Category = "Warrior|Ability", meta = (DisplayName = "On Check Cool down"))
+	FOnCheckCostOrCooldownDelegate OnCheckCooldownDelegate;
+
+protected:
 
 	//技能激活策略。根据策略不同会以不同的形式运行这个技能。
 	UPROPERTY(EditDefaultsOnly, Category = "Warrior|Ability")
@@ -64,4 +88,8 @@ protected:
 	/// @param InHitResults Trace获得的Hit目标。
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	void ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle, const TArray<FHitResult>& InHitResults);
+
+private:
+	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
+	TWeakInterfacePtr<IPawnUIInterface> GetPawnUIInterface();
 };

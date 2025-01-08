@@ -5,8 +5,33 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
 #include "WarriorGameplayTags.h"
+#include "Components/UI/HeroUIComponent.h"
+#include "Interfaces/PawnUIInterface.h"
+
+UWarriorGameplayAbility::UWarriorGameplayAbility()
+{
+	OnCheckCostDelegate.AddUniqueDynamic(this, &ThisClass::OnCheckCost);
+	OnCheckCooldownDelegate.AddUniqueDynamic(this, &ThisClass::OnCheckCooldown);
+}
+
+void UWarriorGameplayAbility::OnCheckCost(bool bAllow, FGameplayTag AbilityTag)
+{
+	if (GetPawnUIInterface().IsValid() && GetPawnUIInterface()->GetHeroUIComponent())
+	{
+		GetPawnUIInterface()->GetHeroUIComponent()->OnCheckCost.Broadcast(bAllow, AbilityTag);
+	}
+}
+
+void UWarriorGameplayAbility::OnCheckCooldown(bool bAllow, FGameplayTag AbilityTag)
+{
+	if (GetPawnUIInterface().IsValid() && GetPawnUIInterface()->GetHeroUIComponent())
+	{
+		GetPawnUIInterface()->GetHeroUIComponent()->OnCheckCooldown.Broadcast(bAllow, AbilityTag);
+	}
+}
 
 void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo,
                                             const FGameplayAbilitySpec& Spec)
@@ -39,6 +64,26 @@ void UWarriorGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 			ActorInfo->AbilitySystemComponent->ClearAbility(Handle);
 		}
 	}
+}
+
+bool UWarriorGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	const bool bAllow = Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags);
+
+	OnCheckCostDelegate.Broadcast(bAllow, AbilityTags.GetByIndex(0));
+	
+	return bAllow;
+}
+
+bool UWarriorGameplayAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	const bool bAllow = Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
+
+	OnCheckCooldownDelegate.Broadcast(bAllow, AbilityTags.GetByIndex(0));
+
+	return bAllow;
 }
 
 UPawnCombatComponent* UWarriorGameplayAbility::GetPawnCombatComponentFromActorInfo() const
@@ -105,4 +150,20 @@ void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FG
 			}
 		}
 	}
+}
+
+TWeakInterfacePtr<IPawnUIInterface> UWarriorGameplayAbility::GetPawnUIInterface()
+{
+	//Tips：CachedPawnUIInterface缓存在GA的InstancingPolicy不是Actor时。
+	//如果TA没有成功激活，CachedPawnUIInterface是无法正常获取到的。
+	
+	//获取人物UI接口
+	if(!CachedPawnUIInterface.IsValid())
+	{
+		//使用弱指针缓存UI接口
+		CachedPawnUIInterface = TWeakInterfacePtr<IPawnUIInterface>(GetAvatarActorFromActorInfo());
+		//CachedPawnUIInterface = Cast<IPawnUIInterface>(Data.Target.GetAvatarActor()); //等价方法
+	}
+
+	return CachedPawnUIInterface;
 }
