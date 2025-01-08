@@ -105,6 +105,42 @@ int32 UWarriorFunctionLibrary::RandomIndexByWeightsForThree(const int32 Weight1,
 	return 2;
 }
 
+float UWarriorFunctionLibrary::LerpLimitChangeMin(const float A, const float B, const float LimitChangeMin, const float Alpha)
+{
+	if (B == A) return B;
+	
+	float Change = Alpha * (B - A);
+
+	//变化小于限制最小变化值
+	if (LimitChangeMin > 0 && FMath::Abs(Change) < LimitChangeMin)
+	{
+		if ( Change > 0.f )
+		{
+			if (A + LimitChangeMin <= B)
+			{
+				Change = LimitChangeMin;
+			}
+			else
+			{
+				return B;
+			}
+		}
+		else
+		{
+			if (A + LimitChangeMin >= B)
+			{
+				Change = -LimitChangeMin;
+			}
+			else
+			{
+				return B;
+			}
+		}
+	}
+	
+	return A + Change;
+}
+
 #pragma endregion
 
 #pragma region Gameplay

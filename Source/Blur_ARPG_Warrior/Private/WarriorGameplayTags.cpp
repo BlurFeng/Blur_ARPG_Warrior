@@ -78,6 +78,8 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rage_Full, "Player.Status.Rage.Full");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rage_None, "Player.Status.Rage.None");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_RecoverStop, "Player.Status.Vitality.RecoverStop");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_Full, "Player.Status.Vitality.Full");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_None, "Player.Status.Vitality.None");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Attacking, "Player.Status.Attacking");
 	

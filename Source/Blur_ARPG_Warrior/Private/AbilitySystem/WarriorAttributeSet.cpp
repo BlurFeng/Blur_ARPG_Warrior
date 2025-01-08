@@ -56,6 +56,23 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 	{
 		const float NewCurrentVitality = FMath::Clamp(GetCurrentVitality(), 0.f, GetMaxVitality());
 		SetCurrentVitality(NewCurrentVitality);
+
+		//体力值达到最大。
+		if (GetCurrentVitality() == GetMaxVitality())
+		{
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Vitality_Full);
+		}
+		//体力值变为空。
+		else if (GetCurrentVitality() <= 0.f)
+		{
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Vitality_None);
+		}
+		//移除体力值最大和体力值空Tag。
+		else
+		{
+			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Vitality_Full);
+			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Vitality_None);
+		}
 		
 		//UI更新广播
 		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
@@ -76,7 +93,7 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_Full);
 		}
 		//愤怒值变为空。
-		else if (GetCurrentRage() == 0.f)
+		else if (GetCurrentRage() <= 0.f)
 		{
 			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_None);
 		}
