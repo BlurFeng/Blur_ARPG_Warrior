@@ -339,7 +339,8 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 		//CurrentSpawnedEnemiesCounter = 0;
 
 		//波次结束。
-		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
+		if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::InProgress)
+			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
 	}
 }
 
