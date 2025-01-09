@@ -17,6 +17,7 @@ AWarriorBaseCharacter::AWarriorBaseCharacter()
 	//是否接受贴花。关闭。因为会对地面使用一些贴花投射。
 	GetMesh()->bReceivesDecals = false;
 
+	//初始化技能系统。
 	WarriorAbilitySystemComponent = CreateDefaultSubobject<UWarriorAbilitySystemComponent>(TEXT("WarriorAbilitySystemComponent"));
 	WarriorAttributeSet = CreateDefaultSubobject<UWarriorAttributeSet>(TEXT("WarriorAttributeSet"));
 

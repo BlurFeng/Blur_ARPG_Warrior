@@ -47,6 +47,7 @@ UGEExecCalc_DamageTaken::UGEExecCalc_DamageTaken()
 	// //添加计算需要用到的属性到RelevantAttributesToCapture数组
 	// RelevantAttributesToCapture.Add(AttackPowerCaptureDefinition);
 
+	//捕获属性列表。在Editor中还可以根据需求进一步对这些参数进行修饰。
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().AttackPowerDef);
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().DefensePowerDef);
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().DamageTakenDef);
@@ -71,12 +72,12 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 	// 获取caster施法者攻击力
 	float SourceAttackPower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().AttackPowerDef, EvaluateParameters, SourceAttackPower);
-	Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
+	// Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
 
 	//获取目标防御力
 	float TargetDefensePower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().DefensePowerDef, EvaluateParameters, TargetDefensePower);
-	Debug::Print(TEXT("TargetDefensePower"), TargetDefensePower);
+	// Debug::Print(TEXT("TargetDefensePower"), TargetDefensePower);
 	
 	// Tips：SetByCallerTagMagnitudes 缓存到Data中的值用于计算。搜索 SetByCallerTagMagnitudes 找到使用处。
 	float BaseDamage = 0.f; //基础伤害，取决于使用的武器。
@@ -88,22 +89,22 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage))
 		{
 			BaseDamage = TagMagnitude.Value;
-			Debug::Print(TEXT("BaseDamage"), BaseDamage);
+			// Debug::Print(TEXT("BaseDamage"), BaseDamage);
 		}
 		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient))
 		{
 			BaseDamageMultiplyCoefficient = TagMagnitude.Value;
-			Debug::Print(TEXT("BaseDamageMultiplyCoefficient"), BaseDamageMultiplyCoefficient);
+			// Debug::Print(TEXT("BaseDamageMultiplyCoefficient"), BaseDamageMultiplyCoefficient);
 		}
 		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCount))
 		{
 			DamageIncreaseCount = TagMagnitude.Value;
-			Debug::Print(TEXT("DamageIncreaseCount"), DamageIncreaseCount);
+			// Debug::Print(TEXT("DamageIncreaseCount"), DamageIncreaseCount);
 		}
 		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCoefficient))
 		{
 			DamageIncreaseCoefficient = TagMagnitude.Value;
-			Debug::Print(TEXT("DamageIncreaseCoefficient"), DamageIncreaseCoefficient);
+			// Debug::Print(TEXT("DamageIncreaseCoefficient"), DamageIncreaseCoefficient);
 		}
 	}
 
@@ -116,7 +117,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 
 	// 最终伤害。根据施法者攻击力和被害者防御力计算。
 	const float FinalDamageDone = BaseDamage * SourceAttackPower / TargetDefensePower;
-	// Debug::Print(TEXT("FinalDamageDone"), FinalDamageDone);
+	// // Debug::Print(TEXT("FinalDamageDone"), FinalDamageDone);
 
 	if (FinalDamageDone > 0.f)
 	{

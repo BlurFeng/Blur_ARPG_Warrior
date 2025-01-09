@@ -52,6 +52,8 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 
 	//创建英雄UI组件。
 	HeroUIComponent = CreateDefaultSubobject<UHeroUIComponent>(TEXT("HeroUIComponent"));
+
+	WarriorAbilitySystemComponent->AddLooseGameplayTag(WarriorGameplayTags::Identity_Character_Hero);
 }
 
 UPawnCombatComponent* AWarriorHeroCharacter::GetPawnCombatComponent() const

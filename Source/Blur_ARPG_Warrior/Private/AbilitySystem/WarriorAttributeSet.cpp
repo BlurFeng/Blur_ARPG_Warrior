@@ -132,7 +132,24 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 			//Debug::Print(TEXT("Need to Death."), FColor::Red);
 			//通过给角色添加 Shared_Status_Dead 来触发 GA_Enemy_Death_Base 死亡技能。在死亡技能中，我们配置了此GA的触发方式为添加 Shared_Status_Dead Tag时。
 			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Shared_Status_Dead);
-			
+		}
+
+		//不清空此属性，作为缓存供其他计算或逻辑使用。
+		//SetDamageTaken(0.f);
+	}
+	else if (Data.EvaluatedData.Attribute == GetGainRageByDamageTakenCachedAttribute())
+	{
+		//将从承受伤害获得的怒气 应用到 当前怒气。
+		const float OldRage = GetCurrentRage();
+		const float GainRage = GetGainRageByDamageTakenCached();
+		const float NewCurrentRage = FMath::Clamp(OldRage + GainRage, 0.f, GetMaxRage());
+		SetCurrentRage(NewCurrentRage);
+
+		//UI更新广播
+		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+		{
+			//只要英雄有怒气值。
+			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
 		}
 	}
 }

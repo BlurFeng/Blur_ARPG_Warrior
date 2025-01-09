@@ -12,6 +12,8 @@
 
 #include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
+#include "WarriorGameplayTags.h"
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Controllers/WarriorAIController.h"
@@ -54,6 +56,8 @@ AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 	RightHandCollisionBox->SetupAttachment(GetMesh());
 	RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RightHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnBodyCollisionBoxBeginOverlap);
+
+	WarriorAbilitySystemComponent->AddLooseGameplayTag(WarriorGameplayTags::Identity_Enemy);
 }
 
 UPawnCombatComponent* AWarriorEnemyCharacter::GetPawnCombatComponent() const

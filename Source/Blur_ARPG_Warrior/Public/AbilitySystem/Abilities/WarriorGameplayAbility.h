@@ -95,6 +95,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	FGameplayEffectSpecHandle MakeSpecHandle(const TSubclassOf<UGameplayEffect> EffectClass) const;
 
+	/// 创建GE查询句柄，用于施加GE。
+	/// @param EffectClass
+	/// @param GameplayTag 查询用Tag。
+	/// @param Magnitude 传递数值。
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
+	FGameplayEffectSpecHandle MakeSpecHandleSetByCallerMagnitude(const TSubclassOf<UGameplayEffect> EffectClass, const FGameplayTag GameplayTag, const float Magnitude) const;
+
 	/// 创建伤害效果查询句柄。然后可以应用GE到目标上。
 	/// @param EffectClass 
 	/// @param InBaseDamage 基础伤害。

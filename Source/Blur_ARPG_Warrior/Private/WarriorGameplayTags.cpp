@@ -35,6 +35,12 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable_TargetLock, "InputTag.Toggleable.TargetLock");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable_Rage, "InputTag.Toggleable.Rage");
 
+
+	//**  Identity 表明身份的Tag  **//
+	UE_DEFINE_GAMEPLAY_TAG(Identity_Character_Hero, "Identity.Character.Hero");
+	UE_DEFINE_GAMEPLAY_TAG(Identity_Enemy, "Identity.Enemy");
+
+	
 	//** Player tags **//
 	//Ability 技能
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_Axe, "Player.Ability.Equip.Axe");
@@ -117,6 +123,7 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient, "Shared.SetByCaller.Attack.BaseDamage.MultiplyCoefficient");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_DamageIncreaseCount, "Shared.SetByCaller.Attack.DamageIncreaseCount");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_DamageIncreaseCoefficient, "Shared.SetByCaller.Attack.DamageIncreaseCoefficient");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_GiveTargetRage, "Shared.SetByCaller.Attack.GiveTargetRage");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Dead, "Shared.Status.Dead");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_HitReact_Front, "Shared.Status.HitReact.Front");

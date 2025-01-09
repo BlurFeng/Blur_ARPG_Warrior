@@ -38,6 +38,10 @@ namespace WarriorGameplayTags
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Toggleable_TargetLock);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Toggleable_Rage);
 
+
+	//**  Identity 表明身份的Tag  **//
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Identity_Character_Hero);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Identity_Enemy);
 	
 	//** Player tags **//
 	//Ability 技能
@@ -118,10 +122,11 @@ namespace WarriorGameplayTags
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_SpawnProjectile);
 
 	//Set By Caller GAS中用于标记缓存数据用途。
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage);
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient);
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCount);
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCoefficient);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage); //基础伤害。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient); //基础伤害乘系数。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCount); //伤害增幅计数。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCoefficient); //上海增幅系数。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_GiveTargetRage); //击中目标时，给与目标怒气值。
 
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Status_Dead);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Status_HitReact_Front);

@@ -172,6 +172,16 @@ FGameplayEffectSpecHandle UWarriorGameplayAbility::MakeSpecHandle(const TSubclas
 	return EffectSpecHandle;
 }
 
+FGameplayEffectSpecHandle UWarriorGameplayAbility::MakeSpecHandleSetByCallerMagnitude(
+	const TSubclassOf<UGameplayEffect> EffectClass, const FGameplayTag GameplayTag, const float Magnitude) const
+{
+	//创建GE查询句柄。
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeSpecHandle(EffectClass);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(GameplayTag, Magnitude);
+
+	return EffectSpecHandle;
+}
+
 //Notes：蓝图方法的参数和 & 关键字。
 //在蓝图中，像 TSubclassOf<UGameplayEffect> 这样的参数，如果想使用UE的资源映射直接选择一个参数，不应当使用 & 关键字。
 //否则你必须创建一个成员字段然后传给 TSubclassOf<UGameplayEffect> 参数。
