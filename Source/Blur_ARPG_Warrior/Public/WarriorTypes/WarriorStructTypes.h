@@ -26,21 +26,25 @@
 class UInputMappingContext;
 class UWarriorHeroLinkedAnimLayer;
 
-//英雄技能设置数据
+//英雄技能设置数据。
 USTRUCT(BlueprintType)
 struct FWarriorHeroAbilitySet
 {
 	GENERATED_BODY()
 
-	//输入Tag
+	//输入Tag。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "InputTag"))
 	FGameplayTag InputTag;
-
-	//赋予技能组
+	
+	//赋予技能。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UWarriorHeroGameplayAbility> AbilityToGrant;
-
+	
 	bool IsValid() const;
+
+#if WITH_EDITOR
+	void PostEditChangeProperty();
+#endif
 };
 
 //特殊技能配置。

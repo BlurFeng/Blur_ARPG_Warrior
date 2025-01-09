@@ -145,7 +145,6 @@ FrostGiant的首领敌人。
 ![](Documents/Warrior_Enemy_SummonEnemies.gif)\
 首领在低血量时会召唤小兵进行支援。
 
-
 ### 危险提示
 ![](Documents/Warrior_Enemy_DangerTips.png)\
 当攻击不可阻挡时，用特效进行提示。
@@ -178,8 +177,9 @@ UAbilityTask_ExecuteTaskOnTick 类用于在 Gameplay Ability 内部实现Tick功
 ##### 等待Event并生成Actors
 UAbilityTask_WaitSpawnActors 类用于等待一个GameplayTag事件，并在之后执行Actor的生成。\
 可以用于在GA中构建召唤敌人的逻辑。
-#### 伤害计算
-UGEExecCalc_DamageTaken 类用于公式化计算最终伤害。
+#### GE计算类
+UGEExecCalc_DamageTaken 类。通过可配置参数的公式，计算最终伤害。
+UGEExecCalc_GainRageByDaTa 通过可配置参数的公式，计算被伤害时获得怒气值。 
 
 ### 【权重随机】
 Random Index By Weights 系列方法。允许玩家传入权重数组，方法根据权重随机后返回一个随机到的Index。\
@@ -191,6 +191,9 @@ Lerp Limit Change Min 方法允许在两个数之间插值，并限制返回插�
 
 ## 【材质和特效】
 材质的制作和扩展。包括敌人受击效果、死亡消融效果等实现。\
+
+![](Documents/Warrior_EnemyDead.png)
+
 Niagara特效的使用。\
 可用于敌人受击、进场和死亡退场的表现效果。
 

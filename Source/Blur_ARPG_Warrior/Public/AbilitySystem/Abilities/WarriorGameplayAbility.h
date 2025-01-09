@@ -9,11 +9,11 @@
 #include "WarriorGameplayAbility.generated.h"
 
 class IPawnUIInterface;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldownDelegate, bool, bAllow, FGameplayTag, AbilityTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldownDelegate, const bool, bAllow, const FGameplayTag, AbilityTag);
 
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
-class IPawnUIInterface;
+class UWarriorGameplayAbility;
 
 //技能激活策略
 UENUM(BlueprintType)
@@ -43,9 +43,9 @@ protected:
 	//~ End UGameplayAbility Interface
 
 	UFUNCTION()
-	virtual void OnCheckCost(bool bAllow, FGameplayTag AbilityTag);
+	virtual void OnCheckCost(const bool bAllow, const FGameplayTag AbilityTag);
 	UFUNCTION()
-	virtual void OnCheckCooldown(bool bAllow, FGameplayTag AbilityTag);
+	virtual void OnCheckCooldown(const bool bAllow, const FGameplayTag AbilityTag);
 	
 public:
 	///当尝试触发技能，确认Cost是否足够时。
@@ -56,16 +56,31 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Warrior|Ability", meta = (DisplayName = "On Check Cool down"))
 	FOnCheckCostOrCooldownDelegate OnCheckCooldownDelegate;
 
+	//条件确认方法。允许蓝图覆盖的方法。
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Warrior|Ability")
+	bool CheckConditionOnToggleableCancelAbility();
+
+	// 条件确认方法。C++中实现的方法。
+	virtual bool CheckConditionOnToggleableCancelAbility_Implementation();
+
 protected:
 
 	//技能激活策略。根据策略不同会以不同的形式运行这个技能。
 	UPROPERTY(EditDefaultsOnly, Category = "Warrior|Ability")
 	EWarriorAbilityActivationPolicy AbilityActivationPolicy = EWarriorAbilityActivationPolicy::OnTriggered;
 
-	/// 获取人物战斗组件
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	AWarriorBaseCharacter* GetCharacterFromActorInfo();
+	
+	/// 获取角色战斗组件。
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UPawnCombatComponent* GetPawnCombatComponentFromActorInfo() const;
+
+	/// 获取角色UI组件。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	UPawnUIComponent* GetPawnUIComponentFromActorInfo();
 
 	/// 获取技能组件
 	/// @return 
@@ -130,7 +145,7 @@ protected:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability", meta = (CompactNodeTitle = "Get Value At Level"))
 	float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat) const;
+
 private:
-	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
-	TWeakInterfacePtr<IPawnUIInterface> GetPawnUIInterface();
+	TWeakObjectPtr<AWarriorBaseCharacter> CachedWarriorBaseCharacter;
 };

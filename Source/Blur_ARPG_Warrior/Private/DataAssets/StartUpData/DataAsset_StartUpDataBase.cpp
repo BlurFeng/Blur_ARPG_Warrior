@@ -52,3 +52,10 @@ void UDataAsset_StartUpDataBase::GrantAbilities(const TArray<TSubclassOf<UWarrio
 		InASCToGive->GiveAbility(AbilitySpec);
 	}
 }
+
+#if WITH_EDITOR
+void UDataAsset_StartUpDataBase::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+#endif

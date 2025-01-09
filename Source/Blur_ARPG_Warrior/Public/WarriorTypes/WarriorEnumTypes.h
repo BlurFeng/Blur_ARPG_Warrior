@@ -60,3 +60,17 @@ enum class EWarriorInputMode : uint8
 	GameOnly,
 	UIOnly
 };
+
+//输入类型。
+UENUM()
+enum class EWarriorInputType : uint8
+{
+	//普通形式，按下时触发。
+	Normal,
+
+	//切换形式。在激活和取消之间切换。比如可主动切换的愤怒状态。
+	Toggleable,
+
+	//持续按住形式。松开时取消技能。比如防御。
+	MustBeHeld,
+};

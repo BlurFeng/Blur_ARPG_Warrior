@@ -52,4 +52,8 @@ public:
 	//当确认技能Cooldown是否足够时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCheckCostOrCooldown OnCheckCooldown;
+
+	//当取消一个技能时。
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnCheckCostOrCooldown OnCancelAbility;
 };

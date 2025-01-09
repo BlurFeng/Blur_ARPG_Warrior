@@ -84,32 +84,7 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 	//愤怒值
 	else if (Data.EvaluatedData.Attribute == GetCurrentRageAttribute())
 	{
-		const float NewCurrentRage = FMath::Clamp(GetCurrentRage(), 0.f, GetMaxRage());
-		SetCurrentRage(NewCurrentRage);
-
-		//愤怒值达到最大。
-		if (GetCurrentRage() == GetMaxRage())
-		{
-			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_Full);
-		}
-		//愤怒值变为空。
-		else if (GetCurrentRage() <= 0.f)
-		{
-			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_None);
-		}
-		//移除愤怒值最大和愤怒值空Tag。
-		else
-		{
-			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_Full);
-			UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_None);
-		}
-
-		//UI更新广播
-		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
-		{
-			//只要英雄有怒气值。
-			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
-		}
+		SetCurrentRageCheck(Data, GetCurrentRage());
 	}
 	//伤害承受值
 	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
@@ -142,14 +117,36 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 		//将从承受伤害获得的怒气 应用到 当前怒气。
 		const float OldRage = GetCurrentRage();
 		const float GainRage = GetGainRageByDamageTakenCached();
-		const float NewCurrentRage = FMath::Clamp(OldRage + GainRage, 0.f, GetMaxRage());
-		SetCurrentRage(NewCurrentRage);
+		SetCurrentRageCheck(Data, OldRage + GainRage);
+	}
+}
 
-		//UI更新广播
-		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
-		{
-			//只要英雄有怒气值。
-			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
-		}
+void UWarriorAttributeSet::SetCurrentRageCheck(const struct FGameplayEffectModCallbackData& Data, float NewCurrentVal)
+{
+	NewCurrentVal = FMath::Clamp(NewCurrentVal, 0.f, GetMaxRage());
+	SetCurrentRage(NewCurrentVal);
+
+	//愤怒值达到最大。
+	if (GetCurrentRage() == GetMaxRage())
+	{
+		UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_Full);
+	}
+	//愤怒值变为空。
+	else if (GetCurrentRage() <= 0.f)
+	{
+		UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), WarriorGameplayTags::Player_Status_Rage_None);
+	}
+	//移除愤怒值最大和愤怒值空Tag。
+	else
+	{
+		UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_Full);
+		UWarriorFunctionLibrary::RemoveGameplayTagFromActorIfFound(Data.Target.GetAvatarActor(),WarriorGameplayTags::Player_Status_Rage_None);
+	}
+
+	//UI更新广播
+	if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+	{
+		//只要英雄有怒气值。
+		HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage() / GetMaxRage());
 	}
 }

@@ -84,4 +84,6 @@ public:
 
 private:
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
+
+	void SetCurrentRageCheck(const struct FGameplayEffectModCallbackData& Data, float NewCurrentVal);
 };

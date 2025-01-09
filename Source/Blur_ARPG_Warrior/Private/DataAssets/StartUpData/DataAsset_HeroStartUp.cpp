@@ -27,3 +27,19 @@ void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 		InASCToGive->GiveAbility(AbilitySpec);
 	}
 }
+
+void UDataAsset_HeroStartUp::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FProperty* PropertyThatChanged = PropertyChangedEvent.Property;
+	//UBlueprint* Blueprint = UBlueprint::GetBlueprintFromClass(GetClass());
+
+	if (PropertyThatChanged && PropertyThatChanged->GetFName() == GET_MEMBER_NAME_CHECKED(UDataAsset_HeroStartUp, HeroStartUpAbilitySets))
+	{
+		for (FWarriorHeroAbilitySet& Item : HeroStartUpAbilitySets)
+		{
+			Item.PostEditChangeProperty();
+		}
+	}
+}

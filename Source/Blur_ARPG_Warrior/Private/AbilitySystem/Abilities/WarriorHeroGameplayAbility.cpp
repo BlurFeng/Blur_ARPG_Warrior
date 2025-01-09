@@ -6,10 +6,28 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Characters/WarriorHeroCharacter.h"
 #include "Controllers/WarriorHeroController.h"
-#include "WarriorGameplayTags.h"
+#include "Components/UI/HeroUIComponent.h"
+
+void UWarriorHeroGameplayAbility::OnCheckCost(const bool bAllow, const FGameplayTag AbilityTag)
+{
+	Super::OnCheckCost(bAllow, AbilityTag);
+
+	if (GetHeroUIComponentFromActorInfo())
+		GetHeroUIComponentFromActorInfo()->OnCheckCost.Broadcast(bAllow, AbilityTag);
+}
+
+void UWarriorHeroGameplayAbility::OnCheckCooldown(const bool bAllow, const FGameplayTag AbilityTag)
+{
+	Super::OnCheckCooldown(bAllow, AbilityTag);
+
+	if (GetHeroUIComponentFromActorInfo())
+		GetHeroUIComponentFromActorInfo()->OnCheckCooldown.Broadcast(bAllow, AbilityTag);
+}
 
 AWarriorHeroCharacter* UWarriorHeroGameplayAbility::GetHeroCharacterFromActorInfo()
 {
+	if (!CurrentActorInfo) return nullptr;
+	
 	if(!CachedWarriorHeroCharacter.IsValid())
 	{
 		CachedWarriorHeroCharacter = Cast<AWarriorHeroCharacter>(CurrentActorInfo->AvatarActor);
@@ -36,7 +54,9 @@ UHeroCombatComponent* UWarriorHeroGameplayAbility::GetHeroCombatComponentFromAct
 
 UHeroUIComponent* UWarriorHeroGameplayAbility::GetHeroUIComponentFromActorInfo()
 {
-	return GetHeroCharacterFromActorInfo()->GetHeroUIComponent();
+	if (GetHeroCharacterFromActorInfo())
+		return GetHeroCharacterFromActorInfo()->GetHeroUIComponent();
+	return nullptr;
 }
 
 bool UWarriorHeroGameplayAbility::GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime,
