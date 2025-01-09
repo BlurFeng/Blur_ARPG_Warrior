@@ -8,7 +8,7 @@
 
 #include "WarriorDebugHelper.h"
 
-//在这个结构体中，我们定义并获取计算需要用到的属性。
+// 在这个结构体中，我们定义并获取计算需要用到的属性。
 struct FWarriorDamageCapture
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackPower)
@@ -22,7 +22,7 @@ struct FWarriorDamageCapture
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DamageTaken, Target, false);
 	}
 };
-//一个全局静态结构体
+// 一个全局静态结构体
 static const FWarriorDamageCapture& GetWarriorDamageCapture()
 {
 	static FWarriorDamageCapture WarriorDamageCapture;
@@ -31,7 +31,7 @@ static const FWarriorDamageCapture& GetWarriorDamageCapture()
 
 UGEExecCalc_DamageTaken::UGEExecCalc_DamageTaken()
 {
-	//通过 DECLARE_ATTRIBUTE_CAPTUREDEF 宏省略下面的代码
+	// 通过 DECLARE_ATTRIBUTE_CAPTUREDEF 宏省略下面的代码
 	// //找到需要的属性
 	// FProperty* AttackPowerProperty = FindFieldChecked<FProperty>(
 	// 	UWarriorAttributeSet::StaticClass(),
@@ -56,8 +56,9 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	const FGameplayEffectSpec EffectSpec = ExecutionParams.GetOwningSpec();
-
-	//上下文 Context 信息是我们在UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecHandle()方法中传入的。
+	
+	// 上下文 Context 信息，可以根据需要使用下列信息。
+	// 是在UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecHandle()方法中传入的。
 	// EffectSpec.GetContext().GetSourceObject();
 	// EffectSpec.GetContext().GetAbility();
 	// EffectSpec.GetContext().GetInstigator();
@@ -67,56 +68,55 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 	EvaluateParameters.SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
 	EvaluateParameters.TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
 
-	//获取caster施法者攻击力
+	// 获取caster施法者攻击力
 	float SourceAttackPower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().AttackPowerDef, EvaluateParameters, SourceAttackPower);
-	//Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
-
-	//获取缓存到 EffectSpec.SetByCallerTagMagnitudes 中的值用于计算。
-	float BaseDamage = 0.f; //基础伤害，取决于使用的武器。
-	int32 UsedLightAttackComboCount = 0;
-	int32 UsedHeavyAttackComboCount = 0;
-	for (const TPair<FGameplayTag, float>& TagMagnitude : EffectSpec.SetByCallerTagMagnitudes)
-	{
-		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_BaseDamage))
-		{
-			BaseDamage = TagMagnitude.Value;
-			//Debug::Print(TEXT("BaseDamage"), BaseDamage);
-		}
-		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Light))
-		{
-			UsedLightAttackComboCount = TagMagnitude.Value;
-			//Debug::Print(TEXT("UsedLightAttackComboCount"), UsedLightAttackComboCount);
-		}
-		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Heavy))
-		{
-			UsedHeavyAttackComboCount = TagMagnitude.Value;
-			//Debug::Print(TEXT("UsedHeavyAttackComboCount"), UsedHeavyAttackComboCount);
-		}
-	}
+	Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
 
 	//获取目标防御力
 	float TargetDefensePower = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().DefensePowerDef, EvaluateParameters, TargetDefensePower);
-	//Debug::Print(TEXT("TargetDefensePower"), TargetDefensePower);
-
-	//根据攻击段数增伤
-	if (UsedLightAttackComboCount != 0)
+	Debug::Print(TEXT("TargetDefensePower"), TargetDefensePower);
+	
+	// Tips：SetByCallerTagMagnitudes 缓存到Data中的值用于计算。搜索 SetByCallerTagMagnitudes 找到使用处。
+	float BaseDamage = 0.f; //基础伤害，取决于使用的武器。
+	float BaseDamageMultiplyCoefficient = 1.f; //基础伤害乘系数。
+	int32 DamageIncreaseCount = 0; //增伤计数，一般和连击段数相关。
+	float DamageIncreaseCoefficient = 0.f; //增伤系数。
+	for (const TPair<FGameplayTag, float>& TagMagnitude : EffectSpec.SetByCallerTagMagnitudes)
 	{
-		//从第二次攻击开始提升伤害，每次递增。
-		const float DamageIncreasePercentLight = (UsedLightAttackComboCount - 1) * 0.05f + 1.f;
-		BaseDamage *= DamageIncreasePercentLight; //增加伤害。
-		//Debug::Print(TEXT("ScaledBaseDamageLight"), BaseDamage);
-	}
-	else if (UsedHeavyAttackComboCount != 0)
-	{
-		const float DamageIncreasePercentHeavy = UsedHeavyAttackComboCount * 0.15f + 1.f;
-		BaseDamage *= DamageIncreasePercentHeavy;
-		//Debug::Print(TEXT("ScaledBaseDamageHeavy"), BaseDamage);
+		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage))
+		{
+			BaseDamage = TagMagnitude.Value;
+			Debug::Print(TEXT("BaseDamage"), BaseDamage);
+		}
+		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient))
+		{
+			BaseDamageMultiplyCoefficient = TagMagnitude.Value;
+			Debug::Print(TEXT("BaseDamageMultiplyCoefficient"), BaseDamageMultiplyCoefficient);
+		}
+		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCount))
+		{
+			DamageIncreaseCount = TagMagnitude.Value;
+			Debug::Print(TEXT("DamageIncreaseCount"), DamageIncreaseCount);
+		}
+		else if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCoefficient))
+		{
+			DamageIncreaseCoefficient = TagMagnitude.Value;
+			Debug::Print(TEXT("DamageIncreaseCoefficient"), DamageIncreaseCoefficient);
+		}
 	}
 
+	// 基础伤害乘系数。
+	BaseDamage *= BaseDamageMultiplyCoefficient;
+	
+	// 根据计数和系数增加基础伤害。
+	const float DamageIncreasePercent = DamageIncreaseCount * DamageIncreaseCoefficient + 1.f;
+	BaseDamage *= DamageIncreasePercent;
+
+	// 最终伤害。根据施法者攻击力和被害者防御力计算。
 	const float FinalDamageDone = BaseDamage * SourceAttackPower / TargetDefensePower;
-	//Debug::Print(TEXT("FinalDamageDone"), FinalDamageDone);
+	// Debug::Print(TEXT("FinalDamageDone"), FinalDamageDone);
 
 	if (FinalDamageDone > 0.f)
 	{

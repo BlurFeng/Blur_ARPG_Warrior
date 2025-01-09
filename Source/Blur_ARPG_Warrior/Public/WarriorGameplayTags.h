@@ -87,9 +87,7 @@ namespace WarriorGameplayTags
 
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Attacking); //正在进攻中
 
-	//Set By Caller
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Light);
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Heavy);
+	//Set By Caller GAS中用于标记缓存数据用途。
 
 	
 	//** Enemy tags **//
@@ -118,8 +116,12 @@ namespace WarriorGameplayTags
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_MeleeHit);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_HitReact);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_SpawnProjectile);
-	
-	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_BaseDamage);
+
+	//Set By Caller GAS中用于标记缓存数据用途。
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCount);
+	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_Attack_DamageIncreaseCoefficient);
 
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Status_Dead);
 	BLUR_ARPG_WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Status_HitReact_Front);

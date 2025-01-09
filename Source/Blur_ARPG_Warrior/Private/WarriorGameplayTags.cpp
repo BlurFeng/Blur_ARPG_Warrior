@@ -85,8 +85,6 @@ namespace WarriorGameplayTags
 	
 	
 	//Set By Caller GAS中用于标记缓存数据用途。
-	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");
-	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Heavy, "Player.SetByCaller.AttackType.Heavy");
 
 	//** Enemy tags **//
 	//Ability 技能
@@ -113,8 +111,12 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_MeleeHit, "Shared.Event.MeleeHit");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_HitReact, "Shared.Event.HitReact");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile, "Shared.Event.SpawnProjectile");
-	
-	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
+
+	//Set By Caller GAS中用于标记缓存数据用途。
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_BaseDamage, "Shared.SetByCaller.Attack.BaseDamage");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient, "Shared.SetByCaller.Attack.BaseDamage.MultiplyCoefficient");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_DamageIncreaseCount, "Shared.SetByCaller.Attack.DamageIncreaseCount");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_Attack_DamageIncreaseCoefficient, "Shared.SetByCaller.Attack.DamageIncreaseCoefficient");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Dead, "Shared.Status.Dead");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_HitReact_Front, "Shared.Status.HitReact.Front");

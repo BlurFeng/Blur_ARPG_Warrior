@@ -68,6 +68,7 @@ public:
 
 	//伤害接收
 	//用于暂时存储受到的伤害，最终作用于CurrentHealth。方便我们在结算伤害前再进行其他计算。
+	//Tips：此值是Override的并不累加。理论上来说一帧之内不会有多个伤害计算 override DamageTaken的值。如果出问题需要扩展修改相关逻辑。
 	UPROPERTY(BlueprintReadOnly, Category = "Damage")
 	FGameplayAttributeData DamageTaken;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, DamageTaken)

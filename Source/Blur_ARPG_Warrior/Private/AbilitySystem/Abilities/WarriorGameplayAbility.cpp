@@ -111,7 +111,7 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyEffectSpecHandle
 FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyEffectSpecHandleTarget(AActor* TargetActor,
 	const FGameplayEffectSpecHandle& InSpecHandle, EWarriorSuccessType& OutSuccessType)
 {
-	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleTarget(TargetActor, InSpecHandle);
+	const FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleTarget(TargetActor, InSpecHandle);
 
 	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EWarriorSuccessType::Successful : EWarriorSuccessType::Failed;
 
@@ -150,6 +150,65 @@ void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FG
 			}
 		}
 	}
+}
+
+FGameplayEffectSpecHandle UWarriorGameplayAbility::MakeSpecHandle(const TSubclassOf<UGameplayEffect> EffectClass) const
+{
+	//创建EffectContext。这是上下文信息，帮助技能系统获取执行技能所需的信息。
+	//比如在使用UGameplayEffectExecutionCalculation类计算伤害时，通过Context我们能获取我们需要的内容。
+	//搜索 UGEExecCalc_DamageTaken::Execute_Implementation 来查看其中一个计算用类。
+	FGameplayEffectContextHandle ContextHandle = GetWarriorAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	ContextHandle.SetAbility(this);
+	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
+	ContextHandle.AddInstigator(GetAvatarActorFromActorInfo(), GetAvatarActorFromActorInfo());
+	
+	//创建FGameplayEffectSpecHandle
+	FGameplayEffectSpecHandle EffectSpecHandle = GetWarriorAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
+		EffectClass,
+		GetAbilityLevel(),
+		ContextHandle
+		);
+
+	return EffectSpecHandle;
+}
+
+//Notes：蓝图方法的参数和 & 关键字。
+//在蓝图中，像 TSubclassOf<UGameplayEffect> 这样的参数，如果想使用UE的资源映射直接选择一个参数，不应当使用 & 关键字。
+//否则你必须创建一个成员字段然后传给 TSubclassOf<UGameplayEffect> 参数。
+
+FGameplayEffectSpecHandle UWarriorGameplayAbility::MakeDamageEffectSpecHandle(
+	const TSubclassOf<UGameplayEffect> EffectClass, const float InBaseDamage, const float InBaseDamageMultiplyCoefficient, const int32 DamageIncreaseCount, const float DamageIncreaseCoefficient) const
+{
+	check(EffectClass);
+
+	//创建GE查询句柄。
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeSpecHandle(EffectClass);
+
+	//Notes：我们可以将数据缓存到Data并在之后使用，存储的数据通过Tag查询。
+
+	//Tips：SetByCallerTagMagnitudes 缓存到Data中的值用于计算。搜索 SetByCallerTagMagnitudes 找到使用处。
+	//缓存基础伤害到Data。用于之后的计算。
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage, InBaseDamage);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(WarriorGameplayTags::Shared_SetByCaller_Attack_BaseDamage_MultiplyCoefficient, InBaseDamageMultiplyCoefficient);
+
+	//缓存增伤计数和系数到Data。用于之后的计算。
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCount, DamageIncreaseCount);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(WarriorGameplayTags::Shared_SetByCaller_Attack_DamageIncreaseCoefficient, DamageIncreaseCoefficient);
+	
+	return EffectSpecHandle;
+}
+
+FGameplayEffectSpecHandle UWarriorGameplayAbility::MakeDamageEffectSpecHandleByScalableFloat(
+	const TSubclassOf<UGameplayEffect> EffectClass, const FScalableFloat& InBaseDamageScalableFloat,
+	const float InBaseDamageMultiplyCoefficient, const int32 DamageIncreaseCount,
+	const float DamageIncreaseCoefficient) const
+{
+	return MakeDamageEffectSpecHandle(EffectClass, GetScalableFloatValueAtLevel(InBaseDamageScalableFloat), InBaseDamageMultiplyCoefficient, DamageIncreaseCount, DamageIncreaseCoefficient);
+}
+
+float UWarriorGameplayAbility::GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat) const
+{
+	return UWarriorFunctionLibrary::GetScalableFloatValueAtLevel(InScalableFloat, GetAbilityLevel());
 }
 
 TWeakInterfacePtr<IPawnUIInterface> UWarriorGameplayAbility::GetPawnUIInterface()

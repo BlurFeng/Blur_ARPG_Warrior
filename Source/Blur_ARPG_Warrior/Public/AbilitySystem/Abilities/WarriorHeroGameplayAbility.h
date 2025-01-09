@@ -38,16 +38,7 @@ public:
 	/// @return 
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UHeroUIComponent* GetHeroUIComponentFromActorInfo();
-
-	/// 创建英雄伤害效果查询句柄。然后可以应用GE到目标上。
-	/// @param EffectClass 
-	/// @param InWeaponBaseDamage 
-	/// @param InCurrentAttackTypeTag 
-	/// @param InUsedComboCount 此值按连击阶段增幅伤害。
-	/// @return 
-	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount) const;
-
+	
 	/// 获取技能冷却剩余时间。
 	/// @param InCooldownTag 冷却GETag。 
 	/// @param TotalCooldownTime 总时间。

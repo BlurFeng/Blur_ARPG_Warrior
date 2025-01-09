@@ -89,6 +89,39 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	void ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle, const TArray<FHitResult>& InHitResults);
 
+	/// 创建GE查询句柄，用于施加GE。
+	/// @param EffectClass 
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
+	FGameplayEffectSpecHandle MakeSpecHandle(const TSubclassOf<UGameplayEffect> EffectClass) const;
+
+	/// 创建伤害效果查询句柄。然后可以应用GE到目标上。
+	/// @param EffectClass 
+	/// @param InBaseDamage 基础伤害。
+	/// @param InBaseDamageMultiplyCoefficient 基础伤害乘系数。
+	/// @param DamageIncreaseCount 增伤计数。增伤幅度为 1 + DamageIncreaseCount * DamageIncreaseCoefficient。
+	/// @param DamageIncreaseCoefficient 增伤系数。增伤幅度为 1 + DamageIncreaseCount * DamageIncreaseCoefficient。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability", meta = (DisplayName = "Make Damage Effect Spec Handle",InBaseDamage = "10", InBaseDamageMultiplyCoefficient = "1", DamageIncreaseCount = "0", DamageIncreaseCoefficient = "0.15"))
+	FGameplayEffectSpecHandle MakeDamageEffectSpecHandle(
+		const TSubclassOf<UGameplayEffect> EffectClass, const float InBaseDamage, const float InBaseDamageMultiplyCoefficient, const int32 DamageIncreaseCount, const float DamageIncreaseCoefficient) const;
+
+	/// 创建伤害效果查询句柄。然后可以应用GE到目标上。
+	/// @param EffectClass 
+	/// @param InBaseDamageScalableFloat 基础伤害可变值，根据AbilityLevel变化。
+	/// @param InBaseDamageMultiplyCoefficient 基础伤害乘系数。
+	/// @param DamageIncreaseCount 增伤计数。增伤幅度为 1 + DamageIncreaseCount * DamageIncreaseCoefficient。
+	/// @param DamageIncreaseCoefficient 增伤系数。增伤幅度为 1 + DamageIncreaseCount * DamageIncreaseCoefficient。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability", meta = (DisplayName = "Make Damage Effect Spec Handle", InBaseDamageMultiplyCoefficient = "1", DamageIncreaseCount = "0", DamageIncreaseCoefficient = "0.15"))
+	FGameplayEffectSpecHandle MakeDamageEffectSpecHandleByScalableFloat(
+		const TSubclassOf<UGameplayEffect> EffectClass, const FScalableFloat& InBaseDamageScalableFloat, const float InBaseDamageMultiplyCoefficient, const int32 DamageIncreaseCount, const float DamageIncreaseCoefficient) const;
+	
+	/// 获取可变float值根据自身AbilityLevel。
+	/// @param InScalableFloat 
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability", meta = (CompactNodeTitle = "Get Value At Level"))
+	float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat) const;
 private:
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 	TWeakInterfacePtr<IPawnUIInterface> GetPawnUIInterface();
