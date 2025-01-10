@@ -1,7 +1,7 @@
 // Blur Feng All Rights Reserved.
 
 
-#include "WarriorTypes/WarriorCountDownAction.h"
+#include "Common/WarriorCountDownAction.h"
 
 void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 {

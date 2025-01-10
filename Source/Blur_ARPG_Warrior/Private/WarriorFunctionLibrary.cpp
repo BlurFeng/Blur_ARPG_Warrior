@@ -14,7 +14,7 @@
 #include "WarriorGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "SaveGame/WarriorSaveGame.h"
-#include "WarriorTypes/WarriorCountDownAction.h"
+#include "Common/WarriorCountDownAction.h"
 
 #pragma region Tools
 
