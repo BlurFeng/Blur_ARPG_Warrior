@@ -13,7 +13,7 @@
 #include "Components/SizeBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "controllers/WarriorHeroController.h"
+#include "Controllers/WarriorHeroController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 

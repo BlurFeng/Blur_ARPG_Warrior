@@ -62,6 +62,9 @@ UHeroUIComponent* UWarriorHeroGameplayAbility::GetHeroUIComponentFromActorInfo()
 bool UWarriorHeroGameplayAbility::GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime,
 	float& RemainingCooldownTime) const
 {
+	TotalCooldownTime = 0.f;
+	RemainingCooldownTime = 0.f;
+	
 	check(InCooldownTag.IsValid());
 
 	const FGameplayEffectQuery CooldownQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(InCooldownTag.GetSingleTagContainer());

@@ -29,10 +29,7 @@ protected:
 
 	/// 获取拥有者Pawn
 	/// @return 
-	APawn* GetOwningPawn() const
-	{
-		return GetOwningPawn<APawn>();
-	}
+	APawn* GetOwningPawn() const;
 
 	template <class T>
 	T* GetOwningController() const
@@ -40,4 +37,8 @@ protected:
 		static_assert(TPointerIsConvertibleFromTo<T, AController>::Value, "'T' Template Parameter to GetController must be derived from AController.");
 		return GetOwningPawn<APawn>()->GetController<T>();
 	}
+
+	/// 获取拥有者Controller。
+	/// @return 
+	AController* GetOwningController() const;
 };

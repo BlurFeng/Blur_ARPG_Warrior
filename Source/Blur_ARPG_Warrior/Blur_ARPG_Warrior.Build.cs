@@ -21,7 +21,6 @@ public class Blur_ARPG_Warrior : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
 			"GameplayTags",
-			"EnhancedInput",
 			"GameplayTasks",
 			"AnimGraphRuntime",
 			"MotionWarping",
