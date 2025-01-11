@@ -33,6 +33,6 @@ public:
 	float GetHeroCurrentEquippedWeaponDamageAtLevel(float InLevel) const;
 
 	//** 回调 **//
-	virtual void OnHitTargetActor(AActor* HitActor); //当武器命中目标时
-	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor); //当武器离开目标时
+	virtual void OnHitTargetActor(AActor* HitActor) override; //当武器命中目标时
+	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor) override; //当武器离开目标时
 };

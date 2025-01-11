@@ -18,14 +18,6 @@ UWarriorGameplayAbility::UWarriorGameplayAbility()
 	OnCheckCooldownDelegate.AddUniqueDynamic(this, &ThisClass::OnCheckCooldown);
 }
 
-void UWarriorGameplayAbility::OnCheckCost(const bool bAllow, const FGameplayTag AbilityTag)
-{
-}
-
-void UWarriorGameplayAbility::OnCheckCooldown(const bool bAllow, const FGameplayTag AbilityTag)
-{
-}
-
 void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo,
                                             const FGameplayAbilitySpec& Spec)
 {
@@ -79,6 +71,14 @@ bool UWarriorGameplayAbility::CheckCooldown(const FGameplayAbilitySpecHandle Han
 	return bAllow;
 }
 
+void UWarriorGameplayAbility::OnCheckCost(const bool bAllow, const FGameplayTag AbilityTag)
+{
+}
+
+void UWarriorGameplayAbility::OnCheckCooldown(const bool bAllow, const FGameplayTag AbilityTag)
+{
+}
+
 bool UWarriorGameplayAbility::CheckConditionOnToggleableCancelAbility_Implementation()
 {
 	return true;
@@ -120,7 +120,7 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyEffectSpecHandle
 		);
 }
 
-//Notes：这里不适用const方法，是应为const后方法在蓝图中是非执行节点，没有Exec节点可以连接。
+// Notes：这里不适用const方法，是应为const后方法在蓝图中是非执行节点，没有Exec节点可以连接。
 FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyEffectSpecHandleTarget(AActor* TargetActor,
 	const FGameplayEffectSpecHandle& InSpecHandle, EWarriorSuccessType& OutSuccessType)
 {
@@ -131,6 +131,7 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyEffectSpecHandleTar
 	return ActiveGameplayEffectHandle;
 }
 
+// Tips：这里不为方法添加 const，否则此方法在蓝图中为成为 Pure 相同的节点，没有执行引脚。
 void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle,
 	const TArray<FHitResult>& InHitResults)
 {

@@ -100,11 +100,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& 
 			if (AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag) && AbilitySpec.IsActive())
 			{
 				//清空缓存的需要持续按住触发的技能Spec。
-				if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld))
-				{
-					CachedMustBeHeldGameplayAbilityInputTag = WarriorGameplayTags::None;
-				}
-				
+				CachedMustBeHeldGameplayAbilityInputTag = WarriorGameplayTags::None; //FGameplayTag::EmptyTag;
 				CancelAbilityHandle(AbilitySpec.Handle);
 
 				//Debug::Print(FString::Printf(TEXT("Cancel Ability, Name: %s"), *AbilitySpec.Ability.GetName()));

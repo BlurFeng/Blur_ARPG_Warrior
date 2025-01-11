@@ -18,7 +18,7 @@ enum class EToggleDamageType : uint8
 	RightHand,
 };
 
-//人物战斗组件基类，角色或敌人的战斗组件由此类派生
+//人物战斗组件基类，角色或敌人的战斗组件由此类派生。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UPawnCombatComponent : public UPawnExtensionComponentBase
 {
@@ -34,7 +34,7 @@ public:
 	/// @param InWeaponToRegister 生成的武器。
 	/// @param bRegisterAsEquippedWeapon 注册的武器装备到自身。
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Combat")
-	void RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister, AWarriorWeaponBase* InWeaponToRegister, bool bRegisterAsEquippedWeapon = false);
+	void RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister, AWarriorWeaponBase* InWeaponToRegister, const bool bRegisterAsEquippedWeapon = false);
 
 	/// 获取角色当前持有的武器，通过Tag。
 	/// @param InWeaponTagToGet 武器Tag。

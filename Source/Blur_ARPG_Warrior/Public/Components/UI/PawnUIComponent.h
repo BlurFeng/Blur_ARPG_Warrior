@@ -16,7 +16,7 @@ class BLUR_ARPG_WARRIOR_API UPawnUIComponent : public UPawnExtensionComponentBas
 
 public:
 
-	//Notes: BlueprintAssignable 蓝图可分配
+	// Notes: BlueprintAssignable 蓝图可分配。
 	// BlueprintAssignable 使得蓝图可以分配和使用此委托。因为 UI 的通信收发大多数在蓝图中操作。
 	
 	UPROPERTY(BlueprintAssignable)

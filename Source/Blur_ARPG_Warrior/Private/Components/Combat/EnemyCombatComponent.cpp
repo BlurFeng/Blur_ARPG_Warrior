@@ -58,7 +58,7 @@ void UEnemyCombatComponent::ToggleBodyCollisionBoxCollision(const bool bShouldEn
 {
 	Super::ToggleBodyCollisionBoxCollision(bShouldEnable, ToggleDamageType);
 
-	AWarriorEnemyCharacter* OwningEnemyCharacter = GetOwningPawn<AWarriorEnemyCharacter>();
+	const AWarriorEnemyCharacter* OwningEnemyCharacter = GetOwningPawn<AWarriorEnemyCharacter>();
 	check(OwningEnemyCharacter);
 
 	UBoxComponent* LeftHandCollisionBox = OwningEnemyCharacter->GetLeftHandCollisionBox();

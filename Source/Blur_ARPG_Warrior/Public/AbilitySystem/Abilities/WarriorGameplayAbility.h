@@ -8,12 +8,13 @@
 
 #include "WarriorGameplayAbility.generated.h"
 
+class UPawnUIComponent;
+class AWarriorBaseCharacter;
 class IPawnUIInterface;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldownDelegate, const bool, bAllow, const FGameplayTag, AbilityTag);
-
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
-class UWarriorGameplayAbility;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldownDelegate, const bool, bAllow, const FGameplayTag, AbilityTag);
 
 //技能激活策略
 UENUM(BlueprintType)

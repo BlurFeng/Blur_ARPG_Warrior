@@ -6,8 +6,8 @@
 
 #include "WarriorDebugHelper.h"
 
-void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister,
-                                                 AWarriorWeaponBase* InWeaponToRegister, bool bRegisterAsEquippedWeapon)
+void UPawnCombatComponent::RegisterSpawnedWeapon(
+	FGameplayTag InWeaponTagToRegister, AWarriorWeaponBase* InWeaponToRegister, const bool bRegisterAsEquippedWeapon)
 {
 	checkf(!CharacterCarriedWeaponsMap.Contains(InWeaponTagToRegister), TEXT("A named %s has already been added as carried weapon"), *InWeaponTagToRegister.ToString());
 	check(InWeaponToRegister);
@@ -78,7 +78,7 @@ void UPawnCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor
 
 void UPawnCombatComponent::ToggleCurrentEquippedWeaponCollision(const bool bShouldEnable)
 {
-	AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
+	const AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
 
 	check(WeaponToToggle);
 
