@@ -9,7 +9,7 @@ void UWarriorWidgetBase::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetOwningPlayerPawn()))
+	if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetOwningPlayerPawn()))
 	{
 		if (UHeroUIComponent* HeroUIComponent = PawnUIInterface->GetHeroUIComponent())
 		{
@@ -20,7 +20,7 @@ void UWarriorWidgetBase::NativeOnInitialized()
 
 void UWarriorWidgetBase::InitEnemyCreatedWidget(AActor* OwningEnemyActor)
 {
-	if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(OwningEnemyActor))
+	if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(OwningEnemyActor))
 	{
 		UEnemyUIComponent* EnemyUIComponent = PawnUIInterface->GetEnemyUIComponent();
 

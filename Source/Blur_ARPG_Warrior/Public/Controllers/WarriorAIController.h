@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "WarriorAIController.generated.h"
 
+struct FAIStimulus;
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 
@@ -16,7 +17,7 @@ class BLUR_ARPG_WARRIOR_API AWarriorAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	AWarriorAIController(const FObjectInitializer& ObjectInitializer);
+	explicit AWarriorAIController(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin IGenericTeamAgentInterface Interface.
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;

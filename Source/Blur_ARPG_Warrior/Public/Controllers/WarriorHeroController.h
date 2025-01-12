@@ -8,7 +8,7 @@
 
 #include "WarriorHeroController.generated.h"
 
-//英雄控制器基类
+// 英雄控制器基类。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API AWarriorHeroController : public APlayerController, public IGenericTeamAgentInterface
 {

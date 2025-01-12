@@ -12,8 +12,7 @@ void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 	Super::GiveToAbilitySystemComponent(InASCToGive, ApplyLevel);
 
 	//Tips：这里的代码实现和GrantAbilities()很像，但GrantAbilities()方法直接赋予GameplayAbility。
-	//而这里我们通过FWarriorHeroAbilitySet来赋予GameplayAbility的同时，还设置相关的Tag参数。
-	//因为HeroStartUpAbilitySets的技能是运行时使用的主动或被动技能，有更复杂的状态机制。
+	//而这里我们通过 FWarriorHeroAbilitySet 来赋予 GameplayAbility 的同时，还设置了 InputTag。方便之后 UBlurEnhancedInputComponent 以及相关输入系统流程的使用。
 
 	for (const FWarriorHeroAbilitySet& AbilitySet : HeroStartUpAbilitySets)
 	{
@@ -21,13 +20,14 @@ void UDataAsset_HeroStartUp::GiveToAbilitySystemComponent(UWarriorAbilitySystemC
 
 		FGameplayAbilitySpec AbilitySpec =
 			UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(AbilitySet.AbilityToGrant, InASCToGive->GetAvatarActor(), ApplyLevel, AbilitySet.InputTag);
-		
+
+		//Tips：这里赋予的技能是需要玩家输入进行使用的技能。
 		//给角色（技能组件）技能，只有经过GiveAbility()赋予的技能才能使用。
-		//Tips：这里赋予的技能是类似装备武器，攻击能需要输入主动触发的技能。
 		InASCToGive->GiveAbility(AbilitySpec);
 	}
 }
 
+#if WITH_EDITOR
 void UDataAsset_HeroStartUp::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -43,3 +43,4 @@ void UDataAsset_HeroStartUp::PostEditChangeProperty(struct FPropertyChangedEvent
 		}
 	}
 }
+#endif

@@ -9,9 +9,7 @@
 
 #include "WarriorInputComponent.generated.h"
 
-/**
- * 战士输入组件
- */
+// 输入组件。
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UWarriorInputComponent : public UEnhancedInputComponent
 {

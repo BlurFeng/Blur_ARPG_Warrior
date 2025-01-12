@@ -59,7 +59,7 @@ UHeroUIComponent* UWarriorHeroGameplayAbility::GetHeroUIComponentFromActorInfo()
 	return nullptr;
 }
 
-bool UWarriorHeroGameplayAbility::GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime,
+bool UWarriorHeroGameplayAbility::GetAbilityRemainingCooldownByTag(const FGameplayTag InCooldownTag, float& TotalCooldownTime,
 	float& RemainingCooldownTime) const
 {
 	TotalCooldownTime = 0.f;
