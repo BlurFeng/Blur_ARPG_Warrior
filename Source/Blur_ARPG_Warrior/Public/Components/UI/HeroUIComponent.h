@@ -13,6 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityIconSlotUpdatedDelegate, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAbilityCooldownBeginDelegate, FGameplayTag, AbilityInputTag, float, TotalCooldownTime, float, RemainingCooldownTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStoneInteractedDelegate, bool, bShouldDisplayInputKey);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldown, bool, bAllow, FGameplayTag, AbilityTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTryActivateAbilityFailed, FGameplayTag, AbilityTag);
 
 //英雄UI组件
 UCLASS()
@@ -56,4 +57,8 @@ public:
 	//当取消一个技能时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCheckCostOrCooldown OnCancelAbility;
+
+	//尝试激活一个技能失败时。
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnTryActivateAbilityFailed OnTryActivateAbilityFailed;
 };

@@ -35,6 +35,8 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		// 确认输入的技能是否存在，通过对比InInputTag。此Tag应当在启动时被添加。
 		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag)) continue;
 
+		bool bTryActivateAbility = false;
+
 		if (InputType == EWarriorInputType::Normal)
 		{
 			if (AbilitySpec.IsActive())
@@ -51,8 +53,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 			}
 			else
 			{
-				// 尝试触发技能。
-				TryActivateAbility(AbilitySpec.Handle);
+				bTryActivateAbility = true;
 			}
 		}
 		// 切换形式的技能。在激活和取消之间切换。比如可切换的愤怒状态。
@@ -60,8 +61,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		{
 			if (!AbilitySpec.IsActive())
 			{
-				// 尝试触发技能。
-				TryActivateAbility(AbilitySpec.Handle);
+				bTryActivateAbility = true;
 			}
 			else
 			{
@@ -76,11 +76,6 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 						Allow = true;
 					}
 					
-					if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
-					{
-						if (PawnUIInterface->GetHeroUIComponent())
-							PawnUIInterface->GetHeroUIComponent()->OnCancelAbility.Broadcast(Allow, AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
-					}
 					// Debug::Print(FString::Printf(TEXT("Cancel Ability, Name: %s"), *AbilitySpec.Ability.GetName()));
 				}
 				// 直接取消技能。
@@ -101,8 +96,20 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 			CachedMustBeHeldGameplayAbilityInputTag = InInputTag;
 			CachedMustBeHeldFGameplayAbilitySpecHandle = AbilitySpec.Handle;
 
+			bTryActivateAbility = true;
+		}
+
+		if (bTryActivateAbility)
+		{
 			// 尝试触发技能。
-			TryActivateAbility(AbilitySpec.Handle);
+			if (!TryActivateAbility(AbilitySpec.Handle))
+			{
+				if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
+				{
+					if (PawnUIInterface->GetHeroUIComponent())
+						PawnUIInterface->GetHeroUIComponent()->OnTryActivateAbilityFailed.Broadcast(AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
+				}
+			}
 		}
 
 		break;
