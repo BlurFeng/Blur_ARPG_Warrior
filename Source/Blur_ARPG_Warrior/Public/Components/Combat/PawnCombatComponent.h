@@ -25,9 +25,13 @@ class BLUR_ARPG_WARRIOR_API UPawnCombatComponent : public UPawnExtensionComponen
 	GENERATED_BODY()
 	
 public:
-	//当前装备武器Tag。应当在使用“装备武器”技能Ability时修改。
+	// 当前装备武器Tag。应当在使用“装备武器”技能Ability时修改。
 	UPROPERTY(BlueprintReadWrite, Category = "Warrior|Combat")
 	FGameplayTag CurrentEquippedWeaponTag;
+
+	// 正在进行卸下装备。用于告知动画开始切换动画状态并开始混合。否则当UnlinkAnimLayer时，将没有可混合的动画Pose。
+	UPROPERTY(BlueprintReadWrite, Category = "Warrior|Combat")
+	bool IsUnequipping;
 
 	/// 注册一个生成武器。
 	/// @param InWeaponTagToRegister 武器Tag。
