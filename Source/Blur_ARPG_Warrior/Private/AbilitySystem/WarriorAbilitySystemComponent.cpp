@@ -37,8 +37,23 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 		if (InputType == EWarriorInputType::Normal)
 		{
-			// 尝试触发技能。
-			TryActivateAbility(AbilitySpec.Handle);
+			if (AbilitySpec.IsActive())
+			{
+				FGameplayEventData Data;
+				Data.Instigator = GetAvatarActor();
+				Data.Target = GetAvatarActor();
+				// 在技能激活时重复输入。这是一个公用的事件，可以用来构建连击技能。
+				// Tips：这里我们会先确认 InInputTag ，然后找到对应的GA。保证了事件传输的准确性。
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+					GetAvatarActor(),
+					WarriorGameplayTags::Player_Event_RepeatInputWhenAbilityActive,
+					Data);
+			}
+			else
+			{
+				// 尝试触发技能。
+				TryActivateAbility(AbilitySpec.Handle);
+			}
 		}
 		// 切换形式的技能。在激活和取消之间切换。比如可切换的愤怒状态。
 		else if (InputType == EWarriorInputType::Toggleable)

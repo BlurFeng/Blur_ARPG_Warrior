@@ -73,6 +73,11 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ActivateRage, "Player.Event.ActivateRage");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_AOE, "Player.Event.AOE");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ConsumeStones, "Player.Event.ConsumeStones");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_RepeatInputWhenAbilityActive, "Player.Event.RepeatInputWhenAbilityActive");
+	
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Combo_WaitInput, "Player.Event.Combo.WaitInput");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Combo_StartNextAttack, "Player.Event.Combo.StartNextAttack");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Combo_Reset, "Player.Event.Combo.Reset");
 	
 	//Status 状态
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_JumpToFinisher, "Player.Status.JumpToFinisher");
