@@ -16,5 +16,5 @@ class BLUR_ARPG_WARRIOR_API UWarriorSaveGame : public USaveGame
 public:
 	//游戏难度。
 	UPROPERTY(BlueprintReadOnly)
-	EWarriorGameDifficulty SavedGameDifficulty;
+	EWarriorGameDifficulty SavedGameDifficulty = EWarriorGameDifficulty::Normal;
 };
