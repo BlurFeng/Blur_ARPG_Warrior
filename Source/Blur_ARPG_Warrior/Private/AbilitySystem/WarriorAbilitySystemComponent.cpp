@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
 #include "WarriorGameplayTags.h"
@@ -19,7 +20,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 {
 	if (!InInputTag.IsValid()) return;
 
-	//Debug::Print(TEXT("OnAbilityInputPressed 1"));
+	// Debug::Print(TEXT("OnAbilityInputPressed 1"));
 
 	EWarriorInputType InputType = EWarriorInputType::Normal;
 	if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable))
@@ -29,57 +30,63 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		//Tips：InInputTag 通过 UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec 方法在赋予技能时添加到 DynamicAbilityTags。
+		// Tips：InInputTag 通过 UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec 方法在赋予技能时添加到 DynamicAbilityTags。
 		
-		//确认输入的技能是否存在，通过对比InInputTag。此Tag应当在启动时被添加。
+		// 确认输入的技能是否存在，通过对比InInputTag。此Tag应当在启动时被添加。
 		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InInputTag)) continue;
 
 		if (InputType == EWarriorInputType::Normal)
 		{
-			//尝试触发技能。
+			// 尝试触发技能。
 			TryActivateAbility(AbilitySpec.Handle);
 		}
-		//切换形式的技能。在激活和取消之间切换。比如可切换的愤怒状态。
+		// 切换形式的技能。在激活和取消之间切换。比如可切换的愤怒状态。
 		else if (InputType == EWarriorInputType::Toggleable)
 		{
 			if (!AbilitySpec.IsActive())
 			{
-				//尝试触发技能。
+				// 尝试触发技能。
 				TryActivateAbility(AbilitySpec.Handle);
 			}
 			else
 			{
-				bool Allow = false;
-				//切换形式的技能如果想在取消时进行确认，可重写 CheckCondition() 方法。不重写时默认返回true。
+				bool Allow = false; // 允许取消技能。
+				// 切换形式的技能如果想在取消时进行确认，可重写 CheckCondition() 方法。不重写时默认返回true。
+				// 且需要技能是Actor形式的，否则 GetPrimaryInstance() 无法获得他的实例。
 				if (UWarriorGameplayAbility* WarriorGameplayAbility = Cast<UWarriorGameplayAbility>(AbilitySpec.GetPrimaryInstance()))
 				{
+					// 确认自定义的确认条件是否允许取消。
 					if (WarriorGameplayAbility->CheckConditionOnToggleableCancelAbility())
 					{
-						CancelAbilityHandle(AbilitySpec.Handle);
 						Allow = true;
 					}
-					//Debug::Print(FString::Printf(TEXT("Cancel Ability, Name: %s"), *AbilitySpec.Ability.GetName()));
+					
+					if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
+					{
+						if (PawnUIInterface->GetHeroUIComponent())
+							PawnUIInterface->GetHeroUIComponent()->OnCancelAbility.Broadcast(Allow, AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
+					}
+					// Debug::Print(FString::Printf(TEXT("Cancel Ability, Name: %s"), *AbilitySpec.Ability.GetName()));
 				}
+				// 直接取消技能。
 				else
 				{
-					CancelAbilityHandle(AbilitySpec.Handle);
 					Allow = true;
 				}
-
-				if (IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
+				
+				if (Allow)
 				{
-					if (PawnUIInterface->GetHeroUIComponent())
-						PawnUIInterface->GetHeroUIComponent()->OnCancelAbility.Broadcast(Allow, AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
+					CancelAbilityHandle(AbilitySpec.Handle);
 				}
 			}
 		}
-		//必须持续按住的技能，松开时取消。比如防御。
+		// 必须持续按住的技能，松开时取消。比如防御。
 		else if (InputType == EWarriorInputType::MustBeHeld)
 		{
 			CachedMustBeHeldGameplayAbilityInputTag = InInputTag;
 			CachedMustBeHeldFGameplayAbilitySpecHandle = AbilitySpec.Handle;
 
-			//尝试触发技能。
+			// 尝试触发技能。
 			TryActivateAbility(AbilitySpec.Handle);
 		}
 
