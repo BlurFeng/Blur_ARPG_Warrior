@@ -3,9 +3,15 @@
 
 #include "Common/WarriorCountDownAction.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 {
 	//FPendingLatentAction::UpdateOperation(Response);
+
+	// 游戏暂停时不更新。
+	if (UGameplayStatics::IsGamePaused(WorldContextObject))
+		return;
 
 	//取消。
 	if (bNeedToCancel)

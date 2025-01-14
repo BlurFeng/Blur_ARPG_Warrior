@@ -20,9 +20,9 @@ public:
 
 	
 	FWarriorCountDownAction(
-		const float InTotalCountTime, const float InUpdateInterval, const bool InExecuteOnFirst,
+		const UObject* WorldContextObject, const float InTotalCountTime, const float InUpdateInterval, const bool InExecuteOnFirst,
 		float& InOutRemainingTime, EWarriorCountDownActionOutput& InCountDownOutput, const FLatentActionInfo& LatentInfo)
-	: bNeedToCancel(false),
+	: WorldContextObject(WorldContextObject), bNeedToCancel(false),
 	TotalCountDownTime(InTotalCountTime), UpdateInterval(InUpdateInterval), ExecuteOnFirst(InExecuteOnFirst), OutRemainingTime(InOutRemainingTime), CountDownOutput(InCountDownOutput),
 	ExecutionFunction(LatentInfo.ExecutionFunction), OutputLink(LatentInfo.Linkage), CallbackTarget(LatentInfo.CallbackTarget),
 	TimerFromStart(0.f), IntervalTimer(0.f)
@@ -35,6 +35,7 @@ public:
 	void CancelAction();
 	
 private:
+	const UObject* WorldContextObject;
 	bool bNeedToCancel; //确认是否触发了取消。
 	const float TotalCountDownTime; //总倒计时时间。
 	float UpdateInterval; //更新间隔，为零时每帧执行Update回调。

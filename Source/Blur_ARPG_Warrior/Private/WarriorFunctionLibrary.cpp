@@ -44,7 +44,7 @@ void UWarriorFunctionLibrary::CountDown(
 		{
 			LatentActionManager.AddNewAction(
 				LatentInfo.CallbackTarget,
-				LatentInfo.UUID, new FWarriorCountDownAction(TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
+				LatentInfo.UUID, new FWarriorCountDownAction(WorldContextObject, TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
 				);
 		}
 	}
