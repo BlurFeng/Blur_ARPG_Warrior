@@ -24,6 +24,18 @@ class BLUR_ARPG_WARRIOR_API UWarriorFunctionLibrary : public UBlueprintFunctionL
 
 public:
 
+#pragma region Maths
+	
+	/// 将一个向量向目标向量旋转一定的幅度。
+	/// @param FromVector 
+	/// @param ToVector 
+	/// @param Rate 旋转比率。[0,1]。为1时完全旋转到ToVector。
+	/// @return 
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static FVector RotateVectorToTarget(const FVector& FromVector, const FVector& ToVector, const float Rate);
+	
+#pragma endregion
+
 #pragma region Tools
 
 	//Notes：Latent Action 潜在事件节点。

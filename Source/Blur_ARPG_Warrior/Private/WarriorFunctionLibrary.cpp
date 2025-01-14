@@ -18,6 +18,35 @@
 
 #pragma region Tools
 
+FVector UWarriorFunctionLibrary::RotateVectorToTarget(const FVector& FromVector, const FVector& ToVector, const float Rate)
+{
+	// 归一化向量。
+	const FVector FromVectorNor = FromVector.GetSafeNormal();
+	const FVector ToVectorNor = ToVector.GetSafeNormal();
+
+	if (Rate >= 1)
+		return ToVectorNor;
+
+	// 计算夹角。
+	const float Angle = FMath::Acos(FVector::DotProduct(FromVectorNor, ToVectorNor));
+
+	if (FMath::IsNearlyZero(Angle, KINDA_SMALL_NUMBER))
+	{
+		return ToVectorNor;
+	}
+
+	// 计算旋转轴。
+	FVector RotationAxis = FVector::CrossProduct(FromVectorNor, ToVectorNor).GetSafeNormal();
+
+	float InterpolatedAngle = Angle * FMath::Clamp(Rate, 0.0f, 1.0f);
+
+	// 构造旋转。
+	const FQuat RotationQuat = FQuat(RotationAxis, InterpolatedAngle);
+
+	// 应用旋转。
+	return RotationQuat.RotateVector(FromVectorNor);
+}
+
 void UWarriorFunctionLibrary::CountDown(
 	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
 	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
