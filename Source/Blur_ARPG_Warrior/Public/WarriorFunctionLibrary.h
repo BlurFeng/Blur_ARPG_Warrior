@@ -75,6 +75,14 @@ public:
 
 #pragma region Gameplay
 
+	/// 尝试通过 Tag 事件触发技能。如果有多个技能配置了此 Tag，就会有多个技能被同时触发。
+	/// @param AbilitySystemComponent 
+	/// @param EventTag 
+	/// @param Payload 
+	/// @return 成功激活的数量。
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static int32 TryActivateAbilityByGameplayEvent(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayTag EventTag, const FGameplayEventData Payload);
+
 	/// 获取AbilitySystemComponent从Actor。
 	/// @param InActor 
 	/// @return 

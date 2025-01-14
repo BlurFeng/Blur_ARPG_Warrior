@@ -22,12 +22,17 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 	// Debug::Print(TEXT("OnAbilityInputPressed 1"));
 
+	// 当有技能输入时广播。无论是否成功激活。此多播委托主要告知玩家进行了技能输入行为。
+	OnAbilityInputPressedDelegate.Broadcast(InInputTag);
+
+	// 确认输入类型。
 	EWarriorInputType InputType = EWarriorInputType::Normal;
 	if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_Toggleable))
 		InputType = EWarriorInputType::Toggleable;
 	else if (InInputTag.MatchesTag(WarriorGameplayTags::InputTag_MustBeHeld))
 		InputType = EWarriorInputType::MustBeHeld;
 
+	// 搜索对应 InInputTag 的技能。
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		// Tips：InInputTag 通过 UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec 方法在赋予技能时添加到 DynamicAbilityTags。

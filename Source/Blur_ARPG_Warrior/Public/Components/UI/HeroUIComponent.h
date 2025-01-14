@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/UI/PawnUIComponent.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 
 #include "HeroUIComponent.generated.h"
 
@@ -12,8 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeaponChangedDelegate, TS
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityIconSlotUpdatedDelegate, FGameplayTag, AbilityInputTag, TSoftObjectPtr<UMaterialInterface>, SoftAbilityIconMaterial);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAbilityCooldownBeginDelegate, FGameplayTag, AbilityInputTag, float, TotalCooldownTime, float, RemainingCooldownTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStoneInteractedDelegate, bool, bShouldDisplayInputKey);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCheckCostOrCooldown, bool, bAllow, FGameplayTag, AbilityTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTryActivateAbilityFailed, FGameplayTag, AbilityTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTryActivateAbilityFailedDelegate, FGameplayTag, AbilityTag);
 
 //英雄UI组件
 UCLASS()
@@ -48,17 +48,17 @@ public:
 
 	//当确认技能Cost是否足够时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FOnCheckCostOrCooldown OnCheckCost;
+	FOnCheckCostOrCooldownDelegate OnCheckCost;
 
 	//当确认技能Cooldown是否足够时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FOnCheckCostOrCooldown OnCheckCooldown;
+	FOnCheckCostOrCooldownDelegate OnCheckCooldown;
 
 	//当取消一个技能时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FOnCheckCostOrCooldown OnCancelAbility;
+	FOnCheckCostOrCooldownDelegate OnCancelAbility;
 
 	//尝试激活一个技能失败时。
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FOnTryActivateAbilityFailed OnTryActivateAbilityFailed;
+	FOnTryActivateAbilityFailedDelegate OnTryActivateAbilityFailed;
 };

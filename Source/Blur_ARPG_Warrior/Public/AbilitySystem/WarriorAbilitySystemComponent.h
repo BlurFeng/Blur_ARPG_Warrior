@@ -10,6 +10,8 @@
 struct FWarriorHeroSpecialAbilitySet;
 struct FWarriorHeroAbilitySet;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAbilityInputPressedDelegate, FGameplayTag, InputTag);
+
 //技能系统组件
 UCLASS()
 class BLUR_ARPG_WARRIOR_API UWarriorAbilitySystemComponent : public UAbilitySystemComponent
@@ -18,6 +20,12 @@ class BLUR_ARPG_WARRIOR_API UWarriorAbilitySystemComponent : public UAbilitySyst
 
 public:
 	UWarriorAbilitySystemComponent();
+
+#pragma region Delegate
+	// 当获得技能输入按下时。
+	UPROPERTY(BlueprintAssignable, meta = (DisplayName = "On Ability Input Pressed"))
+	FOnAbilityInputPressedDelegate OnAbilityInputPressedDelegate;
+#pragma endregion
 	
 	void OnAbilityInputPressed(const FGameplayTag& InInputTag);
 	void OnAbilityInputReleased(const FGameplayTag& InInputTag);

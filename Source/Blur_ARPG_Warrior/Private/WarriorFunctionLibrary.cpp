@@ -139,6 +139,14 @@ float UWarriorFunctionLibrary::LerpLimitChangeMin(const float A, const float B, 
 	return A + Change;
 }
 
+int32 UWarriorFunctionLibrary::TryActivateAbilityByGameplayEvent(UAbilitySystemComponent* AbilitySystemComponent,
+	const FGameplayTag EventTag, const FGameplayEventData Payload)
+{
+	if (!AbilitySystemComponent) return 0;
+
+	return AbilitySystemComponent->HandleGameplayEvent(EventTag, &Payload);
+}
+
 #pragma endregion
 
 #pragma region Gameplay
