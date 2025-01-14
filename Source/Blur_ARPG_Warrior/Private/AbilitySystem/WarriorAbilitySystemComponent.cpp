@@ -111,13 +111,14 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 			{
 				if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
 				{
-					if (PawnUIInterface->GetHeroUIComponent())
+					if (PawnUIInterface->GetHeroUIComponent() && AbilitySpec.GetPrimaryInstance())
 						PawnUIInterface->GetHeroUIComponent()->OnTryActivateAbilityFailed.Broadcast(AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
 				}
 			}
 		}
 
-		break;
+		// 允许一个InputTag对应多个GA。
+		//break;
 	}
 }
 
