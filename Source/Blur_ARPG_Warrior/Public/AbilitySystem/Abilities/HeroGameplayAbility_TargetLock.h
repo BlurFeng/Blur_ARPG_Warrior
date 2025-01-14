@@ -25,7 +25,7 @@ protected:
 	void OnTargetLockTick(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable)
-	void SwitchTarget(const FGameplayTag& InSwitchDirectionTag);
+	bool SwitchTarget(const FGameplayTag& InSwitchDirectionTag, const bool bStriveToGet = false);
 
 private:
 	//尝试锁定目标。
@@ -85,7 +85,7 @@ private:
 
 	//开启目标锁定时的最大移动速度。
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
-	float TargetLockMaxWalkSpeed = 200.f;
+	float TargetLockMaxWalkSpeed = 220.f;
 
 	//锁定目标时的操作映射。覆盖原有操作映射。
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")

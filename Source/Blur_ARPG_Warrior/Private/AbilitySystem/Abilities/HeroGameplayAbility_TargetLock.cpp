@@ -54,8 +54,12 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 		|| UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Shared_Status_Dead)
 		)
 	{
-		CancelTargetLockAbility();
-		return;
+		// 当目标死亡时，尝试获取一个新的目标。
+		if (!SwitchTarget(WarriorGameplayTags::Player_Event_SwitchTarget_Left, true))
+		{
+			CancelTargetLockAbility();
+			return;
+		}
 	}
   
 	//更新目标锁定指示器Widget位置。
@@ -89,7 +93,7 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 	}
 }
 
-void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag)
+bool UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag, const bool bStriveToGet)
 {
 	GetAvailableActorsToLock();
 
@@ -103,10 +107,14 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	if (InSwitchDirectionTag == WarriorGameplayTags::Player_Event_SwitchTarget_Left)
 	{
 		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
+		if (!NewTargetToLock && bStriveToGet)
+			NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnRight);
 	}
 	else
 	{
 		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnRight);
+		if (!NewTargetToLock && bStriveToGet)
+			NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
 	}
 
 	//设置当前目标为新的目标。
@@ -114,6 +122,8 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	{
 		CurrentLockedActor = NewTargetToLock;
 	}
+
+	return CurrentLockedActor != nullptr;
 }
 
 bool UHeroGameplayAbility_TargetLock::TryLockOnTarget()
