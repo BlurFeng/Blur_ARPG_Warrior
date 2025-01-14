@@ -371,7 +371,7 @@ bool UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(EWarriorGameDifficulty&
 	}
 
 	//存储默认值。
-	OutSavedDifficulty = EWarriorGameDifficulty::Easy;
+	OutSavedDifficulty = EWarriorGameDifficulty::Normal;
 	SaveCurrentGameDifficulty(OutSavedDifficulty);
 	return false;
 }
