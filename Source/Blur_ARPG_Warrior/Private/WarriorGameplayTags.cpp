@@ -55,6 +55,9 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialWeaponAbility_Light, "Player.Ability.SpecialWeaponAbility.Light");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialWeaponAbility_Heavy, "Player.Ability.SpecialWeaponAbility.Heavy");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_PickUp_Stones, "Player.Ability.PickUp.Stones");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Light_Axe, "Player.Ability.JumpTo.Attack.Light.Axe");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Light_Axe_Finish, "Player.Ability.JumpTo.Attack.Light.Axe.Finish");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Heavy_Axe, "Player.Ability.JumpTo.Attack.Heavy.Axe");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Heavy_Axe_Finish, "Player.Ability.JumpTo.Attack.Heavy.Axe.Finish");
 
 	//Cooldown 冷却
