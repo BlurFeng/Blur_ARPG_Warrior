@@ -55,7 +55,7 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 		)
 	{
 		// 当目标死亡时，尝试获取一个新的目标。
-		if (!SwitchTarget(WarriorGameplayTags::Player_Event_SwitchTarget_Left, true))
+		if (!SwitchTarget(true, true))
 		{
 			CancelTargetLockAbility();
 			return;
@@ -93,7 +93,36 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 	}
 }
 
-bool UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag, const bool bStriveToGet)
+void UHeroGameplayAbility_TargetLock::SwitchTarget_Triggered(const FGameplayEventData& GameplayEventData)
+{
+	// 获取触发时输入。
+	const float InputDir = GameplayEventData.EventMagnitude;
+
+	// 移动方向和积累方向不同，清空积累方向。
+	if (InputDir > 0.f && SwitchDirectionAccumulate < 0.f
+		|| InputDir < 0.f && SwitchDirectionAccumulate > 0.f)
+		SwitchDirectionAccumulate = 0.f;
+	
+	if (bDrawDebug) Debug::Print(FString::SanitizeFloat(InputDir), FColor::Blue);
+	SwitchDirectionAccumulate += InputDir;
+	if (bDrawDebug) Debug::Print(FString::SanitizeFloat(SwitchDirectionAccumulate), FColor::Green);
+}
+
+void UHeroGameplayAbility_TargetLock::SwitchTarget_Completed(const FGameplayEventData& GameplayEventData)
+{
+	if (bDrawDebug) Debug::Print(FString::SanitizeFloat(SwitchDirectionAccumulate), FColor::Red);
+
+	// 积累方向超过限制值。切换锁定目标。
+	if (FMath::Abs(SwitchDirectionAccumulate) >= SwitchMoveDirectionLimit)
+	{
+		// 移动鼠标，根据移动方向切换锁定目标。
+		SwitchTarget(SwitchDirectionAccumulate < 0.f);
+	}
+	
+	SwitchDirectionAccumulate = 0.f;
+}
+
+bool UHeroGameplayAbility_TargetLock::SwitchTarget(const bool GoToLeft, const bool bStriveToGet)
 {
 	GetAvailableActorsToLock();
 
@@ -104,7 +133,7 @@ bool UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	GetAvailableActorsAroundTarget(ActorsOnLeft, ActorsOnRight);
 
 	//选择距离自己最近的目标。
-	if (InSwitchDirectionTag == WarriorGameplayTags::Player_Event_SwitchTarget_Left)
+	if (GoToLeft)
 	{
 		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
 		if (!NewTargetToLock && bStriveToGet)
@@ -148,7 +177,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	AvailableActorsToLock.Empty();
 	TArray<FHitResult> BoxTraceHits;
 
-	//在Box范围内探测可锁定的目标。
+	// 在Box范围内探测可锁定的目标。
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
 		GetHeroCharacterFromActorInfo(),
 		GetHeroCharacterFromActorInfo()->GetActorLocation(),
@@ -158,7 +187,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 		BoxTraceChannel,
 		false,
 		TArray<AActor*>(),
-		bDrawDebugForBoxTrace ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None,
+		bDrawDebug ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None,
 		BoxTraceHits,
 		true
 		);
@@ -178,8 +207,45 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 
 AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors)
 {
-	float ClosestDistance = 0.f;
-	return UGameplayStatics::FindNearestActor(GetHeroCharacterFromActorInfo()->GetActorLocation(), InAvailableActors, ClosestDistance);
+	AActor* NearestActor = nullptr;
+	float ScoreBest = 0.f;
+	const FVector3d Origin = GetHeroCharacterFromActorInfo()->GetActorLocation();
+
+	// 获取探测Box最大边长作为距离分数计算的分母。实际上应当获取Box最长斜角边除以2，但做距离分数分母的话没必要一定精准，这里节省点计算。
+	const float BoxRangeValue = FMath::Square(BoxTraceDistance + TraceBoxSize.X / 2.f) + FMath::Square(TraceBoxSize.Y) + FMath::Square(TraceBoxSize.Z);
+	
+	for (AActor* ActorToCheck : InAvailableActors)
+	{
+		if (ActorToCheck)
+		{
+			// 计算距离和角度。
+			const FVector DirToTarget = ActorToCheck->GetActorLocation() - Origin;
+			const float Dis = DirToTarget.SizeSquared();
+			const float Dot = FVector::DotProduct(GetCharacterFromActorInfo()->GetActorForwardVector(), DirToTarget.GetSafeNormal());
+			
+			// 计算距离和角度分数，然后按权重计算最终得分。
+			const float Score_Dis = (BoxRangeValue - Dis) / BoxRangeValue;
+			const float Score_Angle = (Dot + 1.f) / 2.f;
+			const float Score = (Score_Dis * SwitchTargetSelectWeight_Distance + Score_Angle * SwitchTargetSelectWeight_Angle) / (SwitchTargetSelectWeight_Distance + SwitchTargetSelectWeight_Angle);
+
+			if (bDrawDebug)
+			{
+				DrawDebugString(
+					GetWorld(),
+					ActorToCheck->GetActorLocation() + FVector::UpVector * 500.f,
+					FString::Printf(TEXT("Score_Dis:%f  Score_Angle:%f  Score:%f"),Score_Dis,Score_Angle,Score));
+			}
+			
+			// 获取分数高的。
+			if (!NearestActor || Score > ScoreBest)
+			{
+				NearestActor = ActorToCheck;
+				ScoreBest = Score;
+			}
+		}
+	}
+
+	return NearestActor;
 }
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,
@@ -200,6 +266,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AAct
 	for (AActor* Actor : AvailableActorsToLock)
 	{
 		if (!Actor || Actor == CurrentLockedActor) continue;
+		if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(Actor, WarriorGameplayTags::Shared_Status_Dead)) continue;
 
 		const FVector PlayerToActorNormalized = (Actor->GetActorLocation() - PlayerLocation).GetSafeNormal();
 		const FVector CrossResult = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToActorNormalized);

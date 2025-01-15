@@ -212,17 +212,23 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 
 void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
 {
-	// 获取触发时输入。
-	SwitchDirection = InputActionValue.Get<FVector2D>();
+	FGameplayEventData Data;
+	Data.EventMagnitude = InputActionValue.Get<FVector2D>().X;
+	
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		WarriorGameplayTags::Player_Event_SwitchTarget_Triggered,
+		Data);
 }
 
 void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
 {
-	// 移动鼠标，根据移动方向切换锁定目标。
-	const FGameplayEventData Data;
+	FGameplayEventData Data;
+	Data.EventMagnitude = InputActionValue.Get<FVector2D>().X;
+	
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		this,
-		SwitchDirection.X > 0.f ? WarriorGameplayTags::Player_Event_SwitchTarget_Right : WarriorGameplayTags::Player_Event_SwitchTarget_Left,
+		WarriorGameplayTags::Player_Event_SwitchTarget_Completed,
 		Data);
 }
 

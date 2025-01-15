@@ -25,7 +25,13 @@ protected:
 	void OnTargetLockTick(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable)
-	bool SwitchTarget(const FGameplayTag& InSwitchDirectionTag, const bool bStriveToGet = false);
+	void SwitchTarget_Triggered(const FGameplayEventData& GameplayEventData);
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchTarget_Completed(const FGameplayEventData& GameplayEventData);
+
+	UFUNCTION()
+	bool SwitchTarget(const bool GoToLeft, const bool bStriveToGet = false);
 
 private:
 	//尝试锁定目标。
@@ -73,11 +79,19 @@ private:
 
 	//绘制BoxTrace的Debug信息。
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
-	bool bDrawDebugForBoxTrace;
+	bool bDrawDebug;
 
 	//锁定目标指示器Widget。
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
 	TSubclassOf<UWarriorWidgetBase> TargetLockWidgetClass;
+
+	// 切换目标选择时，距离权重。权重越高，越会选择距离自己近的目标。
+	UPROPERTY(EditDefaultsOnly, Category="Target Lock", meta = (ClampMin = 1))
+	int SwitchTargetSelectWeight_Distance = 1;
+
+	// 切换目标选择时，角度权重。权重越高，越会选择和自己正面方向角度接近的目标。
+	UPROPERTY(EditDefaultsOnly, Category="Target Lock", meta = (ClampMin = 1))
+	int SwitchTargetSelectWeight_Angle = 1;
 
 	//旋转速度。
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
@@ -114,4 +128,11 @@ private:
 	//进入目标锁定状态时的当前最大移动速度。
 	UPROPERTY()
 	float CachedDefaultMaxWalkSpeed;
+
+	// 切换目标时需要移动的距离量。
+	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
+	float SwitchMoveDirectionLimit = 10.f;
+	
+	UPROPERTY()
+	float SwitchDirectionAccumulate;
 };
