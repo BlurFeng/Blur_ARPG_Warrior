@@ -102,9 +102,16 @@ protected:
 	/// 应用一个GE到FHitResult碰撞探测目标数组。
 	/// 可以使用 BoxTrace 等探测方式来获得目标FHitResult。
 	/// @param InSpecHandle GE说明句柄。
-	/// @param InHitResults Trace获得的Hit目标。
+	/// @param InHitResults Trace获得的Hit目标数组。
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	void ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle, const TArray<FHitResult>& InHitResults);
+
+	/// 应用一个GE到FHitResult碰撞探测目标。
+	/// 可以使用 BoxTrace 等探测方式来获得目标FHitResult。
+	/// @param InSpecHandle GE说明句柄。
+	/// @param InHitResult Trace获得的Hit目标。
+	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
+	void ApplyGameplayEffectSpecHandleToHitResult(const FGameplayEffectSpecHandle& InSpecHandle, const FHitResult& InHitResult);
 
 	/// 创建GE查询句柄，用于施加GE。
 	/// @param EffectClass 

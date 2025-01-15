@@ -93,6 +93,12 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 				{
 					CancelAbilityHandle(AbilitySpec.Handle);
 				}
+
+				if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
+				{
+					if (PawnUIInterface->GetHeroUIComponent() && AbilitySpec.GetPrimaryInstance())
+						PawnUIInterface->GetHeroUIComponent()->OnCancelAbility.Broadcast(Allow, AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
+				}
 			}
 		}
 		// 必须持续按住的技能，松开时取消。比如防御。

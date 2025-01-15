@@ -137,30 +137,35 @@ void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FG
 {
 	if (InHitResults.IsEmpty()) return;
 	
+	for (const FHitResult& HitResult : InHitResults)
+	{
+		ApplyGameplayEffectSpecHandleToHitResult(InSpecHandle, HitResult);
+	}
+}
+
+void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResult(const FGameplayEffectSpecHandle& InSpecHandle, const FHitResult& InHitResult)
+{
 	const APawn* OwningPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 	if (!OwningPawn) return;
 	
-	for (const FHitResult& HitResult : InHitResults)
+	if (APawn* HitPawn = Cast<APawn>(InHitResult.GetActor()))
 	{
-		if (APawn* HitPawn = Cast<APawn>(HitResult.GetActor()))
+		if (UWarriorFunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
 		{
-			if (UWarriorFunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
-			{
-				//对目标造成伤害影响。
-				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleTarget(HitPawn, InSpecHandle);
+			//对目标造成伤害影响。
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleTarget(HitPawn, InSpecHandle);
 				
-				if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
-				{
-					FGameplayEventData Data;
-					Data.Instigator = OwningPawn;
-					Data.Target = HitPawn;
+			if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
+			{
+				FGameplayEventData Data;
+				Data.Instigator = OwningPawn;
+				Data.Target = HitPawn;
 
-					//目标被击中事件。
-					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-						HitPawn,
-						WarriorGameplayTags::Shared_Event_HitReact,
-						Data);
-				}
+				//目标被击中事件。
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+					HitPawn,
+					WarriorGameplayTags::Shared_Event_HitReact,
+					Data);
 			}
 		}
 	}
