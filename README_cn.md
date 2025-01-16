@@ -239,3 +239,5 @@ BT行为树的MoveTo功能需要NavMesh的支持。
  https://www.fab.com/zh-cn/listings/ef04a196-03c1-4204-998a-c7d5264fade7
 
 场景模型使用免费资源 InfinityBladeIceLands。
+
+UINavigation 插件，用于实现多硬件输入操控UI。

@@ -244,3 +244,5 @@ BT（ビヘイビアツリー）のMoveTo機能はNavMeshをサポートする�
  https://www.fab.com/zh-cn/listings/ef04a196-03c1-4204-998a-c7d5264fade7
 
 シーンモデルは、無料リソース「Infinity Blade Ice Lands」を使用。
+
+UINavigationプラグインは、複数のハードウェア入力でUIを操作するためのものです。
