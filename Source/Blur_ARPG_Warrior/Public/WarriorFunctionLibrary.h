@@ -48,15 +48,16 @@ public:
 
 	/// 倒计时异步方法。
 	/// @param WorldContextObject 
-	/// @param TotalTime 总时间。
+	/// @param TotalTime 总时间。为负数时会一直执行直到取消。
 	/// @param UpdateInterval 更新间隔。
 	/// @param ExecuteOnFirst 在开始的第一帧执行。
+	/// @param PausedWithGame 随游戏暂停计时。
 	/// @param OutRemainingTime 剩余时间。
 	/// @param CountDownInput 输入执行引脚。
 	/// @param CountDownOutput 输出执行引脚。
 	/// @param LatentInfo 
-	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true"))
-	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true", PausedWithGame = "true"))
+	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst, bool PausedWithGame,
 		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 		FLatentActionInfo LatentInfo);
 

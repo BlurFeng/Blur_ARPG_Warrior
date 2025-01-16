@@ -58,7 +58,8 @@ UENUM()
 enum class EWarriorInputMode : uint8
 {
 	GameOnly,
-	UIOnly
+	UIOnly,
+	GameAndUI,
 };
 
 //输入类型。

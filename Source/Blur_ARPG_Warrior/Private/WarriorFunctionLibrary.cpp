@@ -48,7 +48,7 @@ FVector UWarriorFunctionLibrary::RotateVectorToTarget(const FVector& FromVector,
 }
 
 void UWarriorFunctionLibrary::CountDown(
-	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst,
+	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst, bool PausedWithGame,
 	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 	FLatentActionInfo LatentInfo)
 {
@@ -73,7 +73,7 @@ void UWarriorFunctionLibrary::CountDown(
 		{
 			LatentActionManager.AddNewAction(
 				LatentInfo.CallbackTarget,
-				LatentInfo.UUID, new FWarriorCountDownAction(WorldContextObject, TotalTime, UpdateInterval, ExecuteOnFirst, OutRemainingTime, CountDownOutput, LatentInfo)
+				LatentInfo.UUID, new FWarriorCountDownAction(WorldContextObject, TotalTime, UpdateInterval, ExecuteOnFirst, PausedWithGame, OutRemainingTime, CountDownOutput, LatentInfo)
 				);
 		}
 	}
@@ -357,6 +357,7 @@ void UWarriorFunctionLibrary::SetInputMode(const UObject* WorldContextObject, co
 
 	const FInputModeGameOnly GameOnlyMode;
 	const FInputModeUIOnly UIOnlyMode;
+	const FInputModeGameAndUI GameAndUI;
 	
 	switch (InInputMode)
 	{
@@ -366,6 +367,10 @@ void UWarriorFunctionLibrary::SetInputMode(const UObject* WorldContextObject, co
 		break;
 	case EWarriorInputMode::UIOnly:
 		PlayerController->SetInputMode(UIOnlyMode);
+		PlayerController->bShowMouseCursor = true;
+		break;
+	case EWarriorInputMode::GameAndUI:
+		PlayerController->SetInputMode(GameAndUI);
 		PlayerController->bShowMouseCursor = true;
 		break;
 	}

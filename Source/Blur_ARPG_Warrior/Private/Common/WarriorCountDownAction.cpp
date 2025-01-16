@@ -10,7 +10,7 @@ void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 	//FPendingLatentAction::UpdateOperation(Response);
 
 	// 游戏暂停时不更新。
-	if (UGameplayStatics::IsGamePaused(WorldContextObject))
+	if (UGameplayStatics::IsGamePaused(WorldContextObject) && PausedWithGame)
 		return;
 
 	//取消。
@@ -22,7 +22,7 @@ void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 	}
 
 	//完成。
-	if (TimerFromStart >= TotalCountDownTime)
+	if (TotalCountDownTime > 0 && TimerFromStart >= TotalCountDownTime)
 	{
 		CountDownOutput = EWarriorCountDownActionOutput::Completed;
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
