@@ -14,7 +14,8 @@
 				"GameplayAbilities",
 				"UMG",
 				"AIModule",
-				"CoreUObject"
+				"CoreUObject",
+				"UINavigation"
 			]
 		}
 	],
@@ -33,6 +34,6 @@
 		{
 			"Name": "MotionWarping",
 			"Enabled": true
-		}
+		},
 	]
 }
