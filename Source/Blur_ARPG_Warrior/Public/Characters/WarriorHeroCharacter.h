@@ -86,6 +86,8 @@ private:
 	void Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue);
 	void Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue);
 
+	void Input_ResetView(const FInputActionValue& InputActionValue);
+
 	void Input_PickUpStonesStarted(const FInputActionValue& InputActionValue);
 	
 	//Tips：这里没有使用const和&关键字，因为此回调方法最终作为UEnhancedInputComponent->BindAction()方法的参数使用，而此类对回调方法的格式是这么要求的。

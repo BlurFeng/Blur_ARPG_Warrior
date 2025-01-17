@@ -25,6 +25,7 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_SpecialWeaponAbility_Light, "InputTag.SpecialWeaponAbility.Light");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_SpecialWeaponAbility_Heavy, "InputTag.SpecialWeaponAbility.Heavy");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_PickUp_Stones, "InputTag.PickUp.Stones");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_ResetView, "InputTag.ResetView");
 	
 	//MustBeHeld 持续按住
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_MustBeHeld, "InputTag.MustBeHeld");
@@ -55,6 +56,8 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialWeaponAbility_Light, "Player.Ability.SpecialWeaponAbility.Light");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialWeaponAbility_Heavy, "Player.Ability.SpecialWeaponAbility.Heavy");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_PickUp_Stones, "Player.Ability.PickUp.Stones");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_ResetView, "Player.Ability.ResetView");
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Light_Axe, "Player.Ability.JumpTo.Attack.Light.Axe");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Light_Axe_Finish, "Player.Ability.JumpTo.Attack.Light.Axe.Finish");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_JumpTo_Attack_Heavy_Axe, "Player.Ability.JumpTo.Attack.Heavy.Axe");
@@ -77,6 +80,8 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ActivateRage, "Player.Event.ActivateRage");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_AOE, "Player.Event.AOE");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ConsumeStones, "Player.Event.ConsumeStones");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ResetView, "Player.Event.ResetView");
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_RepeatInputWhenAbilityActive, "Player.Event.RepeatInputWhenAbilityActive");
 	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Combo_WaitInput, "Player.Event.Combo.WaitInput");
@@ -95,6 +100,7 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_RecoverStop, "Player.Status.Vitality.RecoverStop");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_Full, "Player.Status.Vitality.Full");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Vitality_None, "Player.Status.Vitality.None");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_ResetViewing, "Player.Status.ResetViewing");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Equip_Axe, "Player.Status.Equip.Axe");
 

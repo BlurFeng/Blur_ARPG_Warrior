@@ -80,7 +80,7 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 			UKismetMathLibrary::FindLookAtRotation(
 				GetHeroCharacterFromActorInfo()->GetActorLocation(),
 				CurrentLockedActor->GetActorLocation())
-		- FRotator(TargetLockCameraOffsetDistance, 0.f, 0.f);
+		- FRotator(TargetLockCameraPitchOffsetDistance, 0.f, 0.f);
 
 		//计算这帧的旋转变化值。
 		const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
@@ -181,6 +181,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	UKismetSystemLibrary::BoxTraceMultiForObjects(
 		GetHeroCharacterFromActorInfo(),
 		GetHeroCharacterFromActorInfo()->GetActorLocation(),
+		// 获取探测盒边长总和作为最大距离平方。
 		GetHeroCharacterFromActorInfo()->GetActorLocation() + GetHeroCharacterFromActorInfo()->GetActorForwardVector() * BoxTraceDistance,
 		TraceBoxSize / 2.f,
 		GetHeroCharacterFromActorInfo()->GetActorForwardVector().ToOrientationRotator(),
@@ -207,45 +208,18 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 
 AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors)
 {
-	AActor* NearestActor = nullptr;
-	float ScoreBest = 0.f;
-	const FVector3d Origin = GetHeroCharacterFromActorInfo()->GetActorLocation();
-
-	// 获取探测Box最大边长作为距离分数计算的分母。实际上应当获取Box最长斜角边除以2，但做距离分数分母的话没必要一定精准，这里节省点计算。
-	const float BoxRangeValue = FMath::Square(BoxTraceDistance + TraceBoxSize.X / 2.f) + FMath::Square(TraceBoxSize.Y) + FMath::Square(TraceBoxSize.Z);
-	
-	for (AActor* ActorToCheck : InAvailableActors)
-	{
-		if (ActorToCheck)
-		{
-			// 计算距离和角度。
-			const FVector DirToTarget = ActorToCheck->GetActorLocation() - Origin;
-			const float Dis = DirToTarget.SizeSquared();
-			const float Dot = FVector::DotProduct(GetCharacterFromActorInfo()->GetActorForwardVector(), DirToTarget.GetSafeNormal());
-			
-			// 计算距离和角度分数，然后按权重计算最终得分。
-			const float Score_Dis = (BoxRangeValue - Dis) / BoxRangeValue;
-			const float Score_Angle = (Dot + 1.f) / 2.f;
-			const float Score = (Score_Dis * SwitchTargetSelectWeight_Distance + Score_Angle * SwitchTargetSelectWeight_Angle) / (SwitchTargetSelectWeight_Distance + SwitchTargetSelectWeight_Angle);
-
-			if (bDrawDebug)
-			{
-				DrawDebugString(
-					GetWorld(),
-					ActorToCheck->GetActorLocation() + FVector::UpVector * 500.f,
-					FString::Printf(TEXT("Score_Dis:%f  Score_Angle:%f  Score:%f"),Score_Dis,Score_Angle,Score));
-			}
-			
-			// 获取分数高的。
-			if (!NearestActor || Score > ScoreBest)
-			{
-				NearestActor = ActorToCheck;
-				ScoreBest = Score;
-			}
-		}
-	}
-
-	return NearestActor;
+	return UWarriorFunctionLibrary::GetBestTargetFromActors(
+		this,
+		InAvailableActors,
+		GetHeroCharacterFromActorInfo()->GetActorLocation(),
+		GetCharacterFromActorInfo()->GetActorForwardVector(),
+		FMath::Square(BoxTraceDistance + TraceBoxSize.X / 2.f) + FMath::Square(TraceBoxSize.Y) + FMath::Square(TraceBoxSize.Z),
+		180.f,
+		false,
+		false,
+		SwitchTargetSelectWeight_Distance,
+		SwitchTargetSelectWeight_Angle,
+		bDrawDebug);
 }
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,

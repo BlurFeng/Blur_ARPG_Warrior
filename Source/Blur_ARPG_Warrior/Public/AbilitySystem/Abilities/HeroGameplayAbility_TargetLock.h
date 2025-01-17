@@ -106,7 +106,7 @@ private:
 	class UInputMappingContext* TargetLockMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category="Target Lock")
-	float TargetLockCameraOffsetDistance = 20.f;
+	float TargetLockCameraPitchOffsetDistance = 20.f;
 
 
 	//~ 缓存数据

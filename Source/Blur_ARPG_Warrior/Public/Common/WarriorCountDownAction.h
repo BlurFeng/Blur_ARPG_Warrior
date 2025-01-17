@@ -21,10 +21,10 @@ public:
 	
 	FWarriorCountDownAction(
 		const UObject* WorldContextObject, const float InTotalCountTime, const float InUpdateInterval, const bool InExecuteOnFirst, const bool InPausedWithGame,
-		float& InOutRemainingTime, EWarriorCountDownActionOutput& InCountDownOutput, const FLatentActionInfo& LatentInfo)
+		float& InOutRemainingTime, float& InOutDeltaTime, EWarriorCountDownActionOutput& InCountDownOutput, const FLatentActionInfo& LatentInfo)
 	: WorldContextObject(WorldContextObject), bNeedToCancel(false),
 	TotalCountDownTime(InTotalCountTime), UpdateInterval(InUpdateInterval), ExecuteOnFirst(InExecuteOnFirst), PausedWithGame(InPausedWithGame),
-	OutRemainingTime(InOutRemainingTime), CountDownOutput(InCountDownOutput),
+	OutRemainingTime(InOutRemainingTime), OutDeltaTime(InOutDeltaTime), CountDownOutput(InCountDownOutput),
 	ExecutionFunction(LatentInfo.ExecutionFunction), OutputLink(LatentInfo.Linkage), CallbackTarget(LatentInfo.CallbackTarget),
 	TimerFromStart(0.f), IntervalTimer(0.f)
 	{
@@ -43,6 +43,7 @@ private:
 	bool ExecuteOnFirst; //在第一帧执行。
 	const bool PausedWithGame; //随游戏停止。
 	float& OutRemainingTime; //剩余时间。
+	float& OutDeltaTime;
 	EWarriorCountDownActionOutput& CountDownOutput; //输出执行引脚。
 	FName ExecutionFunction;
 	int32 OutputLink;

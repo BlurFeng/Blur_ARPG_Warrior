@@ -30,6 +30,7 @@ void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 	}
 
 	//计时器增加。
+	OutDeltaTime = Response.ElapsedTime();
 	TimerFromStart +=  Response.ElapsedTime();
 	IntervalTimer += Response.ElapsedTime();
 	bool Update = false;

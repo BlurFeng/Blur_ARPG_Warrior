@@ -49,7 +49,7 @@ FVector UWarriorFunctionLibrary::RotateVectorToTarget(const FVector& FromVector,
 
 void UWarriorFunctionLibrary::CountDown(
 	const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst, bool PausedWithGame,
-	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+	float& OutRemainingTime, float& OutDeltaTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 	FLatentActionInfo LatentInfo)
 {
 	//确认World可用。
@@ -73,7 +73,7 @@ void UWarriorFunctionLibrary::CountDown(
 		{
 			LatentActionManager.AddNewAction(
 				LatentInfo.CallbackTarget,
-				LatentInfo.UUID, new FWarriorCountDownAction(WorldContextObject, TotalTime, UpdateInterval, ExecuteOnFirst, PausedWithGame, OutRemainingTime, CountDownOutput, LatentInfo)
+				LatentInfo.UUID, new FWarriorCountDownAction(WorldContextObject, TotalTime, UpdateInterval, ExecuteOnFirst, PausedWithGame, OutRemainingTime, OutDeltaTime, CountDownOutput, LatentInfo)
 				);
 		}
 	}
@@ -429,6 +429,50 @@ FGameplayAbilitySpec UWarriorFunctionLibrary::NativeGetGameplayAbilitySpec(
 	AbilitySpec.DynamicAbilityTags.AddTag(InputTag);
 
 	return AbilitySpec;
+}
+
+AActor* UWarriorFunctionLibrary::GetBestTargetFromActors(
+	const UObject* WorldContextObject, const TArray<AActor*>& InActors, const FVector& Origin, const FVector& Forward, const float DisSquaredMax, const float AngleMax,
+	const bool LimitToDis, const bool LimitToAngle, const int DisWeight, const int AngleWeight, const bool bDrawDebug)
+{
+	AActor* BestActor = nullptr;
+	float ScoreBest = 0.f;
+	const float DotMax = UKismetMathLibrary::MapRangeClamped(AngleMax, 0, 180, 2, 0);
+	
+	for (AActor* TargetActor : InActors)
+	{
+		if (TargetActor)
+		{
+			// 计算距离和角度。
+			const FVector DirToTarget = TargetActor->GetActorLocation() - Origin;
+			const float DisSquared = DirToTarget.SizeSquared();
+			if (LimitToDis && DisSquared > DisSquaredMax) continue; // 排除超出最大距离的目标。
+			const float Dot = FVector::DotProduct(Forward, DirToTarget.GetSafeNormal()) + 1.f;
+			if (LimitToAngle && Dot < DotMax) continue; // 排除超出最大夹角的目标。
+			
+			// 计算距离和角度分数，然后按权重计算最终得分。
+			const float Score_Dis = (DisSquaredMax - DisSquared) / DisSquaredMax;
+			const float Score_Angle = (Dot + 1.f) / 2.f;
+			const float Score = (Score_Dis * DisWeight + Score_Angle * AngleWeight) / (DisWeight + AngleWeight);
+
+			if (bDrawDebug)
+			{
+				DrawDebugString(
+					WorldContextObject->GetWorld(),
+					TargetActor->GetActorLocation() + FVector::UpVector * 500.f,
+					FString::Printf(TEXT("Score_Dis:%f  Score_Angle:%f  Score:%f"),Score_Dis,Score_Angle,Score));
+			}
+			
+			// 获取分数高的。
+			if (!BestActor || Score > ScoreBest)
+			{
+				BestActor = TargetActor;
+				ScoreBest = Score;
+			}
+		}
+	}
+
+	return BestActor;
 }
 
 #pragma endregion

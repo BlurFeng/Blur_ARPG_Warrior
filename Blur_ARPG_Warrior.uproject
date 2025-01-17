@@ -35,5 +35,10 @@
 			"Name": "MotionWarping",
 			"Enabled": true
 		},
+		{
+			"Name": "UINavigation",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/b9ee9669c98146cd8433a62ea7f23699"
+		}
 	]
 }

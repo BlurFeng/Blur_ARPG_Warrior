@@ -53,12 +53,13 @@ public:
 	/// @param ExecuteOnFirst 在开始的第一帧执行。
 	/// @param PausedWithGame 随游戏暂停计时。
 	/// @param OutRemainingTime 剩余时间。
+	/// @param OutDeltaTime 每帧变化时间。（它不等于 UpdateInterval 时间。）
 	/// @param CountDownInput 输入执行引脚。
 	/// @param CountDownOutput 输出执行引脚。
 	/// @param LatentInfo 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput", TotalTime = "1.0", UpdateInterval = "0.1", ExecuteOnFirst = "true", PausedWithGame = "true"))
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, bool ExecuteOnFirst, bool PausedWithGame,
-		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
+		float& OutRemainingTime,  float& OutDeltaTime, EWarriorCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput& CountDownOutput,
 		FLatentActionInfo LatentInfo);
 
 	/// 根据传入的权重数组，根据权重随机并返回一个Index。
@@ -222,5 +223,21 @@ public:
 	/// @return 
 	static FGameplayAbilitySpec NativeGetGameplayAbilitySpec(const TSubclassOf<UGameplayAbility>& GameplayAbility, const TWeakObjectPtr<UObject> SourceObject, const int32 ApplyLevel, const FGameplayTag InputTag);
 
+	/// 获取最佳目标Actor。
+	/// @param InActors 进行评分的Actors。
+	/// @param Origin 自身位置。
+	/// @param Forward 正面朝向。越接近此方向的目标，角度分数越高。
+	/// @param DisSquaredMax 最大距离平方，决定了距离分数。一般为探测方法的最大距离。不准确的最大距离将导致不准确的距离分数，从而影响最终评分。
+	/// @param AngleMax 最大Dot（夹角角度），决定了角度分数。[0,180]。
+	/// @param DisWeight 距离分数权重。越高时，越会选择距离自己最近目标。
+	/// @param AngleWeight 角度分数权重。越高时，越会选择靠近 Forward 面向的目标。
+	/// @param LimitToDis 限制在距离内的目标。超出距离的目标直接忽略。
+	/// @param LimitToAngle 限制在角度内的目标。超出距离的目标直接忽略。
+	/// @param bDrawDebug 绘制Debug信息。
+	/// @return 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (WorldContext = "WorldContextObject", DisWeight = "1", AngleWeight = "1" , LimitToDis = "false", LimitToAngle = "false", bDrawDebug = "false"))
+	static AActor* GetBestTargetFromActors(
+		const UObject* WorldContextObject, const TArray<AActor*>& InActors, const FVector& Origin, const FVector& Forward, const float DisSquaredMax, const float AngleMax,
+		const bool LimitToDis, const bool LimitToAngle, const int DisWeight, const int AngleWeight, const bool bDrawDebug);
 #pragma endregion
 };
