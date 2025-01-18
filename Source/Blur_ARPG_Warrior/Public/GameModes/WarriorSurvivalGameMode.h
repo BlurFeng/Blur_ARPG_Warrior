@@ -114,6 +114,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnSurvivalGameModeStateToFailed();
 
+	/// 获取注册的敌人。
+	/// @param GetCopy 
+	/// @param OutConfirmType 
+	/// @return 
+	UFUNCTION(BlueprintCallable, meta = (GetCopy = "true", ExpandEnumAsExecs = "OutConfirmType"))
+	TArray<AWarriorEnemyCharacter*> GetRegisteredEnemies(const bool GetCopy, EWarriorConfirmType& OutConfirmType);
 private:
 
 	//设置当前游戏状态。
@@ -201,7 +207,7 @@ private:
 	//预加载敌人缓存Map。
 	UPROPERTY()
 	TMap<TSoftClassPtr<AWarriorEnemyCharacter>, UClass*> PreLoadedEnemyClassMap;
-
+	
 	//当前波次生成敌人时间间隔。
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float CurrentSpawnEnemyIntervalTime;
@@ -217,4 +223,7 @@ private:
 	//当前波次超时结束时，进入下一波次。否则失败。
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	bool CurrentWhenWaveOverGoToNext;
+
+	UPROPERTY()
+	TArray<AWarriorEnemyCharacter*> RegisterEnemies;
 };

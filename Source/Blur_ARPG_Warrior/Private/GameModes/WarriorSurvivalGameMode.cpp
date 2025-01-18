@@ -158,6 +158,19 @@ void AWarriorSurvivalGameMode::OnSurvivalGameModeStateToFailed()
 	SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::Failed);
 }
 
+TArray<AWarriorEnemyCharacter*> AWarriorSurvivalGameMode::GetRegisteredEnemies(const bool GetCopy, EWarriorConfirmType& OutConfirmType)
+{
+	if (GetCopy)
+	{
+		TArray<AWarriorEnemyCharacter*> Enemies = RegisterEnemies;
+		return Enemies;
+	}
+
+	OutConfirmType = RegisterEnemies.IsEmpty() ? EWarriorConfirmType::No : EWarriorConfirmType::Yes;
+	
+	return RegisterEnemies;
+}
+
 void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(const EWarriorSurvivalGameModeState InState)
 {
 	if (CurrentSurvivalGameModeState == InState) return;
@@ -316,11 +329,13 @@ bool AWarriorSurvivalGameMode::ShouldKeepSpawnEnemies() const
 
 bool AWarriorSurvivalGameMode::NativeRegisterSpawnEnemy(AWarriorEnemyCharacter* InEnemiesToRegister)
 {
-	if (!InEnemiesToRegister) return false;
+	if (!InEnemiesToRegister || RegisterEnemies.Contains(InEnemiesToRegister)) return false;
 
 	CurrentSpawnedEnemiesCounter++;
 	InEnemiesToRegister->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
 	TotalSpawnedEnemiesThisWaveCounter++;
+
+	RegisterEnemies.Add(InEnemiesToRegister);
 
 	return true;
 }
@@ -342,6 +357,8 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 		if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::InProgress)
 			SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
 	}
+
+	RegisterEnemies.Remove(Cast<AWarriorEnemyCharacter>(DestroyedActor));
 }
 
 bool AWarriorSurvivalGameMode::HaveNoEnemies() const

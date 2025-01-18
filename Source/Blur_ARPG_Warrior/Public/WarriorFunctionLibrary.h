@@ -120,11 +120,11 @@ public:
 	/// @return 
 	static bool NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck);
 
-	//Notes：ExpandEnumAsExecs 执行引脚
-	//meta = (ExpandEnumAsExecs = "OutConfirmType") 将参数 OutConfirmType 枚举类型转化为蓝图中的执行引脚。免去了Branch判断，便于使用。
-	//Notes：DisplayName 显示名称
-	//在C++中根据用途，我们可能为某一功能创建一系列的方法，采用不同前缀的命名方式。但在蓝图中，我们不希望显示这些前缀。
-	//可以通过 meta = (DisplayName = "Does Actor Have Tag") 来修改显示名称。
+	// Notes：ExpandEnumAsExecs 执行引脚
+	// meta = (ExpandEnumAsExecs = "OutConfirmType") 将参数 OutConfirmType 枚举类型转化为蓝图中的执行引脚。免去了Branch判断，便于使用。
+	// Notes：DisplayName 显示名称
+	// 在C++中根据用途，我们可能为某一功能创建一系列的方法，采用不同前缀的命名方式。但在蓝图中，我们不希望显示这些前缀。
+	// 可以通过 meta = (DisplayName = "Does Actor Have Tag") 来修改显示名称。
 
 	/// 确认Actor是否包含某个Tag。
 	/// @param InActor 目标Actor。
@@ -132,6 +132,20 @@ public:
 	/// @param OutConfirmType 返回确认结果。
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (DisplayName = "Does Actor Have Tag", ExpandEnumAsExecs = "OutConfirmType"))
 	static void BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck, EWarriorConfirmType& OutConfirmType);
+
+	/// 从Actors数组中移除包含某个Tag的Actor。
+	/// @param InActors 
+	/// @param TagToRemove
+	/// @param OutActors
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static void RemoveActorsByTag(UPARAM(ref) TArray<AActor*>& InActors, FGameplayTag TagToRemove, TArray<AActor*>& OutActors);
+
+	/// 从Actors数组中移除包含任一Tag的Actor。
+	/// @param InActors 
+	/// @param TagsToRemove 
+	/// @param OutActors 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static void RemoveActorsByHasAnyTag(UPARAM(ref) TArray<AActor*>& InActors, FGameplayTagContainer TagsToRemove, TArray<AActor*>& OutActors);
 
 	/// 获取人物战斗组件，从Actor。
 	/// @param InActor 

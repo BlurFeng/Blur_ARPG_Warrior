@@ -223,6 +223,30 @@ void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag 
 	OutConfirmType = NativeDoesActorHaveTag(InActor, TagToCheck) ? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
 }
 
+void UWarriorFunctionLibrary::RemoveActorsByTag(TArray<AActor*>& InActors, FGameplayTag TagToRemove, TArray<AActor*>& OutActors)
+{
+	for (int32 i = InActors.Num() - 1; i >= 0; i--)
+	{
+		if (NativeDoesActorHaveTag(InActors[i], TagToRemove))
+			InActors.RemoveAt(i);
+	}
+
+	OutActors = InActors;
+}
+
+void UWarriorFunctionLibrary::RemoveActorsByHasAnyTag(TArray<AActor*>& InActors, FGameplayTagContainer TagsToRemove,
+	TArray<AActor*>& OutActors)
+{
+	for (int32 i = InActors.Num() - 1; i >= 0; i--)
+	{
+		UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActors[i]);
+		if (ASC && ASC->HasAnyMatchingGameplayTags(TagsToRemove))
+			InActors.RemoveAt(i);
+	}
+
+	OutActors = InActors;
+}
+
 UPawnCombatComponent* UWarriorFunctionLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
 {
 	check(InActor);

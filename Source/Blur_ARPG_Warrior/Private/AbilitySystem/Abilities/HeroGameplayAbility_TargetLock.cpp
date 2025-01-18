@@ -49,10 +49,12 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 
 void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 {
-	if (!CurrentLockedActor
-		|| UWarriorFunctionLibrary::NativeDoesActorHaveTag(CurrentLockedActor, WarriorGameplayTags::Shared_Status_Dead)
-		|| UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Shared_Status_Dead)
-		)
+	// 角色死亡。
+	if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGameplayTags::Shared_Status_Dead))
+		return;
+
+	// 当前锁定目标无效。
+	if (!CurrentLockedActor || UWarriorFunctionLibrary::NativeDoesActorHaveTag(CurrentLockedActor, WarriorGameplayTags::Shared_Status_Dead))
 	{
 		// 当目标死亡时，尝试获取一个新的目标。
 		if (!SwitchTarget(true, true))
@@ -197,11 +199,14 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	{
 		if (AActor* HitActor = TraceHit.GetActor())
 		{
-			if (HitActor != GetHeroCharacterFromActorInfo())
-			{
-				//添加敌人到有效锁定目标数组。
-				AvailableActorsToLock.AddUnique(HitActor);
-			}
+			if (HitActor == GetHeroCharacterFromActorInfo() || AvailableActorsToLock.Contains(HitActor)) continue;
+			// 不锁定正在进场动画的敌人。
+			if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor, WarriorGameplayTags::Enemy_Status_Entering)) continue;
+			// 不锁定死亡的敌人。
+			if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor, WarriorGameplayTags::Shared_Status_Dead)) continue;
+			
+			//添加敌人到有效锁定目标数组。
+			AvailableActorsToLock.AddUnique(HitActor);
 		}
 	}
 }
@@ -240,7 +245,6 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AAct
 	for (AActor* Actor : AvailableActorsToLock)
 	{
 		if (!Actor || Actor == CurrentLockedActor) continue;
-		if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(Actor, WarriorGameplayTags::Shared_Status_Dead)) continue;
 
 		const FVector PlayerToActorNormalized = (Actor->GetActorLocation() - PlayerLocation).GetSafeNormal();
 		const FVector CrossResult = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToActorNormalized);
