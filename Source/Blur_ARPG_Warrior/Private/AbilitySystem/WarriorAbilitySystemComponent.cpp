@@ -117,6 +117,12 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 			{
 				if (const IPawnUIInterface* PawnUIInterface = Cast<IPawnUIInterface>(GetAvatarActor()))
 				{
+					// TODO：轻攻击和重攻击在使用时会进入此行。但实际上技能能成功使用。问题待确认。
+					// if (AbilitySpec.GetPrimaryInstance()->AbilityTags.First() == FGameplayTag::EmptyTag)
+					// {
+					// 	Debug::Print(InInputTag.GetTagName().ToString());
+					// }
+					
 					if (PawnUIInterface->GetHeroUIComponent() && AbilitySpec.GetPrimaryInstance())
 						PawnUIInterface->GetHeroUIComponent()->OnTryActivateAbilityFailed.Broadcast(AbilitySpec.GetPrimaryInstance()->AbilityTags.First());
 				}
