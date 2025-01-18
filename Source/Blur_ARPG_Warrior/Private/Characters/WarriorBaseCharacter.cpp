@@ -6,6 +6,7 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "AbilitySystem/WarriorAttributeSet.h"
 #include "MotionWarpingComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AWarriorBaseCharacter::AWarriorBaseCharacter()
@@ -22,6 +23,13 @@ AWarriorBaseCharacter::AWarriorBaseCharacter()
 	WarriorAttributeSet = CreateDefaultSubobject<UWarriorAttributeSet>(TEXT("WarriorAttributeSet"));
 
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
+}
+
+void AWarriorBaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CapsuleHalfHeightCached = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 }
 
 UAbilitySystemComponent* AWarriorBaseCharacter::GetAbilitySystemComponent() const

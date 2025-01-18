@@ -25,6 +25,8 @@ public:
 	// Sets default values for this character's properties
 	AWarriorBaseCharacter();
 
+	virtual void BeginPlay() override;
+
 	//Notes：IAbilitySystemInterface 接口是GAS和Character通信的重要接口。
 	//GAS通过此接口和Character通信。此接口在GAS系统的各种地方使用到。
 
@@ -60,6 +62,9 @@ protected:
 	//角色启动数据资源。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
 	TSoftObjectPtr<UDataAsset_StartUpDataBase> CharacterStartUpData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "CharacterData")
+	float CapsuleHalfHeightCached;
 
 public:
 
