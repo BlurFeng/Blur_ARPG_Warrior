@@ -141,7 +141,7 @@ float UWarriorFunctionLibrary::LerpLimitChangeMin(const float A, const float B, 
 	//变化小于限制最小变化值
 	if (LimitChangeMin > 0 && FMath::Abs(Change) < LimitChangeMin)
 	{
-		if ( Change > 0.f )
+		if (Change > 0.f)
 		{
 			if (A + LimitChangeMin <= B)
 			{
@@ -154,7 +154,7 @@ float UWarriorFunctionLibrary::LerpLimitChangeMin(const float A, const float B, 
 		}
 		else
 		{
-			if (A + LimitChangeMin >= B)
+			if (A - LimitChangeMin >= B)
 			{
 				Change = -LimitChangeMin;
 			}
