@@ -65,7 +65,7 @@ void AWarriorProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent,
 	APawn* HitPawn = Cast<APawn>(OtherActor);
 
 	//如果没有击中敌人。
-	if (!HitPawn || !UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(), HitPawn))
+	if (!HitPawn /*|| !UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(), HitPawn)*/)
 	{
 		Destroy();
 		return;
@@ -113,7 +113,7 @@ void AWarriorProjectileBase::OnProjectileBeginOverlap(UPrimitiveComponent* Overl
 		Data.Instigator = GetInstigator();
 		Data.Target = HitPawn;
 		
-		if (UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(), HitPawn))
+		if (true/*UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(), HitPawn)*/)
 		{
 			//对敌对目标造成效果。
 			HandleApplyProjectileDamage(HitPawn, Data);
