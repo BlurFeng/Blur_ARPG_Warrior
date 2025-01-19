@@ -223,6 +223,13 @@ void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag 
 	OutConfirmType = NativeDoesActorHaveTag(InActor, TagToCheck) ? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
 }
 
+void UWarriorFunctionLibrary::BP_DoesActorHaveTags(AActor* InActor, FGameplayTagContainer TagsToCheck,
+	EWarriorConfirmType& OutConfirmType)
+{
+	UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActor);
+	OutConfirmType = ASC && ASC->HasAnyMatchingGameplayTags(TagsToCheck) ? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
+}
+
 void UWarriorFunctionLibrary::RemoveActorsByTag(TArray<AActor*>& InActors, FGameplayTag TagToRemove, TArray<AActor*>& OutActors)
 {
 	for (int32 i = InActors.Num() - 1; i >= 0; i--)
@@ -497,6 +504,15 @@ AActor* UWarriorFunctionLibrary::GetBestTargetFromActors(
 	}
 
 	return BestActor;
+}
+
+void UWarriorFunctionLibrary::IsEditor(EWarriorConfirmType& OutConfirmType)
+{
+#if WITH_EDITOR
+	OutConfirmType = EWarriorConfirmType::Yes;
+#else
+	OutConfirmType = EWarriorConfirmType::No;
+#endif
 }
 
 #pragma endregion

@@ -133,6 +133,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (DisplayName = "Does Actor Have Tag", ExpandEnumAsExecs = "OutConfirmType"))
 	static void BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck, EWarriorConfirmType& OutConfirmType);
 
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (DisplayName = "Does Actor Have Tag", ExpandEnumAsExecs = "OutConfirmType"))
+	static void BP_DoesActorHaveTags(AActor* InActor, FGameplayTagContainer TagsToCheck, EWarriorConfirmType& OutConfirmType);
+
 	/// 从Actors数组中移除包含某个Tag的Actor。
 	/// @param InActors 
 	/// @param TagToRemove
@@ -254,4 +257,7 @@ public:
 		const UObject* WorldContextObject, const TArray<AActor*>& InActors, const FVector& Origin, const FVector& Forward, const float DisSquaredMax, const float AngleMax,
 		const bool LimitToDis, const bool LimitToAngle, const int DisWeight, const int AngleWeight, const bool bDrawDebug);
 #pragma endregion
+
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary", meta = (ExpandEnumAsExecs = "OutConfirmType"))
+	static void IsEditor(EWarriorConfirmType& OutConfirmType);
 };

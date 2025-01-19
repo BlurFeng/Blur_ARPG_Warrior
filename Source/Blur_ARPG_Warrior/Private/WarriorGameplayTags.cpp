@@ -128,7 +128,9 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_UnderAttack, "Enemy.Status.UnderAttack");
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Unblockable, "Enemy.Status.Unblockable");
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Entering, "Enemy.Status.Entering");
-
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Attacking, "Enemy.Status.Attacking");
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Moving, "Enemy.Status.Moving");
+	
 	//** Shared tags **//
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_HitReact, "Shared.Ability.HitReact");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_Death, "Shared.Ability.Death");
