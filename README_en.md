@@ -67,7 +67,8 @@ The survival mode process UI includes mode and process tips, countdown.
 
 ![](Documents/Warrior_Hero.png)
 ### Input System
-Based on the Enhanced Input system. It allows input operations to override while holding a weapon, providing different character reactions for the same input.
+Based on the Enhanced Input system. It allows input operations to override while holding a weapon, providing different character reactions for the same input.\
+Supports keyboard and mouse, as well as gamepad.
 
 ### Health
 Health decreases when the character takes damage. It can be restored using items.
