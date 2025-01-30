@@ -210,8 +210,6 @@ Creation and expansion of materials, including enemy hit effects and death disso
 Use of Niagara effects.  
 These can be used for effects when enemies are hit, enter the scene, or when they die.
 
-# Project Class Diagram
-TODO
 
 # Debug Guide
 'Press Enter (left) to open the comprehensive console. The numpad numbers toggle display content.  
