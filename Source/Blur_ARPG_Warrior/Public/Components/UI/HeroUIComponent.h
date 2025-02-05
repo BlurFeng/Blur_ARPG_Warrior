@@ -43,22 +43,22 @@ public:
 	FOnAbilityCooldownBeginDelegate OnAbilityCooldownBegin;
 
 	//当和石头交互时。
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnStoneInteractedDelegate OnStoneInteracted;
 
 	//当确认技能Cost是否足够时。
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnCheckCostOrCooldownDelegate OnCheckCost;
 
 	//当确认技能Cooldown是否足够时。
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnCheckCostOrCooldownDelegate OnCheckCooldown;
 
 	//当取消一个技能时。
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnCheckCostOrCooldownDelegate OnCancelAbility;
 
 	//尝试激活一个技能失败时。
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnTryActivateAbilityFailedDelegate OnTryActivateAbilityFailed;
 };

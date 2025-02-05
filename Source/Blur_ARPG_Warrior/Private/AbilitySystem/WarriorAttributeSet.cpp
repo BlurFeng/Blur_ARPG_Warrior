@@ -77,7 +77,6 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 		//UI更新广播
 		if(const UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
 		{
-			//只要英雄有怒气值。
 			HeroUIComponent->OnCurrentVitalityChanged.Broadcast(GetCurrentVitality() / GetMaxVitality());
 		}
 	}
